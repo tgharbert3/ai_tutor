@@ -1,7 +1,7 @@
 import { test } from "./controllers/test.controller";
 
 const server = Bun.serve({
-    port: 3001,
+    port: Bun.env.PORT || 0,
     routes: {
         '/':req => test(req),
     }
