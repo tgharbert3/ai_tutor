@@ -1,21 +1,20 @@
-import { pinoLogger } from 'hono-pino'
-import pino from 'pino'
+import { pinoLogger as logger } from "hono-pino";
+import pino from "pino";
+
+import env from "src/env.js";
 
 export function configurePinoLogger() {
-  // eslint-disable-next-line node/prefer-global/process
-  if (process.env.ENVIRONMENT === 'development') {
-    return pinoLogger({
+  if (env.ENVIRONMENT === "development") {
+    return logger({
       pino: pino({
         base: null,
-        level: 'debug',
-
+        level: "debug",
       }),
-    })
+    });
   }
-
   else {
-    return pinoLogger({
+    return logger({
       pino: pino(),
-    })
+    });
   }
 }

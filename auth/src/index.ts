@@ -1,8 +1,10 @@
-import app from './app.js'
+import app from "./app.js";
+import env from "./env.js";
 
 const server = Bun.serve({
-  port: 5500,
+  port: env.PORT || 3000,
   fetch: app.fetch,
-})
+});
 
-console.log(`Listening on ${server.url}`)
+// eslint-disable-next-line no-console
+console.log(`Listening on ${server.url}`);
