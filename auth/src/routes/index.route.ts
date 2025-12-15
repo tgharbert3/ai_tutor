@@ -1,4 +1,7 @@
-import { createRoute, z } from "@hono/zod-openapi";
+import { createRoute } from "@hono/zod-openapi";
+import * as HttpStatusCodes from "stoker/http-status-codes";
+import { jsonContent } from "stoker/openapi/helpers";
+import { createMessageObjectSchema } from "stoker/openapi/schemas";
 
 import { CreateRouter } from "@/lib/create-app.js";
 
@@ -7,16 +10,10 @@ const router = CreateRouter()
     method: "get",
     path: "/",
     responses: {
-      200: {
-        content: {
-          "application/json": {
-            schema: z.object({
-              message: z.string(),
-            }),
-          },
-        },
-        description: "Auth router",
-      },
+      [HttpStatusCodes.OK]: jsonContent(
+        createMessageObjectSchema("Auth Api"),
+        "Auth API Index",
+      ),
     },
   }), (c) => {
     return c.json({
