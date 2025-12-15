@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "module": "nodenext", // Use 'nodenext' for Bun compatibility
     "paths": {
-      "@/*": ["./src"]
+      "@/*": ["./src/*"]
     },
     "strict": true,
     "esModuleInterop": true

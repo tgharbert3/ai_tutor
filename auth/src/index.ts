@@ -1,5 +1,5 @@
-import app from "./app.js";
-import env from "./env.js";
+import app from "@/app.js";
+import env from "@/env.js";
 
 const server = Bun.serve({
   port: env.PORT || 3000,

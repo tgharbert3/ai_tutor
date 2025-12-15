@@ -1,9 +1,10 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
+import defaultHook from "stoker/openapi/default-hook";
 
-import { configurePinoLogger } from "src/middlewares/pino-logger.js";
+import type { AppBindings } from "@/lib/types.js";
 
-import type { AppBindings } from "./types.js";
+import { configurePinoLogger } from "@/middlewares/pino-logger.js";
 
 /**
  * Resuable function to create a router/OpenAPIHono instance
@@ -12,9 +13,14 @@ import type { AppBindings } from "./types.js";
 export function CreateRouter() {
   return new OpenAPIHono<AppBindings>({
     strict: false,
+    defaultHook,
   });
 }
 
+/**
+ * Resuable function to creat OpenAPIHono app
+ * @returns the created app
+ */
 export default function createApp() {
   const app = CreateRouter();
   app.use(serveEmojiFavicon("📝"));

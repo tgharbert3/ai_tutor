@@ -1,6 +1,6 @@
-import configureOpenAPI from "./lib/configure-openAPI.js";
-import createApp from "./lib/create-app.js";
-import index from "./routes/index.route.js";
+import configureOpenAPI from "@/lib/configure-openAPI.js";
+import createApp from "@/lib/create-app.js";
+import index from "@/routes/index.route.js";
 
 const app = createApp();
 
