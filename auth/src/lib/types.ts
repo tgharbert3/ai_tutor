@@ -9,4 +9,5 @@ export type AppBindings = {
 
 export type APPOpenAPI = OpenAPIHono<AppBindings>;
 
+// Generic type which takes route handler genric and passing in AppBindings
 export type AppRouteHandler<R extends RouteConfig> = RouteHandler<R, AppBindings>;
