@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "ENVIRONMENT=production bun run --hot src/index.ts | pino-pretty",
+    "dev": "ENVIRONMENT=development bun run --hot src/index.ts | pino-pretty",
     "lint": "eslint",
     "lint:fix": "npm run lint --fix"
   },
