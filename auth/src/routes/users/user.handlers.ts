@@ -1,3 +1,6 @@
+import * as HttpStatusCodes from "stoker/http-status-codes";
+import * as HttpStatusPhrases from "stoker/http-status-phrases";
+
 import type { AppRouteHandler } from "@/lib/types.js";
 
 import db from "@/db/index.js";
@@ -12,6 +15,13 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
       return operators.eq(fields.id, id);
     },
   });
-
-  return c.json(user);
+  if (!user) {
+    return c.json(
+      {
+        message: HttpStatusPhrases.NOT_FOUND,
+      },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+  return c.json(user, HttpStatusCodes.OK);
 };
