@@ -3,7 +3,7 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 import { IdParamsSchema } from "stoker/openapi/schemas";
 
-// const tags = ["Users"];
+const tags = ["Users"];
 
 export const getOne = createRoute({
   path: "/users/{id}",
@@ -11,6 +11,7 @@ export const getOne = createRoute({
   request: {
     params: IdParamsSchema,
   },
+  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       z.object({
