@@ -7,6 +7,8 @@ export type AppBindings = {
   };
 };
 
+export type AppEnv = "development" | "production" | "test";
+
 export type APPOpenAPI = OpenAPIHono<AppBindings>;
 
 // Generic type which takes route handler genric and passing in AppBindings
