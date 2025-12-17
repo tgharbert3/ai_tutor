@@ -9,6 +9,8 @@ export default antfu({
     semi: true,
     quotes: "double",
   },
+  ignores: ["./src/db/migrations"],
+  gitignore: true,
 }, {
   rules: {
     "ts/no-redeclare": "off",
@@ -19,9 +21,6 @@ export default antfu({
     "node/no-process-env": ["error"],
     "perfectionist/sort-imports": ["error", {
       tsconfigRootDir: ".",
-    }], 
-    ignores: [
-      "./src/db/migrations"
-    ]
+    }],
   },
 });
