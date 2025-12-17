@@ -19,6 +19,9 @@ export default antfu({
     "node/no-process-env": ["error"],
     "perfectionist/sort-imports": ["error", {
       tsconfigRootDir: ".",
-    }],
+    }], 
+    ignores: [
+      "./src/db/migrations"
+    ]
   },
 });
