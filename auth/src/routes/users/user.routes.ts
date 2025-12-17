@@ -1,8 +1,9 @@
-import { createRoute, z } from "@hono/zod-openapi";
+import { createRoute } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
-import { jsonContent } from "stoker/openapi/helpers";
+import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
+import { insertUserSchema, selectUserSchema } from "@/db/schema.js";
 import { notFoundSchema } from "@/lib/constants.js";
 
 const tags = ["Users"];
@@ -16,9 +17,7 @@ export const getOne = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      z.object({
-        username: z.string(),
-      }),
+      selectUserSchema,
       "One user",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
@@ -32,4 +31,27 @@ export const getOne = createRoute({
   },
 });
 
+export const registerUser = createRoute({
+  path: "/user/register",
+  method: "post",
+  request: {
+    body: jsonContentRequired(
+      insertUserSchema,
+      "The user to create",
+    ),
+  },
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      selectUserSchema,
+      "The inserted user",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(insertUserSchema),
+      "The Valid error(s)",
+    ),
+  },
+});
+
 export type GetOneRoute = typeof getOne;
+export type registerUser = typeof registerUser;
