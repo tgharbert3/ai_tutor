@@ -1,0 +1,40 @@
+name: Auth Service Tests
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+        - 'auth/**'
+  pull_request:
+    paths:
+        - 'auth/**'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+        run:
+            working-directory: ./auth
+    
+    env:
+          ENVIRONMENT: test
+          LOG_LEVEL: silent
+          DATABASE_URL: file:test.db
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+            bun-version: latest
+      
+
+      - name: Get dependencies
+        run: bun install
+
+      - name: Run Unit tests
+        run: bun run test:unit
+
+      # - name: Run integration Tests
+      #   run: bun run test:int
