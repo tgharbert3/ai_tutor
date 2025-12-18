@@ -12,6 +12,14 @@ export function configurePinoLogger() {
       }),
     });
   }
+  else if (env.ENVIRONMENT === "test") {
+    return logger({
+      pino: ({
+        base: null,
+        level: "silent",
+      }),
+    });
+  }
   else {
     return logger({
       pino: pino(),
