@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "ENVIRONMENT=devlopment bun run --hot src/index.ts | pino-pretty",
-    "test": "ENVIRONMENT=test vitest",
+    "test": "ENVIRONMENT=test bun vitest",
     "lint": "eslint",
     "lint:fix": "npm run lint --fix"
   },
