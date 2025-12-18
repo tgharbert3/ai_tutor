@@ -1,16 +1,21 @@
-name: Tests
+name: Auth Service Tests
 
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    paths:
+        - 'auth/**'
   pull_request:
-    branches: ["main"]
-    types: [opened, synchronize, reopened]
+    paths:
+        - 'auth/**'
 
 jobs:
   tests:
     runs-on: ubuntu-latest
+
+    defaults:
+        run:
+            working-directory: ./auth
 
     steps:
       - uses: actions/checkout@v5
