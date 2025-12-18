@@ -1,7 +1,14 @@
 {
   "compilerOptions": {
-    "strict": true,
+    "target": "es2022",
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "baseUrl": ".",
+    "module": "nodenext", // Use 'nodenext' for Bun compatibility
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "strict": true,
+    "esModuleInterop": true
   }
 }
