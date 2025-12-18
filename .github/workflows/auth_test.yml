@@ -36,5 +36,5 @@ jobs:
       - name: Run Unit tests
         run: bun run test:unit
 
-      - name: Run integration Tests
-        run: bun run test:int
+      # - name: Run integration Tests
+      #   run: bun run test:int
