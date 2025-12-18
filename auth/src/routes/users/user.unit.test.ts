@@ -7,7 +7,7 @@ import env from "@/env.js";
 import { ZOD_ERROR_MESSAGES } from "@/lib/constants.js";
 import createApp from "@/lib/create-app.js";
 
-import router from "../users/user.index.js";
+import router from "./user.index.js";
 
 if (env.ENVIRONMENT !== "test") {
   throw new Error("Must be in test Environment");
@@ -26,7 +26,7 @@ describe("user Routes", () => {
     }
   });
 
-  it("get /users validates the body when creating a new user", async () => {
+  it("get /users validates the id when getting one user", async () => {
     const response = await client.users[":id"].$get({
       param: {
         id: "wat",
