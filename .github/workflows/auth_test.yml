@@ -16,6 +16,11 @@ jobs:
     defaults:
         run:
             working-directory: ./auth
+    
+    env:
+          ENVIRONMENT: test
+          LOG_LEVEL: silent
+          DATABASE_URL: file:test.db
 
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +28,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
             bun-version: latest
+      
 
       - name: Get dependencies
         run: bun install
@@ -32,8 +38,3 @@ jobs:
 
       - name: Run integration Tests
         run: bun run test:int
-
-        env:
-          ENVIRONMENT: test
-          LOG_LEVEL: silent
-          DATABASE_URL: file:test.db
