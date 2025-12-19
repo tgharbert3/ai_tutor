@@ -36,6 +36,7 @@ const EnvSchema = z.discriminatedUnion("ENVIRONMENT", [
     ENVIRONMENT: z.literal("development"),
     DATABASE_URL: z.string().min(1),
     DATABASE_AUTH_URL: z.string().optional(),
+    DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
   }),
   BaseSchema.extend({
     ENVIRONMENT: z.literal("production"),

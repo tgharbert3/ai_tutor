@@ -21,6 +21,7 @@ jobs:
           ENVIRONMENT: test
           LOG_LEVEL: silent
           DATABASE_URL: file:test.db
+          DATABASE_AUTH_TOKEN: "dummy-token-for-tests"
 
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +33,12 @@ jobs:
 
       - name: Get dependencies
         run: bun install
+
+      - name: Lint Check
+        run: bun run lint
+
+      - name: Type Check
+        run: bun x tsc --noEmit
 
       - name: Run Unit tests
         run: bun run test:unit
