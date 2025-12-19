@@ -9,8 +9,9 @@
       "@/*": ["./src/*"]
     },
     "strict": true,
+    "noEmit": true,
+    "outDir": "./dist",
     "esModuleInterop": true,
     "skipLibCheck": true
-
   }
 }

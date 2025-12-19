@@ -45,3 +45,6 @@ jobs:
 
       # - name: Run integration Tests
       #   run: bun run test:int
+
+      - name: Build API
+        run: bun run build
