@@ -4,9 +4,10 @@ import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import type { AppRouteHandler } from "@/lib/types.js";
 
 import db from "@/db/index.js";
-import { users } from "@/db/schema.js";
 
 import type { GetOneRoute, registerUser } from "./user.routes.js";
+
+import { insertOneUser } from "./user.service.js";
 
 /**
  * Handler function for getting one usere
@@ -39,6 +40,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
  */
 export const create: AppRouteHandler<registerUser> = async (c) => {
   const user = c.req.valid("json");
-  const [inserted] = await db.insert(users).values(user).returning();
-  return c.json(inserted, HttpStatusCodes.OK);
+  const insertedUser = await insertOneUser(user);
+  return c.json(insertedUser, HttpStatusCodes.OK);
 };
