@@ -4,6 +4,7 @@ import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import type { AppRouteHandler } from "@/lib/types.js";
 
 import db from "@/db/index.js";
+import { generateAccessToken } from "@/lib/token-service.js";
 
 import type { GetOneRoute, registerUser } from "./user.routes.js";
 
@@ -41,5 +42,6 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
 export const create: AppRouteHandler<registerUser> = async (c) => {
   const user = c.req.valid("json");
   const insertedUser = await insertOneUser(user);
-  return c.json(insertedUser, HttpStatusCodes.OK);
+  const token = await generateAccessToken(insertedUser);
+  return c.json({ user: insertedUser, accessToken: token, tokenType: "Bearer" }, HttpStatusCodes.OK);
 };

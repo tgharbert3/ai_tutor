@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { email } from "zod";
+import z, { email } from "zod";
 
 export const users = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -11,6 +11,9 @@ export const users = sqliteTable("users", {
 });
 
 export const selectUserSchema = createSelectSchema(users);
+export const safeSelectUserSchema = selectUserSchema.omit({
+  password: true,
+});
 export const insertUserSchema = createInsertSchema(
   users,
   {
@@ -23,6 +26,12 @@ export const insertUserSchema = createInsertSchema(
   .omit({
     id: true,
   });
+
+export const authResponseSchema = z.object({
+  user: safeSelectUserSchema,
+  accessToken: z.string(),
+  tokenType: z.string(),
+});
 
 export type getOneUser = typeof users.$inferSelect;
 export type insertUser = typeof users.$inferInsert;

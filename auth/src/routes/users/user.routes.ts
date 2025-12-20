@@ -3,7 +3,7 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
-import { insertUserSchema, selectUserSchema } from "@/db/schema.js";
+import { authResponseSchema, insertUserSchema, selectUserSchema } from "@/db/schema.js";
 import { notFoundSchema } from "@/lib/constants.js";
 
 const tags = ["Users"];
@@ -43,7 +43,7 @@ export const registerUser = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      selectUserSchema,
+      authResponseSchema,
       "The inserted user",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(

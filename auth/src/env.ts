@@ -37,16 +37,19 @@ const EnvSchema = z.discriminatedUnion("ENVIRONMENT", [
     DATABASE_URL: z.string().min(1),
     DATABASE_AUTH_URL: z.string().optional(),
     DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
+    JWT_SECRET: z.string().min(1),
   }),
   BaseSchema.extend({
     ENVIRONMENT: z.literal("production"),
     DATABASE_URL: z.url(),
     DATABASE_AUTH_TOKEN: z.string().min(1),
+    JWT_SECRET: z.string().min(1),
   }),
   BaseSchema.extend({
     ENVIRONMENT: z.literal("test"),
     DATABASE_URL: z.string(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
+    JWT_SECRET: z.string().min(1),
   }),
 ]).superRefine((input, ctx) => {
   if (input.ENVIRONMENT === "production" && !input.DATABASE_AUTH_TOKEN) {
