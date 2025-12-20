@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "ENVIRONMENT=devlopment bun run --hot src/index.ts | pino-pretty",
+    "dev": "ENVIRONMENT=production bun run --hot src/index.ts | pino-pretty",
     "start": "bun run ./dist/index.js",
     "test": "ENVIRONMENT=test LOG_LEVEL=silent bun vitest",
     "test:unit": "ENVIRONMENT=test LOG_LEVEL=silent bun vitest run unit",

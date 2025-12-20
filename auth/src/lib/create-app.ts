@@ -23,10 +23,6 @@ export function CreateRouter() {
  */
 export default function createApp() {
   const app = CreateRouter();
-  app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {
-    type: "http",
-    scheme: "bearer",
-  });
   app.use(serveEmojiFavicon("📝"));
   app.use(configurePinoLogger());
 

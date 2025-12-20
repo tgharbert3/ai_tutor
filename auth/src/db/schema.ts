@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import z, { email } from "zod";
+import z from "zod";
 
 export const users = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -19,7 +19,7 @@ export const insertUserSchema = createInsertSchema(
   {
     username: schema => schema.min(1),
     password: schema => schema.min(8),
-    email: email(),
+    email: schema => schema.email(),
     canvasToken: schema => schema.min(1),
   },
 )

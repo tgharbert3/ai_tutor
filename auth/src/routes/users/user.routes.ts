@@ -1,4 +1,4 @@
-import { createRoute } from "@hono/zod-openapi";
+import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
@@ -49,6 +49,12 @@ export const registerUser = createRoute({
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertUserSchema),
       "The Valid error(s)",
+    ),
+    [HttpStatusCodes.CONFLICT]: jsonContent(
+      createErrorSchema(z.object({
+        message: z.string(),
+      })),
+      "Email already exists",
     ),
   },
 });
