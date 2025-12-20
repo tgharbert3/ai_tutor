@@ -1,10 +1,10 @@
 import { sign } from "hono/jwt";
 
-import type { insertUser } from "@/db/schema.js";
+import type { safeUser } from "@/db/schema.js";
 
 import env from "@/env.js";
 
-export async function generateAccessToken(user: insertUser) {
+export async function generateAccessToken(user: safeUser) {
   const payload = {
     id: user.id!,
     username: user.username,

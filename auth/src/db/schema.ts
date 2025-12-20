@@ -35,3 +35,4 @@ export const authResponseSchema = z.object({
 
 export type getOneUser = typeof users.$inferSelect;
 export type insertUser = typeof users.$inferInsert;
+export type safeUser = z.infer<typeof safeSelectUserSchema>;

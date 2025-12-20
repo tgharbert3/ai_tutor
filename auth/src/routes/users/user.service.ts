@@ -10,5 +10,7 @@ export async function insertOneUser(user: insertUser) {
     password: hashedPassword,
   };
   const [inserted] = await db.insert(users).values(hashedUser).returning();
-  return inserted;
+  // destructure the password out of the return type
+  const { password, ...safeUser } = inserted;
+  return safeUser;
 }
