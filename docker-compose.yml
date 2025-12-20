@@ -1,0 +1,11 @@
+services:
+  api:
+    build: 
+      context: ./auth
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./auth/.env
+      - ./auth/.env.local
+    volumes:
+      - ./auth/dev.db:/usr/src/app/dev.db
