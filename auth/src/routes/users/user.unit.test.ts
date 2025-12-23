@@ -9,7 +9,7 @@ import createApp from "@/lib/create-app.js";
 
 import router from "./user.index.js";
 
-if (env.ENVIRONMENT !== "test") {
+if (env.NODE_ENV !== "test") {
   throw new Error("Must be in test Environment");
 }
 

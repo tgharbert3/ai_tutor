@@ -3,11 +3,11 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "ENVIRONMENT=production bun run --hot src/index.ts | pino-pretty",
+    "dev": "NODE_ENV=production bun run --hot src/index.ts | pino-pretty",
     "start": "bun run ./dist/index.js",
-    "test": "ENVIRONMENT=test LOG_LEVEL=silent bun vitest",
-    "test:unit": "ENVIRONMENT=test LOG_LEVEL=silent bun vitest run unit",
-    "test:int": "ENVIRONMENT=test LOG_LEVEL=silent bun vitest run int",
+    "test": "NODE_ENV=test LOG_LEVEL=silent bun vitest",
+    "test:unit": "NODE_ENV=test LOG_LEVEL=silent bun vitest run unit",
+    "test:int": "NODE_ENV=test LOG_LEVEL=silent bun vitest run int",
     "lint": "eslint",
     "lint:fix": "npm run lint --fix",
     "build": "bun build ./src/index.ts --outdir ./dist --target bun"

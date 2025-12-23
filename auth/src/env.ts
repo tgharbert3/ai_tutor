@@ -15,7 +15,7 @@ const ENV_FILE_MAP: Record<AppEnv, string> = {
   test: ".env.test",
 };
 
-const currentEnv = (process.env.ENVIRONMENT as AppEnv) || "development";
+const currentEnv = (process.env.NODE_ENV as AppEnv) || "development";
 const envFile = ENV_FILE_MAP[currentEnv] || ".env";
 
 expand(config({
@@ -31,28 +31,28 @@ const BaseSchema = z.object({
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
 });
 
-const EnvSchema = z.discriminatedUnion("ENVIRONMENT", [
+const EnvSchema = z.discriminatedUnion("NODE_ENV", [
   BaseSchema.extend({
-    ENVIRONMENT: z.literal("development"),
+    NODE_ENV: z.literal("development"),
     DATABASE_URL: z.string().min(1),
     DATABASE_AUTH_URL: z.string().optional(),
     DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
     JWT_SECRET: z.string().min(1),
   }),
   BaseSchema.extend({
-    ENVIRONMENT: z.literal("production"),
+    NODE_ENV: z.literal("production"),
     DATABASE_URL: z.url(),
     DATABASE_AUTH_TOKEN: z.string().min(1),
     JWT_SECRET: z.string().min(1),
   }),
   BaseSchema.extend({
-    ENVIRONMENT: z.literal("test"),
+    NODE_ENV: z.literal("test"),
     DATABASE_URL: z.string(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
     JWT_SECRET: z.string().min(1),
   }),
 ]).superRefine((input, ctx) => {
-  if (input.ENVIRONMENT === "production" && !input.DATABASE_AUTH_TOKEN) {
+  if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
     ctx.addIssue({
       code: "invalid_type",
       expected: "string",

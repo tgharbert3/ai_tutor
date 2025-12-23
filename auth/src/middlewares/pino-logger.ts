@@ -4,7 +4,7 @@ import pino from "pino";
 import env from "@/env.js";
 
 export function configurePinoLogger() {
-  if (env.ENVIRONMENT === "development") {
+  if (env.NODE_ENV === "development") {
     return logger({
       pino: pino({
         base: null,
@@ -12,7 +12,7 @@ export function configurePinoLogger() {
       }),
     });
   }
-  else if (env.ENVIRONMENT === "test") {
+  else if (env.NODE_ENV === "test") {
     return logger({
       pino: ({
         base: null,
