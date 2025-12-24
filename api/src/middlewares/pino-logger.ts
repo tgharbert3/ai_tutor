@@ -1,6 +1,7 @@
-import { env } from "bun";
 import { pinoLogger as logger } from "hono-pino";
 import pino from "pino";
+
+import env from "@/env.js";
 
 export function configurePinoLogger() {
   if (env.NODE_ENV === "development") {

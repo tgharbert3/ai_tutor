@@ -7,7 +7,7 @@ import { expand } from "dotenv-expand";
 import path from "node:path";
 import { z } from "zod";
 
-import type { AppEnv } from "./src/lib/types.js";
+import type { AppEnv } from "./lib/types.js";
 
 const ENV_FILE_MAP: Record<AppEnv, string> = {
   development: ".env",
