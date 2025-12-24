@@ -1,9 +1,9 @@
-import { Hono } from "hono";
+import app from "@/app.js";
 
-const app = new Hono();
-
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
+const server = Bun.serve({
+  port: Bun.env.PORT || 3000,
+  fetch: app.fetch,
 });
 
-export default app;
+// eslint-disable-next-line no-console
+console.log(`Listening on ${server.url}`);
