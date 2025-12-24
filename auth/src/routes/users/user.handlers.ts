@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
 
@@ -42,6 +43,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
 export const create: AppRouteHandler<registerUser> = async (c) => {
   const user = c.req.valid("json");
   const insertedUser = await insertOneUser(user);
+  if (!insertedUser) {
+    throw new HTTPException(HttpStatusCodes.CONFLICT, { message: "Email already exists" });
+  }
   const token = await generateAccessToken(insertedUser);
   return c.json({ user: insertedUser, accessToken: token, tokenType: "Bearer" }, HttpStatusCodes.OK);
 };
