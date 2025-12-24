@@ -5,3 +5,5 @@ export type AppBindings = {
     logger: PinoLogger;
   };
 };
+
+export type AppEnv = "development" | "production" | "test";

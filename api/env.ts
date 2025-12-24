@@ -1,7 +1,7 @@
+// This file defines a type safe env
 /* eslint-disable node/no-process-env */
 import type { ZodError } from "zod";
 
-// This file defines a type safe env
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import path from "node:path";
@@ -34,25 +34,15 @@ const BaseSchema = z.object({
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [
   BaseSchema.extend({
     NODE_ENV: z.literal("development"),
-    DATABASE_URL: z.string().min(1),
-    DATABASE_AUTH_URL: z.string().optional(),
-    DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
-    JWT_SECRET: z.string().min(1),
   }),
   BaseSchema.extend({
     NODE_ENV: z.literal("production"),
-    DATABASE_URL: z.url(),
-    DATABASE_AUTH_TOKEN: z.string().min(1),
-    JWT_SECRET: z.string().min(1),
   }),
   BaseSchema.extend({
     NODE_ENV: z.literal("test"),
-    DATABASE_URL: z.string(),
-    DATABASE_AUTH_TOKEN: z.string().optional(),
-    JWT_SECRET: z.string().min(1),
   }),
 ]).superRefine((input, ctx) => {
-  if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
+  if (input.NODE_ENV === "production") {
     ctx.addIssue({
       code: "invalid_type",
       expected: "string",
@@ -74,7 +64,7 @@ try {
 catch (e) {
   const error = e as ZodError;
   console.error("Invalid env");
-  console.error(z.treeifyError(error));
+  console.error(error);
   process.exit(1);
 }
 
