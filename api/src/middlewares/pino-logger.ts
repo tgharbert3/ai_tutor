@@ -12,17 +12,17 @@ export function configurePinoLogger() {
       }),
     });
   }
-//   else if (env.NODE_ENV === "test") {
-//     return logger({
-//       pino: ({
-//         base: null,
-//         level: "silent",
-//       }),
-//     });
-//   }
-//   else {
-//     return logger({
-//       pino: pino(),
-//     });
-//   }
+  else if (env.NODE_ENV === "test") {
+    return logger({
+      pino: ({
+        base: null,
+        level: "silent",
+      }),
+    });
+  }
+  else {
+    return logger({
+      pino: pino(),
+    });
+  }
 }
