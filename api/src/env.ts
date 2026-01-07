@@ -34,12 +34,19 @@ const BaseSchema = z.object({
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [
   BaseSchema.extend({
     NODE_ENV: z.literal("development"),
+    DATABASE_URL: z.string().min(1),
+    DATABASE_AUTH_URL: z.string().optional(),
+    DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
   }),
   BaseSchema.extend({
     NODE_ENV: z.literal("production"),
+    DATABASE_URL: z.url(),
+    DATABASE_AUTH_TOKEN: z.string().min(1),
   }),
   BaseSchema.extend({
     NODE_ENV: z.literal("test"),
+    DATABASE_URL: z.string(),
+    DATABASE_AUTH_TOKEN: z.string().optional(),
   }),
 ]).superRefine((input, ctx) => {
   if (input.NODE_ENV === "production") {

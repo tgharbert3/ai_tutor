@@ -1,5 +1,5 @@
 import createApp from "@/lib/create-app.js";
-import courses from "@/routes/courses/courses.index";
+import courses from "@/modules/courses/courses.index";
 
 const app = createApp();
 
