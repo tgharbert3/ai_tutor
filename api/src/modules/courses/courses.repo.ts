@@ -4,7 +4,11 @@ import db from "@/db";
 import { courses } from "@/db/schema";
 
 export async function insertOneCourse(course: insertOneCourseType) {
-  const [inserted] = await db.insert(courses).values(course).returning();
-
+  const [inserted] = await db.insert(courses).values(course).returning().onConflictDoUpdate({
+    target: courses.updatedAt,
+    set: {
+      updatedAt: new Date(),
+    },
+  });
   return inserted;
 }

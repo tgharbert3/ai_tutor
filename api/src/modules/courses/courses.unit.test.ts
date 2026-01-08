@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { insertOneCourseType } from "@/db/schema.js";
 
@@ -30,6 +30,6 @@ describe("user Routes", () => {
       courseCode: "T1",
     };
     const response = await insertOneCourse(course);
-    console.log(response);
+    expect(response).toMatchObject(course);
   });
 });

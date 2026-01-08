@@ -3,9 +3,11 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const courses = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  courseId: integer("courseId").notNull(),
+  courseId: integer("courseId").notNull().unique(),
   courseName: text("courseName"),
   courseCode: text("courseCode"),
+  createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
 });
 
 export const selectCourseSchema = createSelectSchema(courses);
