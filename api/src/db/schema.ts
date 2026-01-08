@@ -4,13 +4,18 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 export const courses = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   courseId: integer("courseId").notNull().unique(),
-  courseName: text("courseName"),
-  courseCode: text("courseCode"),
+  courseName: text("courseName").notNull().default(""),
+  courseCode: text("courseCode").notNull().default(""),
   createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
 });
 
-export const selectCourseSchema = createSelectSchema(courses);
+export const selectCourseSchema = createSelectSchema(courses)
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  });
 export const insertCourseSchema = createInsertSchema(
   courses,
   {
