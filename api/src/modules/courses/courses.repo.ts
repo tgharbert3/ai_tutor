@@ -1,9 +1,9 @@
-import type { insertOneCourseType } from "@/db/schema";
+import type { insertCourseType } from "@/db/schema";
 
 import db from "@/db";
 import { courses } from "@/db/schema";
 
-export async function insertOneCourse(course: insertOneCourseType) {
+export async function insertOneCourse(course: insertCourseType[]) {
   const [inserted] = await db.insert(courses).values(course).returning().onConflictDoUpdate({
     target: courses.updatedAt,
     set: {

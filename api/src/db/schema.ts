@@ -22,4 +22,4 @@ export const insertCourseSchema = createInsertSchema(
   });
 
 export type getCourses = typeof courses.$inferSelect;
-export type insertOneCourseType = typeof courses.$inferInsert;
+export type insertCourseType = typeof courses.$inferInsert;

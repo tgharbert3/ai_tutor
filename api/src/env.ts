@@ -29,22 +29,26 @@ expand(config({
 const BaseSchema = z.object({
   PORT: z.coerce.number().default(3000),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
+  CANVAS_BASE_URL: z.string().min(1),
 });
 
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [
   BaseSchema.extend({
     NODE_ENV: z.literal("development"),
+    API_TOKEN: z.string().min(1),
     DATABASE_URL: z.string().min(1),
     DATABASE_AUTH_URL: z.string().optional(),
     DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
   }),
   BaseSchema.extend({
     NODE_ENV: z.literal("production"),
+    API_TOKEN: z.string().min(1),
     DATABASE_URL: z.url(),
     DATABASE_AUTH_TOKEN: z.string().min(1),
   }),
   BaseSchema.extend({
     NODE_ENV: z.literal("test"),
+    API_TOKEN: z.string().min(1),
     DATABASE_URL: z.string(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
   }),
