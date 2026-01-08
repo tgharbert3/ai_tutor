@@ -3,7 +3,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const courses = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  courseId: text("courseId").notNull(),
+  courseId: integer("courseId").notNull(),
   courseName: text("courseName"),
   courseCode: text("courseCode"),
 });
@@ -20,4 +20,4 @@ export const insertCourseSchema = createInsertSchema(
   });
 
 export type getCourses = typeof courses.$inferSelect;
-export type insertOneCourse = typeof courses.$inferInsert;
+export type insertOneCourseType = typeof courses.$inferInsert;
