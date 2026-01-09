@@ -4,20 +4,20 @@ import db from "@/db";
 import { courses } from "@/db/schema";
 
 export async function upsertManyCourses(course: insertCourseType[]) {
-  const inserted = await db.insert(courses).values(course).returning().onConflictDoUpdate({
-    target: courses.courseId,
-    set: {
-      updatedAt: new Date(),
-    },
-  });
-  return inserted;
+    const inserted = await db.insert(courses).values(course).returning().onConflictDoUpdate({
+        target: courses.courseId,
+        set: {
+            updatedAt: new Date(),
+        },
+    });
+    return inserted;
 }
 
 export async function findAllCourses() {
-  const response = await db.select({
-    courseId: courses.courseId,
-    courseName: courses.courseName,
-    courseCode: courses.courseName,
-  }).from(courses);
-  return response;
+    const response = await db.select({
+        courseId: courses.courseId,
+        courseName: courses.courseName,
+        courseCode: courses.courseName,
+    }).from(courses);
+    return response;
 }

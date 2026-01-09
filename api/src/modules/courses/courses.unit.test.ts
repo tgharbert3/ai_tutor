@@ -7,32 +7,32 @@ import env from "@/env.js";
 import { fetchCoursesFromCanvas } from "./courses.client.js";
 
 if (env.NODE_ENV !== "test") {
-  throw new Error("Must be in test Environment");
+    throw new Error("Must be in test Environment");
 }
 
 describe("user Routes", () => {
-  beforeAll(() => {
-    execSync(`bunx drizzle-kit push`);
-  });
+    beforeAll(() => {
+        execSync(`bunx drizzle-kit push`);
+    });
 
-  afterAll(async () => {
-    if (fs.existsSync("test.db")) {
-      fs.rmSync("test.db", { force: true });
-    }
-  });
+    afterAll(async () => {
+        if (fs.existsSync("test.db")) {
+            fs.rmSync("test.db", { force: true });
+        }
+    });
 
-  // it("should return th course that was inserted", async () => {
-  //   const course: insertOneCourseType = {
-  //     courseId: 123,
-  //     courseName: "Test Course",
-  //     courseCode: "T1",
-  //   };
-  //   const response = await insertOneCourse(course);
-  //   expect(response).toMatchObject(course);
-  // });
+    // it("should return th course that was inserted", async () => {
+    //   const course: insertOneCourseType = {
+    //     courseId: 123,
+    //     courseName: "Test Course",
+    //     courseCode: "T1",
+    //   };
+    //   const response = await insertOneCourse(course);
+    //   expect(response).toMatchObject(course);
+    // });
 
-  it("should return courses from canvas", async () => {
-    const response = await fetchCoursesFromCanvas();
-    expect(response).toBeInstanceOf(Array);
-  });
+    it("should return courses from canvas", async () => {
+        const response = await fetchCoursesFromCanvas();
+        expect(response).toBeInstanceOf(Array);
+    });
 });

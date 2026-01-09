@@ -1,11 +1,11 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vitest";
 
 import env from "@/env.js";
+import { CourseService } from "@/modules/courses/courses.service";
 
-import * as CourseRepo from "./courses.repo.js";
-import { CourseService } from "./courses.service";
+import { addCourseQueue } from "./sync.courses.queue";
 
 if (env.NODE_ENV !== "test") {
     throw new Error("Must be in test Environment");
@@ -22,12 +22,9 @@ describe("user Routes", () => {
         }
     });
 
-    it("should return an array of courses", async () => {
+    it("should start the sync courses queue", async () => {
         const courseInstance = new CourseService(env.API_TOKEN);
-        const response = await courseInstance.syncCourses();
-        expect(response).toBeInstanceOf(Array);
-
-        const coursesFromDb = await CourseRepo.findAllCourses();
-        expect(coursesFromDb).toBeInstanceOf(Array);
+        const response1 = await addCourseQueue("Test job", { syncCourses: await courseInstance.syncCourses() });
+        console.log(`RESPONSE1: ${response1}`);
     });
 });

@@ -4,11 +4,11 @@ import courses from "@/modules/courses/courses.index";
 const app = createApp();
 
 const routes = [
-  courses,
+    courses,
 ];
 
 routes.forEach((route) => {
-  app.route("/", route);
+    app.route("/", route);
 });
 
 export default app;
