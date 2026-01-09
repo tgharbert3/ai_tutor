@@ -1,5 +1,3 @@
-import { sql } from "drizzle-orm";
-
 import type { insertCourseType } from "@/db/schema";
 
 import db from "@/db";
@@ -10,8 +8,6 @@ export async function upsertManyCourses(course: insertCourseType[]) {
         target: courses.courseId,
         set: {
             updatedAt: new Date(),
-            courseCode: sql`excluded.course_code`,
-            courseName: sql`excluded.course_name`,
         },
     });
     return inserted;

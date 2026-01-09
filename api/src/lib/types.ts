@@ -2,9 +2,12 @@ import type { PinoLogger } from "hono-pino";
 
 import { z } from "zod";
 
+import type { ServiceContainer } from "@/modules/services.container";
+
 export type AppBindings = {
     Variables: {
         logger: PinoLogger;
+        services: ServiceContainer;
     };
 };
 

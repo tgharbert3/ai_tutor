@@ -1,17 +1,14 @@
 import { Queue } from "bullmq";
 
-import env from "@/env.js";
+import { redisConfig } from "@/config/redis";
 
 export const syncCoursesQueue = new Queue("syncCourses", {
-    connection: {
-        host: "127.0.0.1",
-        port: env.REDIS_PORT,
-        maxRetriesPerRequest: null,
-    },
+    connection: redisConfig,
 });
 
-export async function addSyncCouresJob(API_TOKEN: string) {
+export async function addSyncCouresJob(API_TOKEN: string, canvasBaseUrl: string) {
     return await syncCoursesQueue.add("sync-all", {
         API_TOKEN,
+        canvasBaseUrl,
     });
 };

@@ -1,10 +1,9 @@
-import env from "@/env.js";
-
-export async function fetchCoursesFromCanvas() {
+export async function fetchCoursesFromCanvas(API_TOKEN: string, canvasBaseUrl: string) {
     try {
-        const courses = await fetch(`${env.CANVAS_BASE_URL}/courses?per_page=75&include[]=syllabus_body`, {
+        console.log(canvasBaseUrl);
+        const courses = await fetch(`${canvasBaseUrl}/courses?per_page=75&include[]=syllabus_body`, {
             method: "GET",
-            headers: { Authorization: `Bearer ${env.API_TOKEN}` },
+            headers: { Authorization: `Bearer ${API_TOKEN}` },
         });
         return courses.json();
     }
