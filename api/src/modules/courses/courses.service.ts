@@ -20,7 +20,6 @@ export class CourseService {
     }
 
     async syncCourses(): Promise<insertCourseType[]> {
-        console.log("Syncing Courses");
         const rawCourses = await CanvasClient.fetchCoursesFromCanvas(this.apiToken, this.canvasBaseUrl);
         const adaptedCourses = CanvasAdapter.mapCoursesToDb(rawCourses);
         const insertedCourses = await CanvasRepo.upsertManyCourses(adaptedCourses);

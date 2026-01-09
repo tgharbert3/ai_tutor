@@ -1,10 +1,11 @@
 import { QueueEvents } from "bullmq";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import env from "@/env.js";
 
+import * as CourseRepo from "../modules/courses/courses.repo.js";
 import { addSyncCouresJob, syncCoursesQueue } from "./sync.courses.queue";
 import { syncCoursesWorker } from "./workers/sync.courses.worker";
 
@@ -29,6 +30,9 @@ describe("user Routes", () => {
     it("should start the sync courses queue", async () => {
         const job = await addSyncCouresJob(env.API_TOKEN, env.CANVAS_BASE_URL);
         const result = await job.waitUntilFinished(new QueueEvents("syncCourses"));
-        // expect(result).toMatch("started worker");
+        expect(result).toMatchObject({ status: "successfully synced courses" });
+
+        const allCoruses = await CourseRepo.findAllCourses();
+        expect(allCoruses).toBeInstanceOf(Array);
     });
 });

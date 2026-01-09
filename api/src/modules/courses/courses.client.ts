@@ -1,6 +1,5 @@
 export async function fetchCoursesFromCanvas(API_TOKEN: string, canvasBaseUrl: string) {
     try {
-        console.log(canvasBaseUrl);
         const courses = await fetch(`${canvasBaseUrl}/courses?per_page=75&include[]=syllabus_body`, {
             method: "GET",
             headers: { Authorization: `Bearer ${API_TOKEN}` },
