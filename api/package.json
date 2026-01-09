@@ -1,7 +1,7 @@
 {
     "name": "api",
     "scripts": {
-        "dev": "bun run --hot src/index.ts | pino-pretty",
+        "dev": "NODE_ENV=development bun run --hot src/index.ts | pino-pretty",
         "lint": "eslint",
         "lint:fix": "npm run lint --fix",
         "test:unit": "NODE_ENV=test LOG_LEVEL=silent bun vitest run unit",

@@ -31,6 +31,7 @@ const BaseSchema = z.object({
     LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
     CANVAS_BASE_URL: z.string().min(1),
     REDIS_PORT: z.coerce.number(),
+    REDIS_HOST: z.string().min(1),
 });
 
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [

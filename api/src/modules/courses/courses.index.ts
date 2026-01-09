@@ -1,7 +1,9 @@
 import { CreateRouter } from "@/lib/create-app";
 
+import * as handlers from "./courses.controller";
+
 const router = CreateRouter();
 
-router.get("/courses", c => c.json({ message: "courses" }));
+router.post("/courses", c => handlers.handleSyncCourses(c));
 
 export default router;
