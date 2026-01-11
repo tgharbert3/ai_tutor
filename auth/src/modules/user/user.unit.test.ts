@@ -27,20 +27,26 @@ describe("user Routes", () => {
 
     const user1: insertUserType = {
         email: "test@gmail.com",
-        password: "testPassword",
+        passwordHash: "testPassword",
         username: "testUsername",
         canvasToken: "testToken",
     };
 
     const user2: insertUserType = {
         email: "test2@gmail.com",
-        password: "test2Password",
+        passwordHash: "test2Password",
         username: "test2Username",
         canvasToken: "test2Token",
     };
     it("should return one use after being inserted", async () => {
         const response = await insertOneUser(user1);
-        expect(response).toMatchObject(user1);
+        expect(response).toMatchObject(
+            {
+                email: "test@gmail.com",
+                username: "testUsername",
+                canvasToken: "testToken",
+            },
+        );
     });
 
     it("should return the user with the same id", async () => {

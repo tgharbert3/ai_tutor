@@ -1,5 +1,5 @@
 import createApp from "@/lib/create-app.js";
-import users from "@/routes/users/user.index.js";
+import users from "@/modules/auth/auth.index.js";
 
 const app = createApp();
 
