@@ -1,17 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "es2022",
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "baseUrl": ".",
-    "module": "nodenext", // Use 'nodenext' for Bun compatibility
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "strict": true,
-    "noEmit": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  }
+    "compilerOptions": {
+        "target": "es2022",
+        "jsx": "react-jsx",
+        "jsxImportSource": "hono/jsx",
+        "baseUrl": ".",
+        "module": "nodenext", // Use 'nodenext' for Bun compatibility
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        "strict": true,
+        "noEmit": true,
+        "outDir": "./dist",
+        "esModuleInterop": true,
+        "skipLibCheck": true
+    }
 }

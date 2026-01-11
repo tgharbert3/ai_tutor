@@ -11,10 +11,10 @@ import { configurePinoLogger } from "@/middlewares/pino-logger.js";
  * @returns new instance of OpenAPIHono without extra middleware
  */
 export function CreateRouter() {
-  return new OpenAPIHono<AppBindings>({
-    strict: false,
-    defaultHook,
-  });
+    return new OpenAPIHono<AppBindings>({
+        strict: false,
+        defaultHook,
+    });
 }
 
 /**
@@ -22,13 +22,13 @@ export function CreateRouter() {
  * @returns the created app
  */
 export default function createApp() {
-  const app = CreateRouter();
-  app.use(serveEmojiFavicon("📝"));
-  app.use(configurePinoLogger());
+    const app = CreateRouter();
+    app.use(serveEmojiFavicon("📝"));
+    app.use(configurePinoLogger());
 
-  // Middlewares from stoker library
-  app.notFound(notFound);
-  app.onError(onError);
+    // Middlewares from stoker library
+    app.notFound(notFound);
+    app.onError(onError);
 
-  return app;
+    return app;
 }

@@ -5,21 +5,21 @@ import { afterAll, beforeAll, describe } from "vitest";
 import env from "@/env.js";
 
 if (env.NODE_ENV !== "test") {
-  throw new Error("Must be in test Environment");
+    throw new Error("Must be in test Environment");
 }
 
 // const client = testClient(createApp().route("/", router));
 
 describe("user Routes", () => {
-  beforeAll(() => {
-    execSync(`bunx drizzle-kit push`);
-  });
+    beforeAll(() => {
+        execSync(`bunx drizzle-kit push`);
+    });
 
-  afterAll(async () => {
-    if (fs.existsSync("test.db")) {
-      fs.rmSync("test.db", { force: true });
-    }
-  });
+    afterAll(async () => {
+        if (fs.existsSync("test.db")) {
+            fs.rmSync("test.db", { force: true });
+        }
+    });
 });
 
 // describe("user handlers", () => {

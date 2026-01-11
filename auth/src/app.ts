@@ -4,11 +4,11 @@ import users from "@/routes/users/user.index.js";
 const app = createApp();
 
 const routes = [
-  users,
+    users,
 ];
 
 routes.forEach((route) => {
-  app.route("/", route);
+    app.route("/", route);
 });
 
 export default app;
