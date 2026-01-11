@@ -13,9 +13,7 @@
     "build": "bun build ./src/index.ts --outdir ./dist --target bun"
   },
   "dependencies": {
-    "@hono/zod-openapi": "^1.1.5",
     "@libsql/client": "^0.15.15",
-    "@scalar/hono-api-reference": "^0.9.28",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",

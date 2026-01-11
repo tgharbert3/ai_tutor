@@ -1,4 +1,3 @@
-import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 import type { PinoLogger } from "hono-pino";
 
 export type AppBindings = {
@@ -8,8 +7,3 @@ export type AppBindings = {
 };
 
 export type AppEnv = "development" | "production" | "test";
-
-export type APPOpenAPI = OpenAPIHono<AppBindings>;
-
-// Generic type which takes route handler genric and passing in AppBindings
-export type AppRouteHandler<R extends RouteConfig> = RouteHandler<R, AppBindings>;
