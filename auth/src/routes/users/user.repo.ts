@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import type { getOneUserType, insertUserType } from "@/db/schema.js";
+import type { getOneUserType, insertUserType, safeUserType } from "@/db/schema.js";
 
 import db from "@/db/index.js";
 import { users } from "@/db/schema.js";
@@ -10,12 +10,12 @@ export async function insertOneUser(userToInsert: insertUserType): Promise<inser
     return inserted;
 }
 
-export async function findOneUser(userIdToFind: number): Promise<getOneUserType> {
+export async function findOneUserById(userIdToFind: number): Promise<safeUserType> {
     const [user] = await db.select().from(users).where(eq(users.id, userIdToFind));
     return user;
 };
 
-export async function findOneuserByEmail(email: string): Promise<getOneUserType> {
+export async function findOneUserByEmail(email: string): Promise<getOneUserType> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
 }

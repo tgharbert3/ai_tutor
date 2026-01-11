@@ -49,7 +49,6 @@ const EnvSchema = z.discriminatedUnion("NODE_ENV", [
         NODE_ENV: z.literal("test"),
         DATABASE_URL: z.string(),
         DATABASE_AUTH_TOKEN: z.string().optional(),
-        JWT_SECRET: z.string().min(1),
     }),
 ]).superRefine((input, ctx) => {
     if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
