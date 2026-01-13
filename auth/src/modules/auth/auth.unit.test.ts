@@ -26,7 +26,7 @@ vi.mock("../services/password.service.ts", () => ({
 
 const authService = new AuthService();
 
-describe("user Routes", () => {
+describe("AuthSService", () => {
     const testLoginDto = {
         email: "test@gmail.com",
         password: "testPassword",
@@ -73,9 +73,20 @@ describe("user Routes", () => {
 
     it("Should throw an HTTPException(401) for not finding user", async () => {
         const spyFindOneUserByEmail = vi.spyOn(UserRepo, "findOneUserByEmail");
+        const spyCompare = vi.spyOn(PasswordService, "comparePassword");
         spyFindOneUserByEmail.mockResolvedValueOnce(undefined);
         
-        await expect(authService.loginUser(testLoginDto)).rejects.toThrow(HTTPException)
+        try {
+            await authService.loginUser(testLoginDto);
+            expect(spyCompare).not.toBeCalled()
+            expect.fail("Should throw an error")
+        } catch(error: any) {
+            expect(error).toBeInstanceOf(HTTPException);
+            expect(error.status).toBe(401);
+            const body = error.message
+            expect(body).toMatch("Invalid email or password");
+        }
+        
     })
 
     it("Should throw an HTTPException(401) for wrong password", async () => {
@@ -83,6 +94,15 @@ describe("user Routes", () => {
         const spyFindOneUserByEmail = vi.spyOn(UserRepo, "findOneUserByEmail");
         spyFindOneUserByEmail.mockResolvedValueOnce(user1);
 
-        await expect(authService.loginUser(testLoginDto)).rejects.toThrow(HTTPException)
+        try {
+            await authService.loginUser(testLoginDto);
+            expect(spyFindOneUserByEmail).toBeCalledTimes(1);
+            expect.fail("Should throw an error")
+        } catch(error: any) {
+            expect(error).toBeInstanceOf(HTTPException);
+            expect(error.status).toBe(401);
+            const body = error.message
+            expect(body).toMatch("Invalid email or password");
+        }
     })
 });
