@@ -46,6 +46,20 @@ describe("AuthSService", () => {
         canvasToken: "testToken",
     };
 
+    const userToInsert = {
+        email: "test2@gmail.com",
+        username: "testUsername",
+        password: "hashedPassword",
+        canvasToken: "testToken",
+    }
+
+    const safeInsertedUser = {
+        id: 2,
+        username: 'testUsername',
+        email: 'test2@gmail.com',
+        canvasToken: 'testToken'
+    }
+
     beforeAll(async () => {
         execSync(`bunx drizzle-kit push`);
         await insertOneUser(user1);
@@ -104,5 +118,13 @@ describe("AuthSService", () => {
             const body = error.message
             expect(body).toMatch("Invalid email or password");
         }
+    });
+
+    it("Should return inserted user without their passwordHash", async () => {
+        const spyFindOneUserByEmail = vi.spyOn(UserRepo, "insertOneUser");
+
+        const response = await authService.registerUser(userToInsert)
+        expect(spyFindOneUserByEmail).toBeCalledTimes(1);
+        expect(response).toMatchObject(safeInsertedUser);
     })
 });
