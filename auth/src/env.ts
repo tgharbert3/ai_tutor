@@ -5,7 +5,7 @@ import type { ZodError } from "zod";
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import path from "node:path";
-import { z } from "zod";
+import * as z from "zod";
 
 import type { AppEnv } from "./lib/types.js";
 

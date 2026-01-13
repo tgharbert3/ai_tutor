@@ -7,22 +7,18 @@ import { PasswordService } from "../services/password.service.js";
 import * as UserRepo from "../user/user.repo.js";
 
 export class AuthService {
-    constructor() {
-    };
-
     async loginUser(data: loginDtoType): Promise<safeUserType> {
         const user = await UserRepo.findOneUserByEmail(data.email);
         if (!user) {
             throw new HTTPException(401, { message: "Invalid email or password" });
         }
 
-        const isValid = PasswordService.comparePassword(data.password, user.passwordHash);
+        const isValid = await PasswordService.comparePassword(data.password, user.passwordHash);
         if (!isValid) {
             throw new HTTPException(401, { message: "Invalid email or password" });
         }
 
         const { passwordHash, ...safeUser } = user;
-
         return safeUser;
     };
 
@@ -38,7 +34,6 @@ export class AuthService {
         if (!insertedUser) {
             throw new HTTPException(500, { message: "Failed to create user" });
         }
-
         return insertedUser;
     }
 }

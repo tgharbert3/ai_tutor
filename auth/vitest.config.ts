@@ -6,7 +6,7 @@ export default defineConfig({
         globals: true,
         restoreMocks: true,
         clearMocks: true,
-        fileParallelism: true,
+        fileParallelism: false,
     },
     resolve: {
         alias: {
