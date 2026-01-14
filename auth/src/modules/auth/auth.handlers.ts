@@ -1,22 +1,37 @@
 import { createFactory } from "hono/factory";
 
-const factory = createFactory();
+import type { loginDtoType, registerDtoType } from "@/lib/dto.js";
+import type { AppBindings } from "@/lib/types.js";
 
-// export async function handleLogin(c: Context) {
-//     return c.json({ messaage: "Successfully logged in" }, 200);
-// }
+import { ServiceContainerMiddleware } from "@/middlewares/services.js";
 
-// export async function handleRegister(c: Context) {
-//     return c.json({ messaage: "Successfully registered" }, 200);
-// }
+const factory = createFactory<AppBindings>();
 
 export const loginHandlers = factory.createHandlers(
+    ServiceContainerMiddleware,
     async (c) => {
-        return c.json({ messaage: "Successfully logged in" }, 200);
+        const { email, password } = await c.req.json();
+        const data: loginDtoType = {
+            email,
+            password,
+        };
+        const services = c.get("authService");
+        const response = await services.loginUser(data);
+        return c.json(response, 200);
     },
 );
 export const registerHandlers = factory.createHandlers(
+    ServiceContainerMiddleware,
     async (c) => {
-        return c.json({ messaage: "Successfully registered" }, 200);
+        const { email, password, username, canvasToken } = await c.req.json();
+        const data: registerDtoType = {
+            email,
+            password,
+            username,
+            canvasToken,
+        };
+        const services = c.get("authService");
+        const response = await services.registerUser(data);
+        return c.json(response, 200);
     },
 );
