@@ -126,5 +126,21 @@ describe("AuthSService", () => {
         const response = await authService.registerUser(userToInsert)
         expect(spyFindOneUserByEmail).toBeCalledTimes(1);
         expect(response).toMatchObject(safeInsertedUser);
+    });
+
+    it("Should throw a HTTPException(500) for not inserting the user", async () => {
+        const spyFindOneUserByEmail = vi.spyOn(UserRepo, "insertOneUser");
+        spyFindOneUserByEmail.mockResolvedValueOnce(undefined);
+
+        try {
+            await authService.registerUser(userToInsert);
+            expect.fail("Should throw a HTTPException with 500 status")
+        } catch(error: any) {
+            expect(error).toBeInstanceOf(HTTPException);
+            expect(error.status).toBe(500);
+            const body = error.message
+            expect(body).toMatch("Failed to create user");
+        }
+        
     })
 });
