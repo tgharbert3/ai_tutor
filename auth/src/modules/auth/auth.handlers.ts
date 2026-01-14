@@ -32,6 +32,6 @@ export const registerHandlers = factory.createHandlers(
         };
         const services = c.get("authService");
         const response = await services.registerUser(data);
-        return c.json(response, 200);
+        return c.json(response, 201);
     },
 );

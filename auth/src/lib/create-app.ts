@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 
 import type { AppBindings } from "@/lib/types.js";
+import type { AppType } from "@/modules/auth/auth.index.js";
 
 import { configurePinoLogger } from "@/middlewares/pino-logger.js";
 
@@ -29,4 +30,8 @@ export default function createApp() {
     app.onError(onError);
 
     return app;
+}
+
+export function createTestApp(router: AppType) {
+    return createApp().route("/", router);
 }

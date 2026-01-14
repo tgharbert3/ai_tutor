@@ -26,7 +26,13 @@ export async function insertOneUser(userToInsert: insertUserType): Promise<safeU
 }
 
 export async function findOneUserById(userIdToFind: number): Promise<safeUserType | undefined> {
-    return await db.query.users.findFirst({ where: eq(users.id, userIdToFind) });
+    return await db.query.users.findFirst({ where: eq(users.id, userIdToFind), columns: {
+        id: true,
+        username: true,
+        email: true,
+        canvasToken: true,
+        passwordHash: false,
+    } });
 };
 
 export async function findOneUserByEmail(email: string): Promise<getOneUserType | undefined> {
