@@ -1,6 +1,5 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
+import { Hono } from "hono";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
-import defaultHook from "stoker/openapi/default-hook";
 
 import type { AppBindings } from "@/lib/types.js";
 
@@ -11,9 +10,8 @@ import { configurePinoLogger } from "@/middlewares/pino-logger.js";
  * @returns new instance of OpenAPIHono without extra middleware
  */
 export function CreateRouter() {
-    return new OpenAPIHono<AppBindings>({
+    return new Hono<AppBindings>({
         strict: false,
-        defaultHook,
     });
 }
 

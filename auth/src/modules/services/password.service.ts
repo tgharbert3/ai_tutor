@@ -1,5 +1,4 @@
 export class PasswordService {
-
     static async hashPassword(unsafePassowrd: string): Promise<string> {
         return await Bun.password.hash(unsafePassowrd, {
             algorithm: "argon2id",

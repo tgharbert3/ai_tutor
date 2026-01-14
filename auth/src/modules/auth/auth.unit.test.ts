@@ -66,7 +66,7 @@ describe("AuthSService", () => {
     });
 
     beforeEach(() => {
-    vi.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     afterAll(async () => {
@@ -101,7 +101,7 @@ describe("AuthSService", () => {
             expect(body).toMatch("Invalid email or password");
         }
         
-    })
+    });
 
     it("Should throw an HTTPException(401) for wrong password", async () => {
         vi.mocked(PasswordService.comparePassword).mockResolvedValueOnce(false);
@@ -115,8 +115,7 @@ describe("AuthSService", () => {
         } catch(error: any) {
             expect(error).toBeInstanceOf(HTTPException);
             expect(error.status).toBe(401);
-            const body = error.message
-            expect(body).toMatch("Invalid email or password");
+            expect(error.message).toMatch("Invalid email or password");
         }
     });
 
@@ -138,9 +137,7 @@ describe("AuthSService", () => {
         } catch(error: any) {
             expect(error).toBeInstanceOf(HTTPException);
             expect(error.status).toBe(500);
-            const body = error.message
-            expect(body).toMatch("Failed to create user");
-        }
-        
-    })
+            expect(error.message).toMatch("Failed to create user");
+        };
+    });
 });
