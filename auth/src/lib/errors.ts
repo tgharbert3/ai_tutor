@@ -1,4 +1,7 @@
+import type { Context } from "hono";
+
 import { DrizzleQueryError } from "drizzle-orm";
+import z from "zod";
 
 export function isUniqueConstraintError(error: unknown) {
     if (error instanceof DrizzleQueryError) {
@@ -9,4 +12,17 @@ export function isUniqueConstraintError(error: unknown) {
         }
     }
     return false;
+}
+
+export function handleZodeValidationLoginError(result: any, c: Context, status: 400 | 401) {
+    if (!result.success) {
+        return c.json({ message: "Invalid email or password" }, status);
+    }
+}
+
+export function handleZodValidationRegisterError(result: any, c: Context, status: 400 | 401) {
+    if (!result.success) {
+        const errors = z.flattenError(result.error);
+        return c.json({ errors: errors.fieldErrors }, status);
+    }
 }

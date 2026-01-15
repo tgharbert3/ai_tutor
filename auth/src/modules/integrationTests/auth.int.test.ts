@@ -1,7 +1,7 @@
 import { testClient } from "hono/testing";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { insertUserType } from "@/db/schema.js";
 import type { registerDtoType } from "@/lib/dto.js";
@@ -17,10 +17,6 @@ describe("unit tests for router and controllers", () => {
         execSync(`bunx drizzle-kit push`);
     });
 
-    beforeEach(() => {
-        vi.restoreAllMocks();
-    });
-
     afterAll(async () => {
         if (fs.existsSync("test.db")) {
             fs.rmSync("test.db", { force: true });
@@ -29,9 +25,9 @@ describe("unit tests for router and controllers", () => {
     const client = testClient(createTestApp(app));
     it("pOST /register - should return the user that was created", async () => {
         const userTorRegister: registerDtoType = {
-            email: "testUser",
+            email: "register@email.com",
             username: "testUsername",
-            password: "hasedPass",
+            password: "hashedPassword",
             canvasToken: "testToken",
         };
 
@@ -39,30 +35,33 @@ describe("unit tests for router and controllers", () => {
             json: userTorRegister,
         });
         expect(response.status).toBe(201);
+        if (response.status === 201) {
+            const data = await response.json();
+            expect(data.email).toBe(userTorRegister.email);
+            expect(data.id).toBeDefined();
 
-        const data = await response.json();
-        expect(data.email).toBe(userTorRegister.email);
-        expect(data.id).toBeDefined();
+            const safeInsertedUser = {
+                id: data.id,
+                email: "register@email.com",
+                username: "testUsername",
+                canvasToken: "testToken",
+            };
+            expect(data).toMatchObject(safeInsertedUser);
+            expect(data).not.toHaveProperty("passwordHash");
 
-        const safeInsertedUser = {
-            id: data.id,
-            email: "testUser",
-            username: "testUsername",
-            canvasToken: "testToken",
-        };
-        expect(data).toMatchObject(safeInsertedUser);
-        expect(data).not.toHaveProperty("passwordHash");
-
-        const users = await UserRepo.findOneUserById(data.id);
-        expect(users).toMatchObject(safeInsertedUser);
+            const users = await UserRepo.findOneUserById(data.id);
+            expect(users).toMatchObject(safeInsertedUser);
+        }
     });
 
     it("pOST /login - Should return the user that was logged in", async () => {
+        const password = "hashedPassword";
+        const hashedPassword = await PasswordService.hashPassword(password);
         const insertedUser: insertUserType = {
             id: 2,
-            email: "insertedUser@email.com",
+            email: "login@example.com",
             username: "testUser",
-            passwordHash: await PasswordService.hashPassword("hashedPassword"),
+            passwordHash: hashedPassword,
             canvasToken: "testToken",
         };
 
@@ -70,20 +69,21 @@ describe("unit tests for router and controllers", () => {
         const response = await client.api.v1.login.$post({
             json: {
                 email: insertedUser.email,
-                password: "hashedPassword",
+                password,
             },
         });
         expect(response.status).toBe(200);
-
-        const data = await response.json();
-        expect(data.id).toBeDefined();
-        const safeLoggedInUser = {
-            id: data.id,
-            email: "insertedUser@email.com",
-            username: "testUser",
-            canvasToken: "testToken",
-        };
-        expect(data).toMatchObject(safeLoggedInUser);
-        expect(data).not.toHaveProperty("passwordHash");
+        if (response.status === 200) {
+            const data = await response.json();
+            expect(data.id).toBeDefined();
+            const safeLoggedInUser = {
+                id: data.id,
+                email: "login@example.com",
+                username: "testUser",
+                canvasToken: "testToken",
+            };
+            expect(data).toMatchObject(safeLoggedInUser);
+            expect(data).not.toHaveProperty("passwordHash");
+        }
     });
 });
