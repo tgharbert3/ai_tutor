@@ -1,4 +1,5 @@
 import { HTTPException } from "hono/http-exception";
+import * as HttpStatusCodes from "stoker/http-status-codes";
 
 import type { insertUserType, safeUserType } from "@/db/schema.js";
 import type { loginDtoType, registerDtoType } from "@/lib/dto.js";
@@ -10,12 +11,12 @@ export class AuthService {
     async loginUser(data: loginDtoType): Promise<safeUserType> {
         const user = await UserRepo.findOneUserByEmail(data.email);
         if (!user) {
-            throw new HTTPException(401, { message: "Invalid email or password" });
+            throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
         }
 
         const isValid = await PasswordService.comparePassword(data.password, user.passwordHash);
         if (!isValid) {
-            throw new HTTPException(401, { message: "Invalid email or password" });
+            throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
         }
 
         const { passwordHash, ...safeUser } = user;
@@ -32,7 +33,7 @@ export class AuthService {
         };
         const insertedUser = await UserRepo.insertOneUser(userToInsert);
         if (!insertedUser) {
-            throw new HTTPException(500, { message: "Failed to create user" });
+            throw new HTTPException(HttpStatusCodes.INTERNAL_SERVER_ERROR, { message: "Failed to create user" });
         }
         return insertedUser;
     }

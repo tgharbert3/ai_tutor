@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import * as HttpStatusCodes from "stoker/http-status-codes";
 
 import type { getOneUserType, insertUserType, safeUserType } from "@/db/schema.js";
 
@@ -19,7 +20,7 @@ export async function insertOneUser(userToInsert: insertUserType): Promise<safeU
     }
     catch (error) {
         if (isUniqueConstraintError(error)) {
-            throw new HTTPException(409, { message: "Email already exists" });
+            throw new HTTPException(HttpStatusCodes.CONFLICT, { message: "Email already exists" });
         }
         throw Error;
     }
