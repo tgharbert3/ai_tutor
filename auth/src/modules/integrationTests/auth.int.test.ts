@@ -23,7 +23,7 @@ describe("unit tests for router and controllers", () => {
         }
     });
     const client = testClient(createTestApp(app));
-    it("pOST /register - should return the user that was created", async () => {
+    it("POST /register - should return the user that was created", async () => {
         const userTorRegister: registerDtoType = {
             email: "register@email.com",
             username: "testUsername",
@@ -54,7 +54,7 @@ describe("unit tests for router and controllers", () => {
         }
     });
 
-    it("pOST /login - Should return the user that was logged in", async () => {
+    it("POST /login - Should return the user that was logged in", async () => {
         const password = "hashedPassword";
         const hashedPassword = await PasswordService.hashPassword(password);
         const insertedUser: insertUserType = {

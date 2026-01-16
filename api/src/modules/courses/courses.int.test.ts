@@ -23,7 +23,7 @@ describe("user Routes", () => {
     });
 
     it("should return an array of courses", async () => {
-        const courseInstance = new CourseService(env.API_TOKEN);
+        const courseInstance = new CourseService(env.API_TOKEN, env.CANVAS_BASE_URL);
         const response = await courseInstance.syncCourses();
         expect(response).toBeInstanceOf(Array);
 
