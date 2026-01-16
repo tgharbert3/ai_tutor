@@ -7,7 +7,7 @@
         "start": "bun run ./dist/index.js",
         "test": "NODE_ENV=test LOG_LEVEL=silent bun --bun vitest",
         "test:unit": "NODE_ENV=test LOG_LEVEL=silent bun --bun vitest run unit",
-        "test:int": "NODE_ENV=test LOG_LEVEL=silent bun vitest run int",
+        "test:int": "NODE_ENV=test LOG_LEVEL=silent bun --bun vitest run int",
         "lint": "eslint",
         "lint:fix": "npm run lint --fix",
         "build": "bun build ./src/index.ts --outdir ./dist --target bun"

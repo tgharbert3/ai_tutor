@@ -86,4 +86,41 @@ describe("unit tests for router and controllers", () => {
             expect(data).not.toHaveProperty("passwordHash");
         }
     });
+
+    it("Should return an object of validation errors", async () => {
+        // Failing all validations
+        const response = await client.api.v1.register.$post({
+            json: {
+                email: "",
+                password: "",
+                username: "",
+                canvasToken: "",
+            }
+        })
+        if (response.status === 400) {
+            const data = await response.json();
+            expect(data).toBeInstanceOf(Object);
+            expect(data).toHaveProperty("errors");
+            expect(data.errors).toBeInstanceOf(Object);
+            expect(data.errors).toHaveProperty("email")
+            expect(data.errors).toHaveProperty("password")
+            expect(data.errors).toHaveProperty("username")
+            expect(data.errors).toHaveProperty("canvasToken")
+        };
+    });
+
+    it("POST Should return a object with error property", async () => {
+        const response = await client.api.v1.login.$post({
+            json: {
+                email: "",
+                password: "",
+            }
+        })
+         if (response.status === 400) {
+            const data = await response.json();
+            expect(data).toBeInstanceOf(Object);
+            expect(data).toHaveProperty("error");
+            expect(data.error).toMatch("Invalid email or password");
+         };
+    });
 });
