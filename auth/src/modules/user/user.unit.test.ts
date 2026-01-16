@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import type { insertUserType } from "@/db/schema.js";
+import type { insertUserType, safeUserType } from "@/db/schema.js";
 
 import env from "@/env.js";
 
@@ -38,6 +38,9 @@ describe("user Routes", () => {
         username: "test2Username",
         canvasToken: "test2Token",
     };
+
+    
+
     it("should return one use after being inserted", async () => {
         const response = await insertOneUser(user1);
         expect(response).toMatchObject(
@@ -51,12 +54,18 @@ describe("user Routes", () => {
 
     it("should return the user with the same id", async () => {
         const insertedUser = await insertOneUser(user2);
+        const safeUser2: safeUserType = {
+            id: insertedUser!.id,
+            email: "test2@gmail.com",
+            username: "test2Username",
+            canvasToken: "test2Token",
+        };
         if (!insertedUser) {
             throw new Error("User failed to insert in find one user by id test");
         }
 
         const response = await findOneUserById(insertedUser.id!);
-        expect(response).toMatchObject(user2);
+        expect(response).toMatchObject(safeUser2);
     });
 
     it("should return user1", async () => {
