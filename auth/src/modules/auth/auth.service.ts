@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 
-import type { insertUserType, safeUserType } from "@/db/schema.js";
+import type { insertUserType } from "@/db/schema.js";
 import type { loginDtoType, registerDtoType } from "@/lib/dto.js";
 
 import { PasswordService } from "../services/password.service.js";
@@ -10,7 +10,7 @@ import { cryptoService } from "../services/crypto.service.js";
 import { TokenResponse } from "@/lib/types.js";
 
 export class AuthService {
-    async loginUser(data: loginDtoType): Promise<safeUserType> {
+    async loginUser(data: loginDtoType): Promise<TokenResponse> {
         const user = await UserRepo.findOneUserByEmail(data.email);
         if (!user) {
             throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
@@ -21,8 +21,10 @@ export class AuthService {
             throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
         }
 
-        const { passwordHash, ...safeUser } = user;
-        return safeUser;
+        const accessToken = await cryptoService.generateAccessToken(user.email, String(user.id), user.canvasToken);
+        const refreshToken = await cryptoService.generateRefreshToken(String(user.id));
+
+        return {accessToken, refreshToken};
     };
 
     async registerUser(data: registerDtoType): Promise<TokenResponse> {

@@ -18,7 +18,22 @@ export const loginHandlers = factory.createHandlers(
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.loginUser(data);
-        return c.json(response, HttpStatusCodes.OK);
+
+        setCookie(c, "__Host-at", response.accessToken, {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 900,
+        });
+        setCookie(c, "__Host-rt", response.refreshToken, {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 900,
+        });
+        return c.json({message: "Successfully logged in"}, HttpStatusCodes.OK);
     },
 );
 export const registerHandlers = factory.createHandlers(
@@ -41,7 +56,7 @@ export const registerHandlers = factory.createHandlers(
             secure: true,
             sameSite: "lax",
             maxAge: 900,
-        })
-        return c.json({message: "successfully logged in"}, HttpStatusCodes.CREATED);
+        });
+        return c.json({message: "Successfully registered in"}, HttpStatusCodes.CREATED);
     },
 );
