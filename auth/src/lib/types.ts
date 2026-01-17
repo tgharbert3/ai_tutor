@@ -10,3 +10,5 @@ export type AppBindings = {
 };
 
 export type AppEnv = "development" | "production" | "test";
+
+export type TokenResponse = Record<string, string>;

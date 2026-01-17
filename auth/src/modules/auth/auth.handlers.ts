@@ -7,6 +7,7 @@ import type { AppBindings } from "@/lib/types.js";
 import { loginDTO, registerDTO } from "@/lib/dto.js";
 import { handleZodeValidationLoginError, handleZodValidationRegisterError } from "@/lib/errors.js";
 import { ServiceContainerMiddleware } from "@/middlewares/services.js";
+import { setCookie } from "hono/cookie";
 
 const factory = createFactory<AppBindings>();
 
@@ -27,6 +28,20 @@ export const registerHandlers = factory.createHandlers(
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.registerUser(data);
-        return c.json(response, HttpStatusCodes.CREATED);
+        setCookie(c, "__Host-at", response.accessToken, {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 900,
+        });
+        setCookie(c, "__Host-rt", response.refreshToken, {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 900,
+        })
+        return c.json({message: "successfully logged in"}, HttpStatusCodes.CREATED);
     },
 );

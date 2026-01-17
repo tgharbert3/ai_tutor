@@ -6,6 +6,8 @@ import type { loginDtoType, registerDtoType } from "@/lib/dto.js";
 
 import { PasswordService } from "../services/password.service.js";
 import * as UserRepo from "../user/user.repo.js";
+import { cryptoService } from "../services/crypto.service.js";
+import { TokenResponse } from "@/lib/types.js";
 
 export class AuthService {
     async loginUser(data: loginDtoType): Promise<safeUserType> {
@@ -23,7 +25,7 @@ export class AuthService {
         return safeUser;
     };
 
-    async registerUser(data: registerDtoType): Promise<safeUserType> {
+    async registerUser(data: registerDtoType): Promise<TokenResponse> {
         const hasedPassword = await PasswordService.hashPassword(data.password);
         const userToInsert: insertUserType = {
             email: data.email,
@@ -35,6 +37,10 @@ export class AuthService {
         if (!insertedUser) {
             throw new HTTPException(HttpStatusCodes.INTERNAL_SERVER_ERROR, { message: "Failed to create user" });
         }
-        return insertedUser;
+        
+        const accessToken = await cryptoService.generateAccessToken(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken);
+        const refreshToken = await cryptoService.generateRefreshToken(String(insertedUser.id));
+
+        return { accessToken, refreshToken};
     }
 }

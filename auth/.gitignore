@@ -4,3 +4,5 @@ node_modules/
 .vscode/
 dev.db
 dist/
+localhost+1-key.pem
+localhost+1.pem

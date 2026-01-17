@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "types": ["bun", "node"],
         "target": "es2022",
         "jsx": "react-jsx",
         "jsxImportSource": "hono/jsx",
