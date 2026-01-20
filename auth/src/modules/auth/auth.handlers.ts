@@ -19,6 +19,7 @@ export const loginHandlers = factory.createHandlers(
         const services = c.get("authService");
         const response = await services.loginUser(data);
 
+        // TODO: refine the max age
         setCookie(c, "__Host-at", response.accessToken, {
             path: "/",
             httpOnly: true,
@@ -26,6 +27,7 @@ export const loginHandlers = factory.createHandlers(
             sameSite: "lax",
             maxAge: 900,
         });
+        // TODO: Need to change path for refresh token
         setCookie(c, "__Host-rt", response.refreshToken, {
             path: "/",
             httpOnly: true,
@@ -50,6 +52,8 @@ export const registerHandlers = factory.createHandlers(
             sameSite: "lax",
             maxAge: 900,
         });
+        // TODO: Need to change path for refresh token
+
         setCookie(c, "__Host-rt", response.refreshToken, {
             path: "/",
             httpOnly: true,

@@ -27,12 +27,19 @@ export const insertUserSchema = createInsertSchema(
         id: true,
     });
 
-export const authResponseSchema = z.object({
-    user: safeSelectUserSchema,
-    accessToken: z.string(),
-    tokenType: z.string(),
-});
-
 export type getOneUserType = typeof users.$inferSelect;
 export type insertUserType = typeof users.$inferInsert;
 export type safeUserType = z.infer<typeof safeSelectUserSchema>;
+
+export const refresh_tokens = sqliteTable("refresh_tokens", {
+    id: integer("id", { mode: "number" }).primaryKey(),
+    userId: integer("userid", {mode: "number"}).references(() => users.id).notNull(),
+    expiredAt: integer("expiredAt", {mode: "timestamp"}).notNull(),
+    createdAt: integer("createdAt", {mode: "timestamp"}).notNull(),
+});
+
+export const insertRefreshSchema = createInsertSchema(refresh_tokens);
+export const selectRefreshSchema = createSelectSchema(refresh_tokens);
+
+export type insertTokenType = typeof refresh_tokens.$inferInsert;
+export type selectTokenType = typeof refresh_tokens.$inferSelect;
