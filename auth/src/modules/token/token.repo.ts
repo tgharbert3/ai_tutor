@@ -4,13 +4,14 @@ import { eq } from "drizzle-orm";
 
 export const insertRefreshToken = async (data: insertTokenType) => {
     const [inserted] = await db.insert(refresh_tokens).values(data).returning();
-    if (!inserted) {
-        return undefined;
-    };
     return inserted;
-}
+};
 
-export const selectRefreshToken = async (tokenId: number) => {
+export const selectRefreshTokenByTokenId = async (tokenId: number) => {
     return await db.query.refresh_tokens.findFirst({ where: eq(refresh_tokens.id, tokenId) })
 
-}
+};
+
+export const selectRefreshTokenByToken = async (token: string) => {
+    return await db.query.refresh_tokens.findFirst({ where: eq(refresh_tokens.token, token) });
+};

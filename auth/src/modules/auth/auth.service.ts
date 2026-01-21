@@ -11,17 +11,9 @@ import { tokenService } from "../token/token.service.js";
 
 export class AuthService {
     async loginUser(data: loginDtoType): Promise<TokenResponse> {
-        const user = await UserRepo.findOneUserByEmail(data.email);
-        if (!user) {
-            throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
-        }
+        const user = await this.verifyUser(data);
 
-        const isValid = await PasswordService.comparePassword(data.password, user.passwordHash);
-        if (!isValid) {
-            throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
-        }
-
-        const accessToken = await tokenService.generateAccessToken(user.email, String(user.id), user.canvasToken);
+        const accessToken = await tokenService.generateAccessTokenFacade(user.email, String(user.id), user.canvasToken);
         const refreshToken = await tokenService.generateRefreshTokenFacade(String(user.id));
 
         return {accessToken, refreshToken};
@@ -40,10 +32,24 @@ export class AuthService {
             throw new HTTPException(HttpStatusCodes.INTERNAL_SERVER_ERROR, { message: "Failed to create user" });
         }
         
-        const accessToken = await tokenService.generateAccessToken(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken);
+        const accessToken = await tokenService.generateAccessTokenFacade(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken);
         const refreshToken = await tokenService.generateRefreshTokenFacade(String(insertedUser.id));
 
 
         return { accessToken, refreshToken};
+    }
+
+    async verifyUser(data: loginDtoType) {
+        const user = await UserRepo.findOneUserByEmail(data.email);
+        if (!user) {
+            throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
+        }
+
+        const isValid = await PasswordService.comparePassword(data.password, user.passwordHash);
+        if (!isValid) {
+            throw new HTTPException(HttpStatusCodes.UNAUTHORIZED, { message: "Invalid email or password" });
+        }
+
+        return user;
     }
 }
