@@ -14,7 +14,7 @@ export class AuthService {
         const user = await this.verifyUser(data);
 
         const accessToken = await tokenService.generateAccessTokenFacade(user.email, String(user.id), user.canvasToken);
-        const refreshToken = await tokenService.generateRefreshTokenFacade(String(user.id));
+        const refreshToken = await tokenService.generateRefreshTokenFacade(String(user.id), null, null);
 
         return {accessToken, refreshToken};
     };
@@ -33,7 +33,7 @@ export class AuthService {
         }
         
         const accessToken = await tokenService.generateAccessTokenFacade(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken);
-        const refreshToken = await tokenService.generateRefreshTokenFacade(String(insertedUser.id));
+        const refreshToken = await tokenService.generateRefreshTokenFacade(String(insertedUser.id), null, null);
 
 
         return { accessToken, refreshToken};
@@ -51,5 +51,34 @@ export class AuthService {
         }
 
         return user;
+    };
+
+    async handleRefresh(token: string) {
+        const decryptedToken = await tokenService.decryptRefreshToken(token);
+        // TODO: handle this better
+        if (!decryptedToken) throw new Error("cant decrypt");
+        const { sub: userId, familyJti, jti } = decryptedToken!.payload as {
+            sub: string;
+            familyJti: string,
+            jti: string,
+        };
+        
+        const user = await UserRepo.findOneUserById(Number(userId));
+        // TODO: Handle this better
+        if (!user) throw new Error("cant find user");
+
+        const rt = await tokenService.generateRefreshTokenFacade(
+            String(user.id),
+            jti,
+            familyJti
+        )
+
+        const at = await tokenService.generateAccessTokenFacade(
+            user.email,
+            String(user.id),
+            user.canvasToken
+        );
+
+        return { at, rt };
     }
 }

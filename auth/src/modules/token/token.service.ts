@@ -1,10 +1,11 @@
 import * as jose from "jose";
 
-
 import env from "@/env.js";
 import { insertTokenType } from "@/db/schema.js";
 
 import * as TokenRepo from "./token.repo.js";
+import { isBusyError, isUniqueConstraintError } from "@/lib/errors.js";
+import { BusyError, CriticalSecurityError, TokenReuseError } from "@/lib/error.class.js";
 
 export class TokenService {
 
@@ -14,39 +15,82 @@ export class TokenService {
         this.key = jose.base64url.decode(env.JWT_SECRET);
     }
 
-    async handleRefresh(token: string) {
-        const valdatedToken = await this.decryptToken(token); 
-    }
-
     async generateAccessTokenFacade(email: string, id: string, canvasToken: string) {
         const accessJti = this.#generateRandomUUID();
-        const token = await this.generateAccessToken(email, id, canvasToken, accessJti)
+        const stringId = String(id);
+        const token = await this.#generateAccessToken(email, stringId, canvasToken, accessJti)
         return token
     }
 
-    /**
-     * Facade function to get refresh token
-     * @param id user id
-     * @returns Refresh Token
-     */
-    async generateRefreshTokenFacade(id: string, existingFamily?: string) {
+   /**
+    * Function to generate a new and insert refresh token
+    * @param id
+    * @param existingFamily
+    * @param parentJti 
+    * @returns the refresh token
+    */
+    async generateRefreshTokenFacade(id: string, parentJti: string | null, existingFamily: string | null) {
+        // new jti
         const refreshJti = this.#generateRandomUUID();
+        // new expiration
         const refreshExpiration = this.#generateRefreshExpiration();
-        const token =  await this.generateRefreshToken(id, refreshExpiration, refreshJti);
+
+        // path for the a new family of tokens
+        if (parentJti == null && existingFamily == null) {
+            existingFamily = this.#generateRandomUUID();
+            const token = await this.insertFirstTokenInFamily(id, parentJti, existingFamily, refreshExpiration, refreshJti)
+            return token
+        }
+        // new refresh token
+        const token =  await this.#generateRefreshToken(id, refreshExpiration, refreshJti, parentJti, existingFamily);
+        // hased token to store in db
         const tokenHash = this.#hashToken(token)
 
         const data: insertTokenType = {
             userId: Number(id),
-            createdAt: new Date(Date.now()),
+            createdAt: new Date(),
             expiredAt: refreshExpiration,
-            isRevoked: false,
+            jti: refreshJti,
+            parentJti: parentJti,
+            isRevoked: null,
             token: tokenHash,
-            familyId: existingFamily? existingFamily : this.#generateRandomUUID(),
+            familyJti: existingFamily!,
         }
 
-        const insertedToken = await TokenRepo.insertRefreshToken(data);
-        if (!insertedToken) throw new Error("Failed to insert token")
-        return token
+        try {
+            //Try to revoke the old token and insert the new one
+            const result = await TokenRepo.updateDbForRefresh(data);
+            if (typeof result === "object" && result.isGracePeriod ) {
+                return await this.#generateRefreshToken(
+                    id, 
+                    result.childToken!.expiredAt, 
+                    result.childToken!.jti,
+                    parentJti,
+                    existingFamily,
+            )}
+        } catch (error: any) {
+            if (isUniqueConstraintError(error) || error instanceof TokenReuseError) {
+                try {
+                    // Try to revoke the whole family and revoke all the tokens
+                    await this.revokeEntireFamily(data.familyJti);
+                } catch (error: any) {
+                    // This means we were unable to revoke all the tokens and have a critical seurity error
+                    console.error(`Critical Security Failure: Failed to revoke all family token
+                        ${data.familyJti}`);
+                    throw new Error("Internal security engine failed");
+                }
+                // We were able to revoke all the tokens and can logout the user
+                // Only throw one type of error so the controller can handle it
+                throw new TokenReuseError("Security Breach Detected");
+            } 
+            if (isBusyError(error)) {
+                // TODO: Need to handle this error. Retry?
+                throw new BusyError("Unable to complete token transaction");
+            } 
+            throw error;
+        }
+        
+        return token;
     };
 
     /**
@@ -55,35 +99,13 @@ export class TokenService {
      * @returns token family
      */
     async getRefreshTokenFamily(tokenToFind: string) {
-        let family; 
-
         const tokenHash = this.#hashToken(tokenToFind);
         const token = await TokenRepo.selectRefreshTokenByToken(tokenHash);
-        if (!token) {
-            family = this.#generateRandomUUID()
-        }
-        family = token!.familyId;
-        return family;
+        return token ? token.familyJti : this.#generateRandomUUID();
     }
 
-    #generateRefreshExpiration() {
-        // Calcuate the date in which it expires for the db
-        const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000
-        const expiresAt = new Date(Date.now() + SEVEN_DAYS_IN_MS)
-        return expiresAt;
-    }
 
-    #generateRandomUUID() {
-        return crypto.randomUUID();
-    }
-
-    #hashToken(token: string) {
-        const hasher = new Bun.CryptoHasher("sha256");
-        hasher.update(token);
-        return hasher.digest("hex")
-    }
-
-    async generateAccessToken(email: string, id: string, canvasToken: string, jti: string) {
+    async #generateAccessToken(email: string, id: string, canvasToken: string, jti: string) {
          return new jose.EncryptJWT({
             email,
             canvasToken,
@@ -96,8 +118,11 @@ export class TokenService {
             .encrypt(this.key);     
     };
 
-    async generateRefreshToken(id: string, expiration: Date, jti: string) {
-        return await new jose.EncryptJWT()
+    async #generateRefreshToken(id: string, expiration: Date, jti: string, parentJti: string | null, familyJti: string | null) {
+        return await new jose.EncryptJWT({
+            parentJti,
+            familyJti,
+        })
             .setSubject(id)
             .setJti(jti)
             .setProtectedHeader({alg: env.TOKEN_ALG, enc: env.TOKEN_ENC})
@@ -106,12 +131,64 @@ export class TokenService {
     };
 
     //TODO: Handle the error correctly
-    async decryptToken(tokenToDecrypt: string) {
+    async decryptRefreshToken(tokenToDecrypt: string) {
         try {
-            return await jose.jwtDecrypt(tokenToDecrypt, this.key)
+            return await jose.jwtDecrypt(tokenToDecrypt, this.key, {
+                clockTolerance: 30,
+            })
         } catch (error) {
             console.error(`Invalid token`);
         }
+    }
+
+    async insertFirstTokenInFamily(id: string, parentJti: null, existingFamily: string, refreshExpiration: Date, refreshJti: string) {
+        const newToken = await this.#generateRefreshToken(id, refreshExpiration, refreshJti, parentJti, existingFamily);
+        const tokenHash = this.#hashToken(newToken);
+
+        const data: insertTokenType = {
+            userId: Number(id),
+            createdAt: new Date(),
+            expiredAt: refreshExpiration,
+            jti: refreshJti,
+            parentJti: parentJti,
+            isRevoked: null,
+            token: tokenHash,
+            familyJti: existingFamily,
+        };
+
+        const insertedToken = await TokenRepo.insertRefreshToken(data);
+        if (!insertedToken) throw new Error("Failed to insert token")
+        return newToken
+    };
+
+    async revokeEntireFamily(familyJti: string) {
+        const rowsAffected = await TokenRepo.revokeAllTokens(familyJti);
+
+        if (rowsAffected === 0) {
+            throw new CriticalSecurityError("Security breach and unable to clear the tokens")
+        }
+    }
+
+    async getTokenByJti(jti: string) {
+        return await TokenRepo.selectRefreshTokenByJti(jti);
+    }
+
+    #generateRefreshExpiration() {
+        // Calcuate the date in which it expires for the db
+        const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000
+        // TODO: refactor this DATE.NOW?
+        const expiresAt = new Date(Date.now() + SEVEN_DAYS_IN_MS)
+        return expiresAt;
+    }
+
+    #generateRandomUUID() {
+        return crypto.randomUUID();
+    }
+
+    #hashToken(token: string) {
+        const hasher = new Bun.CryptoHasher("sha256");
+        hasher.update(token);
+        return hasher.digest("hex")
     }
 }
 

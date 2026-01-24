@@ -14,6 +14,17 @@ export function isUniqueConstraintError(error: unknown) {
     return false;
 }
 
+export function isBusyError(error: unknown) {
+    if (error instanceof DrizzleQueryError) {
+        if ("code" in error.cause!) {
+            if (error.cause?.code === "SQLITE_BUSY") {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 export function handleZodeValidationLoginError(result: any, c: Context, status: 400) {
     if (!result.success) {
         return c.json({ error: "Invalid email or password" }, status);

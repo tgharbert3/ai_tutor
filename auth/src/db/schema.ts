@@ -33,12 +33,14 @@ export type safeUserType = z.infer<typeof safeSelectUserSchema>;
 
 export const refresh_tokens = sqliteTable("refresh_tokens", {
     id: integer("id", { mode: "number" }).primaryKey(),
-    userId: integer("userid", {mode: "number"}).references(() => users.id).notNull(),
+    userId: integer("user_id", {mode: "number"}).references(() => users.id).notNull(),
     token: text("token").notNull().unique(),
-    familyId: text("family_id").notNull(),
-    isRevoked: integer("is_revoked", {mode: "boolean"}).default(false),
-    expiredAt: integer("expiredAt", {mode: "timestamp"}).notNull(),
-    createdAt: integer("createdAt", {mode: "timestamp"}).notNull(),
+    familyJti: text("family_jti").notNull(),
+    jti: text("jti").notNull().unique(),
+    parentJti: text("parent_jti").unique(),
+    isRevoked: integer("is_revoked", {mode: "timestamp"}),
+    expiredAt: integer("expired_at", {mode: "timestamp"}).notNull(),
+    createdAt: integer("created_at", {mode: "timestamp"}).notNull(),
 });
 
 export const insertRefreshSchema = createInsertSchema(refresh_tokens);
