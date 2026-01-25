@@ -7,7 +7,8 @@ import type { AppBindings } from "@/lib/types.js";
 import { loginDTO, registerDTO } from "@/lib/dto.js";
 import { handleZodeValidationLoginError, handleZodValidationRegisterError } from "@/lib/errors.js";
 import { ServiceContainerMiddleware } from "@/middlewares/services.js";
-import { setCookie } from "hono/cookie";
+import { clearAuthCookies, getrefreshCookie, setAuthCookies } from "@/lib/cookies.js";
+import { BusyError, TokenReuseError } from "@/lib/error.class.js";
 
 const factory = createFactory<AppBindings>();
 
@@ -18,23 +19,7 @@ export const loginHandlers = factory.createHandlers(
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.loginUser(data);
-
-        // TODO: refine the max age
-        setCookie(c, "__Host-at", response.accessToken, {
-            path: "/",
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 900,
-        });
-        // TODO: Need to change path for refresh token. __HOST- only allows path to be /
-        setCookie(c, "__Host-rt", response.refreshToken, {
-            path: "/",
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 900,
-        });
+        setAuthCookies(c, response.accessToken, response.refreshToken);
         return c.json({message: "Successfully logged in"}, HttpStatusCodes.OK);
     },
 );
@@ -45,23 +30,33 @@ export const registerHandlers = factory.createHandlers(
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.registerUser(data);
-        setCookie(c, "__Host-at", response.accessToken, {
-            path: "/",
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 900,
-        });
-        // TODO: Need to change path for refresh token
-
-        setCookie(c, "__Host-rt", response.refreshToken, {
-            path: "/",
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 900,
-        });
-        return c.json({message: "Successfully registered in"}, HttpStatusCodes.CREATED);
+        setAuthCookies(c, response.accessToken, response.refreshToken);
+        return c.json({message: "Successfully registered"}, HttpStatusCodes.CREATED);
     },
 );
-// TODO: Write the contoller for refresh. Make sure to catch all errors and return correct HTTP Status
+
+export const refreshHandler = factory.createHandlers (
+    ServiceContainerMiddleware,
+    async (c) => {
+        const refreshToken = getrefreshCookie(c);
+        if (!refreshToken) {
+            return c.json({message: "No user token"},  HttpStatusCodes.UNAUTHORIZED)
+        }
+        const services = c.get("authService");
+        try {
+            const {at, rt} =  await services.handleRefresh(refreshToken);
+            setAuthCookies(c, at, rt);
+            return c.json({message: "Successfully refreshed cookies"}, HttpStatusCodes.OK)
+        } catch (error: any) {
+            if (error instanceof TokenReuseError) {
+                clearAuthCookies(c)
+                return c.json({error: "Unauthorized Access"}, HttpStatusCodes.FORBIDDEN);
+            }
+            if (error instanceof BusyError) {
+                return c.json({error: "Unable to refresh token"}, HttpStatusCodes.TOO_MANY_REQUESTS);
+            }
+            throw error;
+        }
+        
+    }
+)
