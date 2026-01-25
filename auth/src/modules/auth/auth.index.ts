@@ -7,7 +7,8 @@ const app = CreateRouter().basePath("/api/v1");
 const routes = app
     .post("/login", ...handlers.loginHandlers)
     .post("/register", ...handlers.registerHandlers)
-    .post("/refresh", ...handlers.refreshHandler);
+    .post("/refresh", ...handlers.refreshHandler)
+    .post("/logout, ...handlers.logoutHandler");
 
 export default app;
 export type AppType = typeof routes;

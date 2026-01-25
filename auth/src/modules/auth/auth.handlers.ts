@@ -60,3 +60,23 @@ export const refreshHandler = factory.createHandlers (
         
     }
 )
+
+export const logoutHandler = factory.createHandlers (
+    ServiceContainerMiddleware,
+    async (c) => {
+         const refreshToken = getrefreshCookie(c);
+        if (!refreshToken) {
+            return c.json({message: "No user token"},  HttpStatusCodes.UNAUTHORIZED)
+        }
+
+        const services = c.get("authService");
+        try {
+            await services.handleLogout(refreshToken);
+        } catch (error: any) {
+            console.warn(`Logout Failed, ${error}`)
+        }
+        
+        clearAuthCookies(c)
+        return c.body(null, HttpStatusCodes.NO_CONTENT);
+    }
+)

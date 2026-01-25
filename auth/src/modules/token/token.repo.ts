@@ -46,6 +46,7 @@ export const updateDbForRefresh = async (data: insertTokenType) => {
                     throw new TokenReuseError("Security Breach: Token resused");
                 }
 
+                // Return child token if it is within the grace period
                 if (now - revokedAt < GRACE_PERIOD) {
                     const [childToken] = await tx.select()
                         .from(refresh_tokens)
@@ -74,3 +75,7 @@ export const updateDbForRefresh = async (data: insertTokenType) => {
 export const revokeAllTokens = async (familyJti: string) => {
     return (await db.update(refresh_tokens).set({isRevoked: new Date()}).where(eq(refresh_tokens.familyJti, familyJti))).rowsAffected;
 }
+
+export const revokeTokenByJti = async (jtiToRevoke: string) => {
+    return (await db.update(refresh_tokens).set({isRevoked: new Date()}).where(eq(refresh_tokens.jti, jtiToRevoke))).rowsAffected
+};

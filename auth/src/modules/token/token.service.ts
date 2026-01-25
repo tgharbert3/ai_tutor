@@ -169,6 +169,14 @@ export class TokenService {
         }
     }
 
+    async revokeTokenByJti(jti: string) {
+        const rowsAffected = await TokenRepo.revokeTokenByJti(jti);
+        if (rowsAffected !== 1) {
+            console.warn(`${jti} token was not found or already revoked`);
+        }
+        return true
+    }
+
     async getTokenByJti(jti: string) {
         return await TokenRepo.selectRefreshTokenByJti(jti);
     }
