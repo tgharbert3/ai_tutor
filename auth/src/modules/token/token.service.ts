@@ -114,6 +114,7 @@ export class TokenService {
             .setProtectedHeader({alg: env.TOKEN_ALG, enc: env.TOKEN_ENC})
             //TODO add this to env
             .setExpirationTime("15m")
+            .setIssuedAt(new Date())
             .encrypt(this.key);     
     };
 
@@ -126,6 +127,7 @@ export class TokenService {
             .setJti(jti)
             .setProtectedHeader({alg: env.TOKEN_ALG, enc: env.TOKEN_ENC})
             .setExpirationTime(expiration)
+            .setIssuedAt(new Date())
             .encrypt(this.key);
     };
 

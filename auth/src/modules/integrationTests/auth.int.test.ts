@@ -1,7 +1,7 @@
 import { testClient } from "hono/testing";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import type { registerDtoType } from "@/lib/dto.js";
 
@@ -101,6 +101,61 @@ describe("unit tests for router and controllers", () => {
             const deletedRt = emptyCookies.find(c => c.includes("__Host-rt"));
             expect(deletedRt).toMatch("__Host-rt=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax")
         };
+    });
+
+    it("POST /refresh - Should refresh the cookies", async () => {
+        vi.useFakeTimers();
+
+        const password = "hashedPassword";
+        const hashedPassword = await PasswordService.hashPassword(password);
+        const insertedUser: insertUserType = {
+            id: 3,
+            email: "login3@example.com",
+            username: "testUser",
+            passwordHash: hashedPassword,
+            canvasToken: "testToken",
+        };
+
+        await UserRepo.insertOneUser(insertedUser);
+        const response = await client.api.v1.login.$post({
+            json: {
+                email: insertedUser.email,
+                password,
+            },
+        });
+
+        // Make sure the cookies were set after the user logs in
+        expect(response.status).toBe(200);
+        const data = await response.json();
+        expect(data).toMatchObject({message: "Successfully logged in"})
+        const cookies = response.headers.getSetCookie();
+        const at = cookies.find(c => c.includes("__Host-at"));
+        const rt = cookies.find(c => c.includes("__Host-rt"));
+        expect(at).toBeDefined();
+        expect(rt).toBeDefined();
+
+        // advance the time by 16 min to expire cookie
+        vi.advanceTimersByTime(16 * 60 * 1000);
+
+        // Start the refresh process
+        const rtCookieValue = rt?.split(";")[0];
+        const refreshResponse = await client.api.v1.refresh.$post({}, {
+            headers: {
+                "Cookie": rtCookieValue || "",
+            }
+        });
+
+        // check the new cookies
+        expect (refreshResponse.status).toBe(200);
+        const newData = await refreshResponse.json()
+        expect(newData).toMatchObject({ message: 'Successfully refreshed cookies' });
+        const newCookies = refreshResponse.headers.getSetCookie();
+        const newRt = newCookies.find(c => c.includes("__Host-rt"));
+        const newAt = newCookies.find(c => c.includes("__Host-at"));
+        expect(at).not.toMatch(newAt!);
+        expect(rt).not.toMatch(newRt!);
+
+        vi.useRealTimers();
     });
 
     // it("Should return an object of validation errors", async () => {
