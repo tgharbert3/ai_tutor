@@ -8,6 +8,7 @@ import { PasswordService } from "../services/password.service.js";
 import * as UserRepo from "../user/user.repo.js";
 import { TokenResponse } from "@/lib/types.js";
 import { tokenService } from "../token/token.service.js";
+import { UserNotFoundError } from "@/lib/error.class.js";
 
 export class AuthService {
     async loginUser(data: loginDtoType): Promise<TokenResponse> {
@@ -55,8 +56,6 @@ export class AuthService {
 
     async handleRefresh(token: string) {
         const decryptedToken = await tokenService.decryptRefreshToken(token);
-        // TODO: handle this better
-        if (!decryptedToken) throw new Error("cant decrypt");
         const { sub: userId, familyJti, jti } = decryptedToken!.payload as {
             sub: string;
             familyJti: string,
@@ -64,8 +63,7 @@ export class AuthService {
         };
         
         const user = await UserRepo.findOneUserById(Number(userId));
-        // TODO: Handle this better
-        if (!user) throw new Error("cant find user");
+        if (!user) throw new UserNotFoundError("cant find user");
 
         const rt = await tokenService.generateRefreshTokenFacade(
             String(user.id),
@@ -84,8 +82,6 @@ export class AuthService {
 
     async handleLogout(token: string) {
         const decryptedToken = await tokenService.decryptRefreshToken(token);
-        // TODO: handle this better
-        if (!decryptedToken) throw new Error("cant decrypt");
         const { jti } = decryptedToken!.payload as {
             jti: string,
         };

@@ -25,3 +25,17 @@ export class CriticalSecurityError extends Error {
         this.name = "CriticalSecurityError"
     }
 }
+
+export class TokenValidationError extends Error {
+    constructor(public message: string) {
+        super(message);
+        this.name = "Token Validation Error";
+    }
+}
+
+export class UserNotFoundError extends Error {
+    constructor(public message: string) {
+        super(message);
+        this.name = "User not found";
+    }
+}

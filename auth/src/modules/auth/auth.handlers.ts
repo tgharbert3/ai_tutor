@@ -8,7 +8,7 @@ import { loginDTO, registerDTO } from "@/lib/dto.js";
 import { handleZodeValidationLoginError, handleZodValidationRegisterError } from "@/lib/errors.js";
 import { ServiceContainerMiddleware } from "@/middlewares/services.js";
 import { clearAuthCookies, getrefreshCookie, setAuthCookies } from "@/lib/cookies.js";
-import { BusyError, TokenReuseError } from "@/lib/error.class.js";
+import { BusyError, TokenReuseError, TokenValidationError, UserNotFoundError } from "@/lib/error.class.js";
 
 const factory = createFactory<AppBindings>();
 
@@ -54,6 +54,12 @@ export const refreshHandler = factory.createHandlers (
             }
             if (error instanceof BusyError) {
                 return c.json({error: "Unable to refresh token"}, HttpStatusCodes.TOO_MANY_REQUESTS);
+            }
+            if (error instanceof TokenValidationError) {
+                return c.json({error: "Unable to decrypt token"}, HttpStatusCodes.UNAUTHORIZED)
+            }
+            if (error instanceof UserNotFoundError) {
+                return c.json({error: "User not found"}, HttpStatusCodes.UNAUTHORIZED);
             }
             throw error;
         }

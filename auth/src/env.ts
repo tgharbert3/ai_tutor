@@ -31,6 +31,7 @@ const BaseSchema = z.object({
     LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
     TOKEN_ENC: z.string(),
     TOKEN_ALG: z.string(),
+    ACCESS_EXPIRATION: z.coerce.number(),
 });
 
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [

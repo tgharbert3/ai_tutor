@@ -5,7 +5,7 @@ import { insertTokenType } from "@/db/schema.js";
 
 import * as TokenRepo from "./token.repo.js";
 import { isBusyError, isUniqueConstraintError } from "@/lib/errors.js";
-import { BusyError, CriticalSecurityError, TokenReuseError } from "@/lib/error.class.js";
+import { BusyError, CriticalSecurityError, TokenReuseError, TokenValidationError } from "@/lib/error.class.js";
 
 export class TokenService {
 
@@ -84,7 +84,6 @@ export class TokenService {
                 throw new TokenReuseError("Security Breach Detected");
             } 
             if (isBusyError(error)) {
-                // TODO: Need to handle this error. Retry?
                 throw new BusyError("Unable to complete token transaction");
             } 
             throw error;
@@ -112,8 +111,7 @@ export class TokenService {
             .setSubject(id)
             .setJti(jti)
             .setProtectedHeader({alg: env.TOKEN_ALG, enc: env.TOKEN_ENC})
-            //TODO add this to env
-            .setExpirationTime("15m")
+            .setExpirationTime(`${env.ACCESS_EXPIRATION}m`)
             .setIssuedAt(new Date())
             .encrypt(this.key);     
     };
@@ -131,14 +129,14 @@ export class TokenService {
             .encrypt(this.key);
     };
 
-    //TODO: Handle the error correctly
     async decryptRefreshToken(tokenToDecrypt: string) {
         try {
             return await jose.jwtDecrypt(tokenToDecrypt, this.key, {
                 clockTolerance: 30,
             })
         } catch (error) {
-            console.error(`Invalid token`);
+            console.warn(`JWT decryption error ${error instanceof Error ? error.message : "unknown error"}`);
+            throw new TokenValidationError("Jwt decryption error");
         }
     }
 
@@ -185,7 +183,6 @@ export class TokenService {
     #generateRefreshExpiration() {
         // Calcuate the date in which it expires for the db
         const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000
-        // TODO: refactor this DATE.NOW?
         const expiresAt = new Date(Date.now() + SEVEN_DAYS_IN_MS)
         return expiresAt;
     }
