@@ -83,14 +83,13 @@ export class AuthService {
     }
 
     async handleLogout(token: string) {
-        //TODO: Extract this to a helper function?
         const decryptedToken = await tokenService.decryptRefreshToken(token);
         // TODO: handle this better
         if (!decryptedToken) throw new Error("cant decrypt");
         const { jti } = decryptedToken!.payload as {
             jti: string,
         };
-        const isRevoked = tokenService.revokeTokenByJti(jti);
+        const isRevoked = await tokenService.revokeTokenByJti(jti);
         return isRevoked;
     }
 }

@@ -77,6 +77,6 @@ export const logoutHandler = factory.createHandlers (
         }
         
         clearAuthCookies(c)
-        return c.body(null, HttpStatusCodes.NO_CONTENT);
+        return c.newResponse(null, HttpStatusCodes.NO_CONTENT);
     }
 )

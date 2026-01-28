@@ -1,8 +1,15 @@
 import { Context } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
+import { deleteCookie, getCookie, setCookie } from "hono/cookie";
+import { CookieOptions } from "hono/utils/cookie";
 
 const REFRESH_TOKEN_NAME = "__Host-rt"
 const ACCESS_TOKEN_NAME = "__Host-at"
+const COOKIE_OPTS: CookieOptions = {
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax"
+    }
 
 export const setAuthCookies = (c: Context, accessToken: string, refreshToken: string) => {
     // 15 Minutes
@@ -24,8 +31,9 @@ export const setAuthCookies = (c: Context, accessToken: string, refreshToken: st
 };
 
 export const clearAuthCookies = (c: Context) => {
-    setCookie(c, ACCESS_TOKEN_NAME, "", { path: "/" });
-    setCookie(c, REFRESH_TOKEN_NAME, "", { path: "/" });
+    deleteAccessCookie(c),
+    deleteRefreshCookie(c);
+    return;
 };
 
 export const getAccessCookie = (c: Context) => {
@@ -34,4 +42,14 @@ export const getAccessCookie = (c: Context) => {
 
 export const getrefreshCookie = (c: Context) => {
     return getCookie(c, REFRESH_TOKEN_NAME);
+}
+
+const deleteRefreshCookie = (c: Context) => {
+    deleteCookie(c, REFRESH_TOKEN_NAME, COOKIE_OPTS);
+    return;
+}
+
+const deleteAccessCookie = (c: Context) => {
+    deleteCookie(c, ACCESS_TOKEN_NAME, COOKIE_OPTS);
+    return;
 }

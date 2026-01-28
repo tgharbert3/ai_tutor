@@ -20,7 +20,7 @@ export class TokenService {
         const stringId = String(id);
         const token = await this.#generateAccessToken(email, stringId, canvasToken, accessJti)
         return token
-    }
+    };
 
    /**
     * Function to generate a new and insert refresh token
@@ -102,8 +102,7 @@ export class TokenService {
         const tokenHash = this.#hashToken(tokenToFind);
         const token = await TokenRepo.selectRefreshTokenByToken(tokenHash);
         return token ? token.familyJti : this.#generateRandomUUID();
-    }
-
+    };
 
     async #generateAccessToken(email: string, id: string, canvasToken: string, jti: string) {
          return new jose.EncryptJWT({

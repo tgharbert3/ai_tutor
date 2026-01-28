@@ -8,7 +8,7 @@ const routes = app
     .post("/login", ...handlers.loginHandlers)
     .post("/register", ...handlers.registerHandlers)
     .post("/refresh", ...handlers.refreshHandler)
-    .post("/logout, ...handlers.logoutHandler");
+    .post("/logout", ...handlers.logoutHandler);
 
 export default app;
 export type AppType = typeof routes;
