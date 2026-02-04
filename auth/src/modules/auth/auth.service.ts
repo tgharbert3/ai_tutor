@@ -15,7 +15,7 @@ export class AuthService {
     async loginUser(data: loginDtoType): Promise<TokenResponse> {
         const user = await this.verifyUser(data);
 
-        const accessToken = await tokenService.generateAccessTokenFacade(user.email, String(user.id), user.canvasToken);
+        const accessToken = await tokenService.generateAccessTokenFacade(user.email, String(user.id), user.canvasToken, user.fullUrl);
         const refreshToken = await tokenService.generateRefreshTokenFacade(String(user.id), null, null);
 
         return {accessToken, refreshToken};
@@ -35,7 +35,7 @@ export class AuthService {
             throw new HTTPException(HttpStatusCodes.INTERNAL_SERVER_ERROR, { message: "Failed to create user" });
         }
         
-        const accessToken = await tokenService.generateAccessTokenFacade(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken);
+        const accessToken = await tokenService.generateAccessTokenFacade(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken, insertedUser.fullUrl);
         const refreshToken = await tokenService.generateRefreshTokenFacade(String(insertedUser.id), null, null);
 
 
@@ -76,7 +76,8 @@ export class AuthService {
         const at = await tokenService.generateAccessTokenFacade(
             user.email,
             String(user.id),
-            user.canvasToken
+            user.canvasToken,
+            user.fullUrl
         );
 
         return { at, rt };
