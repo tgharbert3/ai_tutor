@@ -9,6 +9,7 @@ import * as UserRepo from "../user/user.repo.js";
 import { TokenResponse } from "@/lib/types.js";
 import { tokenService } from "../token/token.service.js";
 import { UserNotFoundError } from "@/lib/error.class.js";
+import { urlHealthCheck } from "./auth.client.js";
 
 export class AuthService {
     async loginUser(data: loginDtoType): Promise<TokenResponse> {
@@ -27,6 +28,7 @@ export class AuthService {
             passwordHash: hasedPassword,
             username: data.username,
             canvasToken: data.canvasToken,
+            fullUrl: data.fullUrl,
         };
         const insertedUser = await UserRepo.insertOneUser(userToInsert);
         if (!insertedUser) {
@@ -87,5 +89,14 @@ export class AuthService {
         };
         const isRevoked = await tokenService.revokeTokenByJti(jti);
         return isRevoked;
+    }
+
+    async urlCheck(canvasToken: string, url: string) {
+        const validUrl = await urlHealthCheck(canvasToken, url);
+        if (validUrl) {
+            return true;
+        }
+
+        return false
     }
 }

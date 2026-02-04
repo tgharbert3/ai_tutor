@@ -8,6 +8,7 @@ export const users = sqliteTable("users", {
     email: text("email").notNull().unique(),
     passwordHash: text("password").notNull(),
     canvasToken: text("canvas_token").notNull(),
+    fullUrl: text("full_url").notNull(),
 });
 
 export const selectUserSchema = createSelectSchema(users);
@@ -21,6 +22,7 @@ export const insertUserSchema = createInsertSchema(
         passwordHash: schema => schema.min(8),
         email: schema => schema.email(),
         canvasToken: schema => schema.min(1),
+        fullUrl: schema => schema.url(),
     },
 )
     .omit({

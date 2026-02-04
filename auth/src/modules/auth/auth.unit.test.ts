@@ -38,12 +38,14 @@ describe("authService", () => {
         username: "testUsername",
         passwordHash: "hashedPassword",
         canvasToken: "testToken",
+        fullUrl: "https://uncw.infrastructure.com"
     };
     const safeReturnUser: safeUserType = {
         id: 1,
         email: "test@gmail.com",
         username: "testUsername",
         canvasToken: "testToken",
+        fullUrl: "https://uncw.infrastructure.com"
     };
 
     const userToInsert = {
@@ -51,6 +53,7 @@ describe("authService", () => {
         username: "testUsername",
         password: "hashedPassword",
         canvasToken: "testToken",
+        fullUrl: "https://uncw.infrastructure.com"
     };
 
     const safeInsertedUser = {
@@ -58,6 +61,7 @@ describe("authService", () => {
         username: "testUsername",
         email: "test2@gmail.com",
         canvasToken: "testToken",
+        fullUrl: "https://uncw.infrastructure.com"
     };
 
     beforeAll(async () => {

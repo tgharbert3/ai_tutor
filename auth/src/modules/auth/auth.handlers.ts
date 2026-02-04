@@ -30,8 +30,13 @@ export const registerHandlers = factory.createHandlers(
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.registerUser(data);
-        setAuthCookies(c, response.accessToken, response.refreshToken);
-        return c.json({message: "Successfully registered"}, HttpStatusCodes.CREATED);
+        const validUrl = await services.urlCheck(data.canvasToken, data.fullUrl);
+        if (validUrl) {
+            setAuthCookies(c, response.accessToken, response.refreshToken);
+            return c.json({message: "Successfully registered"}, HttpStatusCodes.CREATED);
+        }
+        return c.json({error: "Invalid url"}, HttpStatusCodes.UNAUTHORIZED);
+        
     },
 );
 
@@ -48,6 +53,8 @@ export const refreshHandler = factory.createHandlers (
             setAuthCookies(c, at, rt);
             return c.json({message: "Successfully refreshed cookies"}, HttpStatusCodes.OK)
         } catch (error: any) {
+
+            // TODO: extract this
             if (error instanceof TokenReuseError) {
                 clearAuthCookies(c)
                 return c.json({error: "Unauthorized Access"}, HttpStatusCodes.FORBIDDEN);
@@ -63,7 +70,6 @@ export const refreshHandler = factory.createHandlers (
             }
             throw error;
         }
-        
     }
 )
 
