@@ -22,5 +22,6 @@ export default antfu({
         "perfectionist/sort-imports": ["error", {
             tsconfigRootDir: ".",
         }],
+        "style/eol-last": false
     },
 });
