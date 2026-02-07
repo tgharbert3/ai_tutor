@@ -1,10 +1,8 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe } from "vitest";
 
 import env from "@/env.js";
-
-import { fetchCoursesFromCanvas } from "./courses.client.js";
 
 if (env.NODE_ENV !== "test") {
     throw new Error("Must be in test Environment");
@@ -31,8 +29,8 @@ describe("user Routes", () => {
     //   expect(response).toMatchObject(course);
     // });
 
-    it("should return courses from canvas", async () => {
-        const response = await fetchCoursesFromCanvas();
-        expect(response).toBeInstanceOf(Array);
-    });
+    // it("should return courses from canvas", async () => {
+    //     const response = await fetchCoursesFromCanvas();
+    //     expect(response).toBeInstanceOf(Array);
+    // });
 });

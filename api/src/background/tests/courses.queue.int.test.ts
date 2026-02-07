@@ -5,9 +5,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import env from "@/env.js";
 
-import * as CourseRepo from "../modules/courses/courses.repo.js";
-import { addSyncCouresJob, syncCoursesQueue } from "./sync.courses.queue";
-import { syncCoursesWorker } from "./workers/sync.courses.worker";
+import * as CourseRepo from "../../modules/courses/courses.repo.js";
+import { addSyncCouresJob, syncCoursesQueue } from "../jobs/sync.courses.queue.js";
+import { syncCoursesWorker } from "../workers/sync.courses.worker.js";
 
 if (env.NODE_ENV !== "test") {
     throw new Error("Must be in test Environment");

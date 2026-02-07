@@ -1,6 +1,6 @@
 import type { insertCourseType } from "@/db/schema.js";
 
-import { addSyncCouresJob } from "@/queues/sync.courses.queue.js";
+import { addSyncCouresJob } from "@/background/jobs/sync.courses.queue.js";
 
 import * as CanvasAdapter from "./courses.adapter.js";
 import * as CanvasClient from "./courses.client.js";

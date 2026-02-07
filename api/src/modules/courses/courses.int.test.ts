@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import env from "@/env.js";
 
 import * as CourseRepo from "./courses.repo.js";
-import { CourseService } from "./courses.service";
+import { CourseService } from "./courses.service.js";
 
 if (env.NODE_ENV !== "test") {
     throw new Error("Must be in test Environment");
