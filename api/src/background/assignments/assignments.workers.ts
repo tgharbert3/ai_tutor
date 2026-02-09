@@ -2,13 +2,16 @@ import { redisConfig } from "@/config/redis.js";
 import { fetchAssignmentsFromCanvas } from "@/modules/assignments/assignments.client.js";
 import { Job } from "bullmq";
 import { createWorker } from "../factories/worker.js";
+import { CanvasAssignmentType, fetchAssignmentJob } from "@/lib/types.js";
+import { mapAssignmentsToDb } from "@/modules/assignments/assignments.adapter.js";
 
 export const fetchAssignmentsWorker = createWorker(
     "fetchAssigmentsQueue", 
-    async (job: Job) => {
+    async (job: Job<fetchAssignmentJob>) => {
         const { apiToken, canvasBaseUrl, courseId} = job.data;
 
         const response = await fetchAssignmentsFromCanvas(apiToken, canvasBaseUrl, courseId);
+        job.data = response;
         await job.updateProgress(100);
         return response;
     },
@@ -18,13 +21,11 @@ export const fetchAssignmentsWorker = createWorker(
 export const extractAssignmentsWorker = createWorker(
     "extractAssignmentsQueue", 
     async (job: Job) => {
-        const result = await job.getChildrenValues();
+        const result = await job.getChildrenValues<CanvasAssignmentType[]>();
         const assignmentsArray = Object.values(result)[0]
-        // console.log(Object.values(result)[0][0])
-        // const reslutJson = JSON.stringify(result, null, 2)
-        // console.log(`result: ${reslutJson}`);
-        await job.updateProgress(100);
-        return assignmentsArray;
+        console.log(assignmentsArray[0].id);
+        const extractedAssignments = mapAssignmentsToDb(assignmentsArray);
+        return extractedAssignments
     }, 
     redisConfig
 )
@@ -33,6 +34,8 @@ export const insertAssignmentsWorker = createWorker(
     "insertAssignmentsQueue", 
     async (job: Job) => {
         const result = await job.getChildrenValues();
+        const assignmentsArray = Object.values(result)[0]
+        console.log(assignmentsArray);
     },
     redisConfig
 )

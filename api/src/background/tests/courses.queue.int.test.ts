@@ -38,7 +38,6 @@ describe("user Routes", () => {
         const result = await job.waitUntilFinished(new QueueEvents("syncCourses"));
         const assignmentsJob = await loadAssignments(env.API_TOKEN, env.CANVAS_BASE_URL, 81419)
         const result2 = await assignmentsJob.job.waitUntilFinished(new QueueEvents("insertAssignmentsQueue"))
-        console.log(result2);
         expect(result).toMatchObject({ status: "successfully synced courses" });
 
         const allCoruses = await CourseRepo.findAllCourses();

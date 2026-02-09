@@ -1,5 +1,5 @@
-import type { insertCourseType } from "@/db/schema";
-import type { CanvasCourse } from "@/lib/types";
+import type { insertCourseType } from "@/db/schema.js";
+import type { CanvasCourse } from "@/lib/types.js";
 
 function canvasToDb(rawcourses: CanvasCourse): insertCourseType {
     return {
