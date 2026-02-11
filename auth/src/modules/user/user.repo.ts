@@ -33,6 +33,7 @@ export async function findOneUserById(userIdToFind: number): Promise<safeUserTyp
         email: true,
         canvasToken: true,
         passwordHash: false,
+        fullUrl: true,
     } });
 };
 

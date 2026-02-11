@@ -97,7 +97,6 @@ export class AuthService {
         if (validUrl) {
             return true;
         }
-
         return false
     }
 }
