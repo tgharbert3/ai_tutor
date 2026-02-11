@@ -1,6 +1,6 @@
 # DB schmea
 
-<img width="5664" height="2547" alt="db_schema_1 0" src="https://github.com/user-attachments/assets/219c5fa9-a7d9-4aac-a661-ae7d37ec74f1" />
+<img width="5664" height="2601" alt="dbSchema" src="https://github.com/user-attachments/assets/d57d967b-9027-4275-ac55-3872137216ca" />
 
 ## Legend
 
@@ -9,11 +9,11 @@
 - isActive: if the users enrollment in the course is active or not. Boolean
 
 ### Courses
-- Workflow state: Whether the case is available, completed, or deleted
+- Workflow state: Whether the course is available, completed, or deleted
 - canvasUpdatedAt: The last time the course was updated by the professor. Used to know when the course needs to be refreshed.
 - lastVectorizedAt: The last time the course was vectorized for the llm.
-- if canvasUpdatedAt is after lastVectorized, need to full fetch the course
-- courseCodeL "CS 101"
+- lastSyncedAt: The last time that data was synced from canvas
+- courseCode: "CS 101"
 
 ### Assignments
 - workflowState: published or unpublished. Only feed the published info to the llm
