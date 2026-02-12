@@ -6,8 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import env from "@/env.js";
 
 import * as CourseRepo from "../../modules/courses/courses.repo.js";
-import { addSyncCouresJob, syncCoursesQueue } from "../sync.courses.queue.js";
-import { syncCoursesWorker } from "../sync.courses.worker.js";
+import { addSyncCouresJob, syncCoursesQueue } from "../courses/sync.courses.queue.js";
+import { syncCoursesWorker } from "../courses/sync.courses.worker.js";
 import { fetchAssignmentsWorker } from "../assignments/assignments.workers.js";
 import { fetchAssignmentsQueue } from "../assignments/assignment.queue.js";
 import { loadAssignments } from "../assignments/assignments.fp.js";
