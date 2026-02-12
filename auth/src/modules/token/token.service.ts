@@ -15,10 +15,9 @@ export class TokenService {
         this.key = jose.base64url.decode(env.JWT_SECRET);
     }
 
-    async generateAccessTokenFacade(email: string, id: string, canvasToken: string, fullUrl: string) {
+    async generateAccessTokenFacade(email: string, userId: string, canvasToken: string, fullUrl: string) {
         const accessJti = this.#generateRandomUUID();
-        const stringId = String(id);
-        const token = await this.#generateAccessToken(email, stringId, canvasToken, accessJti, fullUrl)
+        const token = await this.#generateAccessToken(email, userId, canvasToken, accessJti, fullUrl)
         return token
     };
 
@@ -103,13 +102,13 @@ export class TokenService {
         return token ? token.familyJti : this.#generateRandomUUID();
     };
 
-    async #generateAccessToken(email: string, id: string, canvasToken: string, jti: string, fullUrl: string) {
+    async #generateAccessToken(email: string, userId: string, canvasToken: string, jti: string, fullUrl: string) {
          return new jose.EncryptJWT({
             email,
             canvasToken, 
             fullUrl,
          })
-            .setSubject(id)
+            .setSubject(userId)
             .setJti(jti)
             .setProtectedHeader({alg: env.TOKEN_ALG, enc: env.TOKEN_ENC})
             .setExpirationTime(`${env.ACCESS_EXPIRATION}m`)
