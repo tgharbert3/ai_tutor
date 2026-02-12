@@ -12,16 +12,16 @@
 ### Courses
 
 - Workflow state: Whether the course is available, completed, or deleted
-- canvasUpdatedAt: The last time the course was updated by the professor. Used to know when the course needs to be refreshed.
+- canvasUpdatedAt: The last time the course was updated by the professor.
 - lastVectorizedAt: The last time the course was vectorized for the llm.
-- lastSyncedAt: The last time that data was synced from canvas
+- lastSyncedAt: The last time that data was synced from canvas.
 - courseCode: "CS 101"
 
 ### Assignments
 
 - workflowState: published or unpublished. Only feed the published info to the llm
 
-### Course Activity Stream(added with 1.1)
+### Course Activity Stream:
 
 - Used to keep track of each stream item to know whe to an incremental update
 - canvasStreamId: id for the specific stream
@@ -30,3 +30,19 @@
 - eventTime: when the canvas opject was 'updated_at'
 - dedupHash: a hash of the url and time to generate a unique key. Make sure the multiple users in the same class don't add rows for the same object.
 - status: used to know the state of the job.
+
+### User Sync:
+
+- latestStreamId: keep track of the latest id
+- lastChecked: Date to know it was last checked
+- Status: Used to by the workers to know if it is being processed
+
+### Version 1.1
+
+- added course activity stream table
+
+### Version 1.2
+
+- Added user_sync table
+- Updated users table to only contain info that is needed
+- fixed typos

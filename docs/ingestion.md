@@ -37,7 +37,7 @@
 - Case 2: User has enrollments from canvas but none in db, this means new user to the app, update user enrollments.
 - Case 3: Existing user with new enrollments, add new enrollments to user enrollments and then proceed.
 - Case 4: The api service will handle the etl from canvas and the ai servive will handle the vectorizing.
-- Case 5: Each stream activty will be parsed by the url to identify what needs to be updated
+- Case 5: Each stream activity will be parsed by the url to identify what needs to be updated
 
 ### Notes:
 
