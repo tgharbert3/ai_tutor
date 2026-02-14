@@ -1,77 +1,84 @@
 import { relations } from "drizzle-orm";
-import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { bigint, boolean, pgSchema, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-export const users = sqliteTable("users", {
-    id: integer("id", { mode: "number"}).primaryKey({ autoIncrement: true}), 
-    email: text("email").notNull(),
-    schoolId: integer("school_id").references(() => schools.id)
+export const apiSchema = pgSchema("ai")
+
+const timestamps = {
+    updated_at: timestamp(),
+    created_at: timestamp().defaultNow().notNull()
+}
+
+export const users = apiSchema.table("users", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email"),
+    schoolId: bigint({ mode: "number"}).references(() => schools.id),
+    ...timestamps,
+});
+
+export const schools = apiSchema.table("schools", {
+    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    canvasBaseUrl: text("canvasBaseUrl").notNull(),
+    schoolColor: text(),
+    ...timestamps,
+});
+
+export const courses = apiSchema.table("courses", {
+    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    courseId: bigint({ mode: "number"}),
+    courseCode: text("course_code"),
+    // TODO: make this an enum
+    workflowState: text(),
+    canvasUpdatedAt: timestamp(),
+    lastSyncedAt: timestamp(),
+    schoolId: bigint({ mode: "number" }).references(() => schools.id),
+    ...timestamps,
+});
+
+export const userEnrollments = apiSchema.table("user_enrollments", {
+    userId: uuid().references(() => users.id),
+    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    enrollmentState: text(), 
+    isActive: boolean(),
+}, (table) => [
+    primaryKey({columns: [table.userId, table.courseId]})
+]);
+
+export const userSync = apiSchema.table("user_sync", {
+    userId: uuid().references(() => users.id),
+    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    lastStreamId: bigint({ mode: "number"}), 
+    lastCheckAt: timestamp(),
+    // TODO: make this an enum
+    status: text(),
+}, (table) => [
+    primaryKey({columns: [table.userId, table.courseId]})
+]);
+
+export const assignments = apiSchema.table("assignments", {
+    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    assignmentId: bigint({ mode: "number" }),
+    name: text(),
+    description: text(), 
+    dueAt: timestamp(),
+    // TODO: make this an enum
+    workflowState: text(),
+    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    ...timestamps,
+});
+
+export const courseActivityStream = apiSchema.table("course_activity_stream", {
+    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    canvasStreamId: bigint({ mode: "number" }),
+    entityType: text(),
+    htmlUrl: text(),
+    eventTime: timestamp(),
+    dedupHash: text().unique(),
+    status: text(),
+    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    ...timestamps,
 })
 
-export const schools = sqliteTable("schools", {
-    id: integer("id", { mode: "number"}).primaryKey({ autoIncrement: true}),
-    canvasBaseUrl: text("cavas_base_url").notNull(),
-    schoolColor: text("school_color")
-});
-
-export const courses = sqliteTable("courses", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    courseId: integer("courseId").notNull().unique(),
-    courseName: text("courseName").notNull().default(""),
-    courseCode: text("courseCode").notNull().default(""),
-    // TODO: make this an enum
-    workflowState: text("worflow_state").notNull(),
-    canvasUpdatedAt: integer("canvas_updated_at",{ mode: "timestamp"}),
-    lastSyncedAt: integer("last_synced_at", {mode: "timestamp"}),
-    schoolId: integer("schoolId").references(() => schools.id),
-    createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
-    updatedAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
-});
-
-export const userEnrollments = sqliteTable("user_enrollments", {
-    userId: integer("user_id").notNull().references(() => users.id),
-    courseId: integer("course_id").notNull().references(() => courses.id),
-    // TODO: make this an enum
-    enrollmentState: text("enrollment_state"),
-    isActive: integer("is_active", { mode: "boolean"}),
-},
-    (t) => [primaryKey({columns: [t.userId, t.courseId]})]
-);
-
-export const userSync = sqliteTable("user_sync", {
-    userId: integer("user_id").notNull().references(() => users.id),
-    courseId: integer("course_id").notNull().references(() => courses.id),
-    lastStreamId: integer("last_stream_id"),
-    lastCheckedAt: integer("last_checked_at", { mode: "timestamp"}),
-    //TODO: make this an enum
-    status: text("status").notNull().default("inactive")
-},
-    (t) => [primaryKey({columns: [t.userId, t.courseId]})]
-);
-
-export const assignments = sqliteTable("assignments", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    assignmentId: integer("assignment_id", { mode: "number" }).notNull(),
-    name: text("name"),
-    description: text("description"),
-    dueAt: integer("due_at", { mode: "timestamp" }),
-    updatedAt: integer("updated_at", { mode: "timestamp" }),
-    // TODO: make this an enum
-    workflowState: text("workflow_state"),
-    courseId: integer("course_id", { mode: "number" }).references(() => courses.courseId) 
-});
-
-export const courseActivityStream = sqliteTable("course_activity_stream", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    canvasStreamId: integer("canvas_stream_id", { mode: "number" }),
-    entityType: text("entity_type"),
-    htmlUrl: text("html_url"),
-    eventTime: integer("event_time", { mode: "timestamp"}),
-    dedupHash: text("dedup_hash").unique(),
-    status: text("status"),
-    createdAt: integer("created_at", { mode: "timestamp"}),
-    courseId: integer("course_id", { mode: 'number' }).references(() => courses.id)
-});
 
 // Relations: 
 export const userToCourseRelations = relations(users, ({ many }) => ({
@@ -138,7 +145,7 @@ export const courseToAssignmentrelations = relations(courses, ({ many }) => ({
 export const assignmentToCourseRelation = relations(assignments, ({ one }) => ({
     course: one(courses, {
         fields: [assignments.courseId],
-        references: [courses.courseId]
+        references: [courses.id]
     }),
 }))
 
@@ -157,18 +164,15 @@ export const courseActivityStreamToCourse = relations(courseActivityStream, ({ o
 export const selectCourseSchema = createSelectSchema(courses)
     .omit({
         id: true,
-        createdAt: true,
-        updatedAt: true,
+        created_at: true,
+        updated_at: true,
     });
 export const insertCourseSchema = createInsertSchema(
     courses,
     {
         courseId: schema => schema.min(1),
     },
-)
-    .omit({
-        id: true,
-    });
+);
 
 //TODO: Extract this
 export type getUsers = typeof users.$inferSelect;
