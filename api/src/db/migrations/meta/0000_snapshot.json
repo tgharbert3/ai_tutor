@@ -1,5 +1,5 @@
 {
-  "id": "a2dab75e-ac43-487e-920e-b64402337a90",
+  "id": "5ebb278d-866b-4461-94c1-b9b185278a41",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -239,6 +239,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "courseName": {
+          "name": "courseName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "workflowState": {
           "name": "workflowState",
           "type": "text",
@@ -295,7 +301,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "courses_courseId_unique": {
+          "name": "courses_courseId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "courseId"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

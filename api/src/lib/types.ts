@@ -1,8 +1,12 @@
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { PgliteDatabase } from "drizzle-orm/pglite";
 import type { PinoLogger } from "hono-pino";
 
 import * as z from "zod";
 
 import type { ServiceContainer } from "@/modules/services.container.js";
+
+import type * as schema from "../db/schema.js";
 
 export type AppBindings = {
     Variables: {
@@ -12,6 +16,8 @@ export type AppBindings = {
 };
 
 export type AppEnv = "development" | "production" | "test";
+
+export type db = PgliteDatabase<typeof schema> | NodePgDatabase<typeof schema>;
 
 // interfaces
 

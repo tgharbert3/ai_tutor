@@ -30,12 +30,14 @@ CREATE TABLE "ai"."courses" (
 	"id" bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "ai"."courses_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
 	"courseId" bigint,
 	"course_code" text,
+	"courseName" text,
 	"workflowState" text,
 	"canvasUpdatedAt" timestamp,
 	"lastSyncedAt" timestamp,
 	"schoolId" bigint,
 	"updated_at" timestamp,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "courses_courseId_unique" UNIQUE("courseId")
 );
 --> statement-breakpoint
 CREATE TABLE "ai"."schools" (

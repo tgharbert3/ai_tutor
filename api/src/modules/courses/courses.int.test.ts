@@ -1,31 +1,27 @@
-import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
+import { beforeEach, describe, expect, it } from "vitest";
 
-import { Client } from "pg";
-import { beforeAll, describe, it } from "vitest";
+import env from "@/env.js";
+import { createTestDb } from "@/lib/test.utils.js";
 
 import { CourseRepository } from "./courses.repo.js";
-
+import { CourseService } from "./courses.service.js";
 
 describe("user Routes", () => {
-    let postgresContainer: StartedPostgreSqlContainer;
-    let postgresClient: Client;
-    let db;
     let courseRepo: CourseRepository;
 
-    beforeAll(async () => {
-       
-    
-    }, 30000);
+    beforeEach(async () => {
+        const db = await createTestDb();
 
-    it("test", async () => {
-        
-    })
-    // it("should return an array of courses", async () => {
-    // const courseInstance = new CourseService(courseRepo, env.API_TOKEN, env.CANVAS_BASE_URL);
-    // const response = await courseInstance.syncCourses();
-    // expect(response).toBeInstanceOf(Array);
+        courseRepo = new CourseRepository(db);
+    });
 
-    // const coursesFromDb = await courseRepo.findAllCourses();
-    // expect(coursesFromDb).toBeInstanceOf(Array);
-    // });
+    it("should return an array of courses", async () => {
+        const courseInstance = new CourseService(courseRepo, env.API_TOKEN, env.CANVAS_BASE_URL);
+        const response = await courseInstance.syncCourses();
+        expect(response).toBeInstanceOf(Array);
+
+        const coursesFromDb = await courseRepo.findAllCourses();
+        console.log(coursesFromDb);
+        expect(coursesFromDb).toBeInstanceOf(Array);
+    });
 });

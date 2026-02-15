@@ -5,7 +5,7 @@
         "dev": "NODE_ENV=development bun run --hot src/index.ts | pino-pretty",
         "lint": "eslint",
         "lint:fix": "npm run lint --fix",
-        "test": "TESTCONTAINERS_RYUK_DISABLED=true NODE_ENV=test LOG_LEVEL=silent bun --bun vitest run int",
+        "test": "NODE_ENV=test LOG_LEVEL=silent bun --bun vitest run",
         "test:unit": "NODE_ENV=test LOG_LEVEL=silent bun vitest run unit",
         "test:int": "NODE_ENV=test LOG_LEVEL=silent bun vitest run int"
     },

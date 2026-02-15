@@ -1,11 +1,10 @@
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-
 import type { insertCourseType } from "@/db/schema.js";
+import type { db } from "@/lib/types.js";
 
 import { courses } from "@/db/schema.js";
 
 export class CourseRepository {
-    constructor(private db: NodePgDatabase<any>) {}
+    constructor(private db: db) {}
 
     async upsertManyCourses(course: insertCourseType[]) {
         const inserted = await this.db.insert(courses).values(course).returning().onConflictDoUpdate({

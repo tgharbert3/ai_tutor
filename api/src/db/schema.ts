@@ -25,7 +25,7 @@ export const users = apiSchema.table("users", {
 
 export const courses = apiSchema.table("courses", {
     id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-    courseId: bigint({ mode: "number" }),
+    courseId: bigint({ mode: "number" }).unique(),
     courseCode: text("course_code"),
     courseName: text(),
     // TODO: make this an enum
