@@ -5,7 +5,7 @@ import type { ZodError } from "zod";
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import path from "node:path";
-import { z } from "zod";
+import * as z from "zod";
 
 import type { AppEnv } from "./lib/types.js";
 
@@ -51,8 +51,6 @@ const EnvSchema = z.discriminatedUnion("NODE_ENV", [
     BaseSchema.extend({
         NODE_ENV: z.literal("test"),
         API_TOKEN: z.string().min(1),
-        DATABASE_URL: z.string(),
-        DATABASE_AUTH_TOKEN: z.string().optional(),
     }),
 ]).superRefine((input, ctx) => {
     if (input.NODE_ENV === "production") {

@@ -1,23 +1,28 @@
-import type { insertCourseType } from "@/db/schema";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import db from "@/db";
-import { courses } from "@/db/schema";
+import type { insertCourseType } from "@/db/schema.js";
 
-export async function upsertManyCourses(course: insertCourseType[]) {
-    const inserted = await db.insert(courses).values(course).returning().onConflictDoUpdate({
-        target: courses.courseId,
-        set: {
-            updatedAt: new Date(),
-        },
-    });
-    return inserted;
-}
+import { courses } from "@/db/schema.js";
 
-export async function findAllCourses() {
-    const response = await db.select({
-        courseId: courses.courseId,
-        courseName: courses.courseName,
-        courseCode: courses.courseCode,
-    }).from(courses);
-    return response;
+export class CourseRepository {
+    constructor(private db: NodePgDatabase<any>) {}
+
+    async upsertManyCourses(course: insertCourseType[]) {
+        const inserted = await this.db.insert(courses).values(course).returning().onConflictDoUpdate({
+            target: courses.courseId,
+            set: {
+                updated_at: new Date(),
+            },
+        });
+        return inserted;
+    }
+
+    async findAllCourses() {
+        const response = await this.db.select({
+            courseId: courses.courseId,
+            courseName: courses.courseName,
+            courseCode: courses.courseCode,
+        }).from(courses);
+        return response;
+    }
 }

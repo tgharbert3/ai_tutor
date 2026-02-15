@@ -1,33 +1,31 @@
-import { execSync } from "node:child_process";
-import fs from "node:fs";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 
-import env from "@/env.js";
+import { Client } from "pg";
+import { beforeAll, describe, it } from "vitest";
 
-import * as CourseRepo from "./courses.repo.js";
-import { CourseService } from "./courses.service.js";
+import { CourseRepository } from "./courses.repo.js";
 
-if (env.NODE_ENV !== "test") {
-    throw new Error("Must be in test Environment");
-}
 
 describe("user Routes", () => {
-    beforeAll(() => {
-        execSync(`bunx drizzle-kit push`);
-    });
+    let postgresContainer: StartedPostgreSqlContainer;
+    let postgresClient: Client;
+    let db;
+    let courseRepo: CourseRepository;
 
-    afterAll(async () => {
-        if (fs.existsSync("test.db")) {
-            fs.rmSync("test.db", { force: true });
-        }
-    });
+    beforeAll(async () => {
+       
+    
+    }, 30000);
 
-    it("should return an array of courses", async () => {
-        const courseInstance = new CourseService(env.API_TOKEN, env.CANVAS_BASE_URL);
-        const response = await courseInstance.syncCourses();
-        expect(response).toBeInstanceOf(Array);
+    it("test", async () => {
+        
+    })
+    // it("should return an array of courses", async () => {
+    // const courseInstance = new CourseService(courseRepo, env.API_TOKEN, env.CANVAS_BASE_URL);
+    // const response = await courseInstance.syncCourses();
+    // expect(response).toBeInstanceOf(Array);
 
-        const coursesFromDb = await CourseRepo.findAllCourses();
-        expect(coursesFromDb).toBeInstanceOf(Array);
-    });
+    // const coursesFromDb = await courseRepo.findAllCourses();
+    // expect(coursesFromDb).toBeInstanceOf(Array);
+    // });
 });

@@ -1,4 +1,4 @@
-import { CanvasAssignmentType, AssignmentType } from "@/lib/types.js";
+import type { AssignmentType, CanvasAssignmentType } from "@/lib/types.js";
 
 function canvasToDb(rawAssignments: CanvasAssignmentType): AssignmentType {
     return {

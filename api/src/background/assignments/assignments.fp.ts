@@ -1,6 +1,6 @@
 import { FlowProducer } from "bullmq";
-import { fetchAssignmentsQueue, extractAssignmentsQueue, insertAssignmentsQueue } from "./assignment.queue.js";
 
+import { extractAssignmentsQueue, fetchAssignmentsQueue, insertAssignmentsQueue } from "./assignment.queue.js";
 
 export async function loadAssignments(apiToken: string, canvasBaseUrl: string, courseId: number) {
     const assignmentsProducer = new FlowProducer();
@@ -9,18 +9,17 @@ export async function loadAssignments(apiToken: string, canvasBaseUrl: string, c
         name: "loadAssignments",
         queueName: insertAssignmentsQueue.name,
         children: [
-            { 
-                name: "extractAssignments",  
-                queueName: extractAssignmentsQueue.name, 
+            {
+                name: "extractAssignments",
+                queueName: extractAssignmentsQueue.name,
                 children: [
-                    { 
-                        name: "fetchAssignments", 
-                        data: {apiToken, canvasBaseUrl, courseId}, 
-                        queueName: fetchAssignmentsQueue.name
-                    }
-                ]
+                    {
+                        name: "fetchAssignments",
+                        data: { apiToken, canvasBaseUrl, courseId },
+                        queueName: fetchAssignmentsQueue.name,
+                    },
+                ],
             },
-        ]
+        ],
     });
 }
-

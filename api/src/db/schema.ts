@@ -2,19 +2,12 @@ import { relations } from "drizzle-orm";
 import { bigint, boolean, pgSchema, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-export const apiSchema = pgSchema("ai")
+export const apiSchema = pgSchema("ai");
 
 const timestamps = {
     updated_at: timestamp(),
-    created_at: timestamp().defaultNow().notNull()
-}
-
-export const users = apiSchema.table("users", {
-    id: uuid("id").primaryKey().defaultRandom(),
-    email: text("email"),
-    schoolId: bigint({ mode: "number"}).references(() => schools.id),
-    ...timestamps,
-});
+    created_at: timestamp().defaultNow().notNull(),
+};
 
 export const schools = apiSchema.table("schools", {
     id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
@@ -23,10 +16,18 @@ export const schools = apiSchema.table("schools", {
     ...timestamps,
 });
 
+export const users = apiSchema.table("users", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email"),
+    schoolId: bigint({ mode: "number" }).references(() => schools.id),
+    ...timestamps,
+});
+
 export const courses = apiSchema.table("courses", {
     id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-    courseId: bigint({ mode: "number"}),
+    courseId: bigint({ mode: "number" }),
     courseCode: text("course_code"),
+    courseName: text(),
     // TODO: make this an enum
     workflowState: text(),
     canvasUpdatedAt: timestamp(),
@@ -38,28 +39,28 @@ export const courses = apiSchema.table("courses", {
 export const userEnrollments = apiSchema.table("user_enrollments", {
     userId: uuid().references(() => users.id),
     courseId: bigint({ mode: "number" }).references(() => courses.id),
-    enrollmentState: text(), 
+    enrollmentState: text(),
     isActive: boolean(),
-}, (table) => [
-    primaryKey({columns: [table.userId, table.courseId]})
+}, table => [
+    primaryKey({ columns: [table.userId, table.courseId] }),
 ]);
 
 export const userSync = apiSchema.table("user_sync", {
     userId: uuid().references(() => users.id),
     courseId: bigint({ mode: "number" }).references(() => courses.id),
-    lastStreamId: bigint({ mode: "number"}), 
+    lastStreamId: bigint({ mode: "number" }),
     lastCheckAt: timestamp(),
     // TODO: make this an enum
     status: text(),
-}, (table) => [
-    primaryKey({columns: [table.userId, table.courseId]})
+}, table => [
+    primaryKey({ columns: [table.userId, table.courseId] }),
 ]);
 
 export const assignments = apiSchema.table("assignments", {
     id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
     assignmentId: bigint({ mode: "number" }),
     name: text(),
-    description: text(), 
+    description: text(),
     dueAt: timestamp(),
     // TODO: make this an enum
     workflowState: text(),
@@ -77,35 +78,34 @@ export const courseActivityStream = apiSchema.table("course_activity_stream", {
     status: text(),
     courseId: bigint({ mode: "number" }).references(() => courses.id),
     ...timestamps,
-})
+});
 
-
-// Relations: 
+// Relations:
 export const userToCourseRelations = relations(users, ({ many }) => ({
-    userEnrollmets: many(userEnrollments)
+    userEnrollmets: many(userEnrollments),
 }));
 
 export const coursesToUserRelations = relations(courses, ({ many }) => ({
-    userEnrollments: many(userEnrollments)
+    userEnrollments: many(userEnrollments),
 }));
 
 export const userEnrollmentRelations = relations(userEnrollments, ({ one }) => ({
     user: one(users, {
         fields: [userEnrollments.userId],
-        references: [users.id]
+        references: [users.id],
     }),
     course: one(courses, {
         fields: [userEnrollments.courseId],
-        references: [courses.id]
-    })
+        references: [courses.id],
+    }),
 }));
- 
+
 export const schoolToUserRelations = relations(schools, ({ one }) => ({
     user: one(users),
 }));
 
 export const userToSchoolrelation = relations(users, ({ one }) => ({
-    school: one(schools, { fields: [users.schoolId], references: [schools.id]}),
+    school: one(schools, { fields: [users.schoolId], references: [schools.id] }),
 }));
 
 export const schoolToCourseRelation = relations(schools, ({ many }) => ({
@@ -115,26 +115,26 @@ export const schoolToCourseRelation = relations(schools, ({ many }) => ({
 export const courseToSchoolRelation = relations(courses, ({ one }) => ({
     school: one(schools, {
         fields: [courses.schoolId],
-        references: [schools.id]
+        references: [schools.id],
     }),
 }));
 
 export const userToUserSync = relations(users, ({ many }) => ({
-    userSync: many(userSync)
+    userSync: many(userSync),
 }));
 
 export const courseToUserSync = relations(courses, ({ many }) => ({
-    course: many(userSync)
+    course: many(userSync),
 }));
 
 export const userSyncRelations = relations(userSync, ({ one }) => ({
     user: one(users, {
         fields: [userSync.userId],
-        references: [users.id]
+        references: [users.id],
     }),
     course: one(courses, {
         fields: [userSync.courseId],
-        references: [courses.id]
+        references: [courses.id],
     }),
 }));
 
@@ -145,18 +145,18 @@ export const courseToAssignmentrelations = relations(courses, ({ many }) => ({
 export const assignmentToCourseRelation = relations(assignments, ({ one }) => ({
     course: one(courses, {
         fields: [assignments.courseId],
-        references: [courses.id]
+        references: [courses.id],
     }),
-}))
+}));
 
 export const courseToCourseActivityStreamRelation = relations(courses, ({ many }) => ({
     courseActivityStream: many(courseActivityStream),
 }));
 
 export const courseActivityStreamToCourse = relations(courseActivityStream, ({ one }) => ({
-    course: one(courses, { 
+    course: one(courses, {
         fields: [courseActivityStream.courseId],
-        references: [courses.id]
+        references: [courses.id],
     }),
 }));
 
@@ -174,7 +174,7 @@ export const insertCourseSchema = createInsertSchema(
     },
 );
 
-//TODO: Extract this
+// TODO: Extract this
 export type getUsers = typeof users.$inferSelect;
 export type insertUser = typeof users.$inferSelect;
 

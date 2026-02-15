@@ -1,6 +1,6 @@
 import type { PinoLogger } from "hono-pino";
 
-import { z } from "zod";
+import * as z from "zod";
 
 import type { ServiceContainer } from "@/modules/services.container.js";
 
@@ -15,31 +15,31 @@ export type AppEnv = "development" | "production" | "test";
 
 // interfaces
 
-export interface fetchAssignmentJob {
+export type fetchAssignmentJob = {
     apiToken: string;
     canvasBaseUrl: string;
     courseId: number;
-}
+};
 
-export interface CanvasAssignmentType {
-  id: number;
-  description: string | null;
-  points_possible: number;
-  due_at: string | null;
-  course_id: number;
-  name: string;
-  html_url: string;
-}
+export type CanvasAssignmentType = {
+    id: number;
+    description: string | null;
+    points_possible: number;
+    due_at: string | null;
+    course_id: number;
+    name: string;
+    html_url: string;
+};
 
-export interface AssignmentType {
-  assignmentId: number;
-  assignmentName: string;
-  description: string;
-  dueAt: string;
-  courseId: number;
-  pointsPossible: number;
-  url: string;
-}
+export type AssignmentType = {
+    assignmentId: number;
+    assignmentName: string;
+    description: string;
+    dueAt: string;
+    courseId: number;
+    pointsPossible: number;
+    url: string;
+};
 
 // zod types
 
