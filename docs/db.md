@@ -1,6 +1,7 @@
-# DB schmea(version 1.1)
+# DB schmea(version 1.3)
 
-<img width="5664" height="2415" alt="dbSchema" src="https://github.com/user-attachments/assets/d9221cb2-7e55-49ce-a2d2-9a139f9bac00" />
+
+<img width="4383" height="2055" alt="dbSchema" src="https://github.com/user-attachments/assets/d4c17e1b-b1b2-41c0-bdd5-4f8cd771f309" />
 
 
 ## Legend
@@ -47,3 +48,7 @@
 - Added user_sync table
 - Updated users table to only contain info that is needed
 - fixed typos
+
+### Version 1.3
+
+- added canvasUserId to users table
