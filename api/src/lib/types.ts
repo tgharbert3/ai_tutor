@@ -19,8 +19,6 @@ export type AppEnv = "development" | "production" | "test";
 
 export type db = PgliteDatabase<typeof schema> | NodePgDatabase<typeof schema>;
 
-// interfaces
-
 export type fetchAssignmentJob = {
     apiToken: string;
     canvasBaseUrl: string;
@@ -45,6 +43,12 @@ export type AssignmentType = {
     courseId: number;
     pointsPossible: number;
     url: string;
+};
+
+export type Enrollment = {
+    canvasUserId: number;
+    canvasCourseId: number;
+    enrollmentState: string;
 };
 
 // zod types

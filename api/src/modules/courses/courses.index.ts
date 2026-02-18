@@ -1,7 +1,7 @@
-import { CreateRouter } from "@/lib/create-app";
-import { ServiceContainerMiddleware } from "@/middlewares/services";
+import { CreateRouter } from "@/lib/create-app.js";
+import { ServiceContainerMiddleware } from "@/middlewares/services.js";
 
-import * as handlers from "./courses.controller";
+import * as handlers from "./courses.controller.js";
 
 const router = CreateRouter();
 

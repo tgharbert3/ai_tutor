@@ -1,7 +1,7 @@
 import type { insertCourseType } from "@/db/schema.js";
 import type { CanvasCourse } from "@/lib/types.js";
 
-function canvasToDb(rawcourses: CanvasCourse): insertCourseType {
+function canvasCourseToDbCourse(rawcourses: CanvasCourse): insertCourseType {
     return {
         courseId: rawcourses.id,
         courseName: rawcourses.name || "",
@@ -10,5 +10,5 @@ function canvasToDb(rawcourses: CanvasCourse): insertCourseType {
 }
 
 export function mapCoursesToDb(courses: CanvasCourse[]) {
-    return courses.map(canvasToDb);
-}
+    return courses.map(canvasCourseToDbCourse);
+};

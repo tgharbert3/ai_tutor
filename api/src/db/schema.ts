@@ -40,7 +40,9 @@ export const userEnrollments = apiSchema.table("user_enrollments", {
     userId: uuid().references(() => users.id),
     courseId: bigint({ mode: "number" }).references(() => courses.id),
     enrollmentState: text(),
+    canvasUserId: bigint({ mode: "number" }),
     isActive: boolean(),
+    ...timestamps,
 }, table => [
     primaryKey({ columns: [table.userId, table.courseId] }),
 ]);

@@ -21,7 +21,6 @@ describe("user Routes", () => {
         expect(response).toBeInstanceOf(Array);
 
         const coursesFromDb = await courseRepo.findAllCourses();
-        console.log(coursesFromDb);
         expect(coursesFromDb).toBeInstanceOf(Array);
     });
 });
