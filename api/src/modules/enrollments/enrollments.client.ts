@@ -1,6 +1,11 @@
-export async function fetchUserEnrollmetnsFromCanvas(API_TOKEN: string, canvasBaseUrl: string) {
+import type { Enrollment } from "@/lib/types.js";
+
+import { SchoolService } from "../schools/school.service.js";
+
+export async function fetchUserEnrollmentsFromCanvas(API_TOKEN: string, canvasBaseUrl: string): Promise<Enrollment[]> {
+    const builtUrl = SchoolService.buildCanvasUrl(canvasBaseUrl, "users/self/enrollments");
     try {
-        const enrollments = await fetch(`${canvasBaseUrl}/users/self/enrollments`, {
+        const enrollments = await fetch(builtUrl, {
             method: "GET",
             headers: { Authorization: `Bearer ${API_TOKEN}` },
         });

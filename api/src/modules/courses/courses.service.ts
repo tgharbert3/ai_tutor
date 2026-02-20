@@ -1,4 +1,5 @@
 import type { insertCourseType } from "@/db/schema.js";
+import type { PartialCourse } from "@/lib/types.js";
 
 import { addSyncCouresJob } from "@/background/courses/sync.courses.queue.js";
 
@@ -24,4 +25,9 @@ export class CourseService {
         const insertedCourses = await this.repo.upsertManyCourses(adaptedCourses);
         return insertedCourses;
     };
+
+    async insertPartialCourse(data: PartialCourse[]) {
+        const response = this.repo.upsertNewCourse(data);
+        return response;
+    }
 }

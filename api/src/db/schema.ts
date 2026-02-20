@@ -10,23 +10,23 @@ const timestamps = {
 };
 
 export const schools = apiSchema.table("schools", {
-    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-    canvasBaseUrl: text("canvasBaseUrl").notNull(),
+    id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    canvasBaseUrl: text("canvas_base_url").notNull().unique(),
     schoolColor: text(),
     ...timestamps,
 });
-
+// TODO: add canvasUserId
 export const users = apiSchema.table("users", {
-    id: uuid("id").primaryKey().defaultRandom(),
-    email: text("email"),
-    schoolId: bigint({ mode: "number" }).references(() => schools.id),
+    id: uuid("id").primaryKey(),
+    email: text().notNull(),
+    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
     ...timestamps,
 });
 
 export const courses = apiSchema.table("courses", {
     id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
     courseId: bigint({ mode: "number" }).unique(),
-    courseCode: text("course_code"),
+    courseCode: text(),
     courseName: text(),
     // TODO: make this an enum
     workflowState: text(),
@@ -37,8 +37,8 @@ export const courses = apiSchema.table("courses", {
 });
 
 export const userEnrollments = apiSchema.table("user_enrollments", {
-    userId: uuid().references(() => users.id),
-    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    userId: uuid().references(() => users.id).notNull(),
+    courseId: bigint({ mode: "number" }).references(() => courses.id).notNull(),
     enrollmentState: text(),
     canvasUserId: bigint({ mode: "number" }),
     isActive: boolean(),
@@ -48,8 +48,8 @@ export const userEnrollments = apiSchema.table("user_enrollments", {
 ]);
 
 export const userSync = apiSchema.table("user_sync", {
-    userId: uuid().references(() => users.id),
-    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    userId: uuid().references(() => users.id).notNull(),
+    courseId: bigint({ mode: "number" }).references(() => courses.id).notNull(),
     lastStreamId: bigint({ mode: "number" }),
     lastCheckAt: timestamp(),
     // TODO: make this an enum
@@ -83,15 +83,36 @@ export const courseActivityStream = apiSchema.table("course_activity_stream", {
 });
 
 // Relations:
-export const userToCourseRelations = relations(users, ({ many }) => ({
-    userEnrollmets: many(userEnrollments),
+// 1. Schools Relations
+export const schoolsRelations = relations(schools, ({ many }) => ({
+    users: many(users),
+    courses: many(courses),
 }));
 
-export const coursesToUserRelations = relations(courses, ({ many }) => ({
+// 2. Users Relations
+export const usersRelations = relations(users, ({ one, many }) => ({
+    school: one(schools, {
+        fields: [users.schoolId],
+        references: [schools.id],
+    }),
     userEnrollments: many(userEnrollments),
+    userSync: many(userSync),
 }));
 
-export const userEnrollmentRelations = relations(userEnrollments, ({ one }) => ({
+// 3. Courses Relations
+export const coursesRelations = relations(courses, ({ one, many }) => ({
+    school: one(schools, {
+        fields: [courses.schoolId],
+        references: [schools.id],
+    }),
+    userEnrollments: many(userEnrollments),
+    userSync: many(userSync),
+    assignments: many(assignments),
+    courseActivityStream: many(courseActivityStream),
+}));
+
+// 4. User Enrollments (Join Table)
+export const userEnrollmentsRelations = relations(userEnrollments, ({ one }) => ({
     user: one(users, {
         fields: [userEnrollments.userId],
         references: [users.id],
@@ -102,33 +123,7 @@ export const userEnrollmentRelations = relations(userEnrollments, ({ one }) => (
     }),
 }));
 
-export const schoolToUserRelations = relations(schools, ({ one }) => ({
-    user: one(users),
-}));
-
-export const userToSchoolrelation = relations(users, ({ one }) => ({
-    school: one(schools, { fields: [users.schoolId], references: [schools.id] }),
-}));
-
-export const schoolToCourseRelation = relations(schools, ({ many }) => ({
-    courses: many(courses),
-}));
-
-export const courseToSchoolRelation = relations(courses, ({ one }) => ({
-    school: one(schools, {
-        fields: [courses.schoolId],
-        references: [schools.id],
-    }),
-}));
-
-export const userToUserSync = relations(users, ({ many }) => ({
-    userSync: many(userSync),
-}));
-
-export const courseToUserSync = relations(courses, ({ many }) => ({
-    course: many(userSync),
-}));
-
+// 5. User Sync Relations
 export const userSyncRelations = relations(userSync, ({ one }) => ({
     user: one(users, {
         fields: [userSync.userId],
@@ -140,22 +135,16 @@ export const userSyncRelations = relations(userSync, ({ one }) => ({
     }),
 }));
 
-export const courseToAssignmentrelations = relations(courses, ({ many }) => ({
-    assignment: many(assignments),
-}));
-
-export const assignmentToCourseRelation = relations(assignments, ({ one }) => ({
+// 6. Assignments Relations
+export const assignmentsRelations = relations(assignments, ({ one }) => ({
     course: one(courses, {
         fields: [assignments.courseId],
         references: [courses.id],
     }),
 }));
 
-export const courseToCourseActivityStreamRelation = relations(courses, ({ many }) => ({
-    courseActivityStream: many(courseActivityStream),
-}));
-
-export const courseActivityStreamToCourse = relations(courseActivityStream, ({ one }) => ({
+// 7. Activity Stream Relations
+export const courseActivityStreamRelations = relations(courseActivityStream, ({ one }) => ({
     course: one(courses, {
         fields: [courseActivityStream.courseId],
         references: [courses.id],

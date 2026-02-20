@@ -1,12 +1,12 @@
 import createApp from "@/lib/create-app.js";
-
-import "./background/workers/sync.courses.worker";
-import courses from "@/modules/courses/courses.index";
+import courses from "@/modules/courses/courses.index.js";
+import sync from "@/modules/routes/routes.index.js";
 
 const app = createApp();
 
 const routes = [
     courses,
+    sync,
 ];
 
 routes.forEach((route) => {

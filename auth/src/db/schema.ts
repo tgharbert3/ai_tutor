@@ -2,6 +2,7 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import z from "zod";
 
+//TODO: update this to Pgtable
 export const users = sqliteTable("users", {
     id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     username: text("username").notNull(),

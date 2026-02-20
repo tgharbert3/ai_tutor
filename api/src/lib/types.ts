@@ -1,6 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { PgliteDatabase } from "drizzle-orm/pglite";
 import type { PinoLogger } from "hono-pino";
+import type { JWTPayload } from "jose";
 
 import * as z from "zod";
 
@@ -12,18 +13,13 @@ export type AppBindings = {
     Variables: {
         logger: PinoLogger;
         services: ServiceContainer;
+        user: JWTData;
     };
 };
 
 export type AppEnv = "development" | "production" | "test";
 
 export type db = PgliteDatabase<typeof schema> | NodePgDatabase<typeof schema>;
-
-export type fetchAssignmentJob = {
-    apiToken: string;
-    canvasBaseUrl: string;
-    courseId: number;
-};
 
 export type CanvasAssignmentType = {
     id: number;
@@ -49,6 +45,39 @@ export type Enrollment = {
     canvasUserId: number;
     canvasCourseId: number;
     enrollmentState: string;
+};
+
+export type PartialCourse = {
+    courseId: number;
+    schoolId: number;
+};
+
+export type PartialUser = {
+    id: string;
+    email: string;
+    schoolId: number;
+};
+
+export type JWTData = {
+    userId: string;
+    email: string;
+    fullurl: string;
+    canvasToken: string;
+} & JWTPayload;
+
+// Bull Jobs
+
+export type fetchAssignmentJob = {
+    apiToken: string;
+    canvasBaseUrl: string;
+    courseId: number;
+};
+
+export type fetchEnrollmentsJob = {
+    apiToken: string;
+    canvasBaseUrl: string;
+    userId: string;
+    schoolId: number;
 };
 
 // zod types

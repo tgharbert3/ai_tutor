@@ -6,7 +6,11 @@ import path from "node:path";
 import * as schema from "@/db/schema.js";
 
 export async function createTestDb() {
-    const db = drizzle(new PGlite(), { schema });
+    const client = new PGlite();
+
+    const db = drizzle(client, { schema, casing: "snake_case" });
+
+    // 2. Run migrations
     await migrate(db, {
         migrationsFolder: path.resolve(__dirname, "../db/migrations/"),
     });

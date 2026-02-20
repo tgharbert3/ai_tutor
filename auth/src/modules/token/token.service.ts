@@ -106,7 +106,7 @@ export class TokenService {
          return new jose.EncryptJWT({
             email,
             canvasToken, 
-            fullUrl,
+            canvasBaseUrl: fullUrl,
          })
             .setSubject(userId)
             .setJti(jti)

@@ -1,5 +1,5 @@
 import type { insertCourseType } from "@/db/schema.js";
-import type { db } from "@/lib/types.js";
+import type { db, PartialCourse } from "@/lib/types.js";
 
 import { courses } from "@/db/schema.js";
 
@@ -14,7 +14,7 @@ export class CourseRepository {
             },
         });
         return inserted;
-    }
+    };
 
     async findAllCourses() {
         const response = await this.db.select({
@@ -23,5 +23,9 @@ export class CourseRepository {
             courseCode: courses.courseCode,
         }).from(courses);
         return response;
+    };
+
+    async upsertNewCourse(data: PartialCourse[]) {
+        return await this.db.insert(courses).values(data).returning().onConflictDoNothing();
     }
-}
+};
