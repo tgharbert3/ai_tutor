@@ -53,7 +53,7 @@ const EnvSchema = z.discriminatedUnion("NODE_ENV", [
     BaseSchema.extend({
         NODE_ENV: z.literal("test"),
         API_TOKEN: z.string().min(1),
-        DATABASE_URL: z.string().min(1),
+        DATABASE_URL: z.string().min(1).optional(),
         JWT_SECRET: z.string().min(1),
     }),
 ]).superRefine((input, ctx) => {

@@ -1,25 +1,76 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { insertSchools } from "@/db/schema.js";
+import type { insertSchools, insertUser } from "@/db/schema.js";
 import type { JWTData } from "@/lib/types.js";
 
 import env from "@/env.js";
 import { createTestDb } from "@/lib/test.utils.js";
 
-import { SchoolRepository } from "../schools/school.repo.js";
-import { SchoolService } from "../schools/school.service.js";
-import { UserRepository } from "../users/user.repo.js";
-import { UserService } from "../users/user.service.js";
+import { ServiceContainer } from "../services.container.js";
 
 describe("user Routes", () => {
-    let userRepo: UserRepository;
-    let schoolRepo: SchoolRepository;
+    let serviceContainer: ServiceContainer;
 
     beforeEach(async () => {
         const db = await createTestDb();
 
-        userRepo = new UserRepository(db);
-        schoolRepo = new SchoolRepository(db);
+        serviceContainer = new ServiceContainer(db, env.API_TOKEN, env.CANVAS_BASE_URL);
+    });
+
+    // Tests the case where there is already a user with school info
+    it("should return user and color", async () => {
+        // Insert the test school
+        const testSchool: insertSchools = {
+            canvasBaseUrl: env.CANVAS_BASE_URL,
+            schoolColor: "TestColor",
+            created_at: new Date(),
+            updated_at: new Date(),
+        };
+        const schoolService = serviceContainer.schoolService;
+        const savedSchools = await schoolService.upsertSchool(testSchool);
+        expect(savedSchools).toBeDefined();
+
+        // Insert the test user
+        const testUser: insertUser = {
+            id: crypto.randomUUID(),
+            email: "test@gmail.com",
+            schoolId: savedSchools[0].id,
+            updated_at: new Date(),
+            created_at: new Date(),
+        };
+        const userService = serviceContainer.userService;
+        const [savedUser] = await userService.insertUser(testUser);
+        expect(savedUser).toBeDefined();
+
+        const data: JWTData = {
+            userId: crypto.randomUUID(),
+            email: "tgh1432@uncw.edu",
+            fullurl: env.CANVAS_BASE_URL,
+            canvasToken: env.API_TOKEN,
+        };
+
+        const response = await userService.syncUserFacade(data);
+        expect(response).toBeDefined();
+        expect(response).toBeInstanceOf(Object);
+        expect(response).toHaveProperty("userId");
+        expect(response).toHaveProperty("schoolColor");
+    });
+
+    // Tests the path where there is no school or user
+    it("should return school color ", async () => {
+        const data: JWTData = {
+            userId: crypto.randomUUID(),
+            email: "tgh1432@uncw.edu",
+            fullurl: env.CANVAS_BASE_URL,
+            canvasToken: env.API_TOKEN,
+        };
+
+        const userInstance = serviceContainer.userService;
+        const response = await userInstance.syncUserFacade(data);
+        expect(response).toBeDefined();
+        expect(response).toBeInstanceOf(Object);
+        expect(response).toHaveProperty("userId");
+        expect(response).toHaveProperty("schoolColor");
     });
 
     // Tests the path where there is not a user but there is a school
@@ -37,14 +88,15 @@ describe("user Routes", () => {
             created_at: new Date(),
             updated_at: new Date(),
         };
-        const savedSchools = await schoolRepo.upsertSchool(testSchool);
-
+        const schoolService = serviceContainer.schoolService;
+        const savedSchools = await schoolService.upsertSchool(testSchool);
         expect(savedSchools).toBeDefined();
-        const schoolService = new SchoolService(schoolRepo, env.API_TOKEN, env.CANVAS_BASE_URL);
 
-        const userInstance = new UserService(userRepo, env.API_TOKEN, env.CANVAS_BASE_URL, schoolService);
+        const userInstance = serviceContainer.userService;
         const response = await userInstance.syncUserFacade(data);
-        console.log(response);
+        expect(response).toBeDefined();
         expect(response).toBeInstanceOf(Object);
+        expect(response).toHaveProperty("userId");
+        expect(response).toHaveProperty("schoolColor");
     });
 });

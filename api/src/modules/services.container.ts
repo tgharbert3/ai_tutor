@@ -1,36 +1,50 @@
-import type { CourseRepository } from "./courses/courses.repo.js";
-import type { UserRepository } from "./users/user.repo.js";
+import type { db } from "@/lib/types.js";
 
-import { AssignmentsService } from "./assignments/assignments.service.js";
+import { CourseRepository } from "./courses/courses.repo.js";
 import { CourseService } from "./courses/courses.service.js";
+import { SchoolRepository } from "./schools/school.repo.js";
+import { SchoolService } from "./schools/school.service.js";
+import { UserRepository } from "./users/user.repo.js";
 import { UserService } from "./users/user.service.js";
 
 export class ServiceContainer {
-    private readonly courses: CourseService;
-    private readonly assignments: AssignmentsService;
-    private readonly users: UserService;
+    // Starts as undefined. When it gets called for then it will be memoized
+    private _courseService: CourseService | undefined;
+    private _userService: UserService | undefined;
+    private _schoolService: SchoolService | undefined;
 
     constructor(
-        apiToken: string,
-        canvasBaseUrl: string,
-        private readonly courseRepo: CourseRepository,
-        private readonly userRepo: UserRepository,
+        private readonly db: db,
+        private readonly apiToken: string,
+        private readonly canvasBaseUrl: string,
+    ) {}
 
-    ) {
-        this.courses = new CourseService(this.courseRepo, apiToken, canvasBaseUrl);
-        this.assignments = new AssignmentsService(apiToken, canvasBaseUrl);
-        this.users = new UserService(this.userRepo, apiToken, canvasBaseUrl);
+    get schoolService(): SchoolService {
+        if (!this._schoolService) {
+            const repo = new SchoolRepository(this.db);
+            this._schoolService = new SchoolService(repo, this.apiToken, this.canvasBaseUrl);
+        }
+        return this._schoolService;
     }
 
-    get courseService() {
-        return this.courses;
-    }
-
-    get assignmentsService() {
-        return this.assignments;
+    get courseService(): CourseService {
+        if (!this._courseService) {
+            const repo = new CourseRepository(this.db);
+            this._courseService = new CourseService(repo, this.apiToken, this.canvasBaseUrl);
+        }
+        return this._courseService;
     }
 
     get userService() {
-        return this.users;
+        if (!this._userService) {
+            const repo = new UserRepository(this.db);
+            this._userService = new UserService(
+                repo,
+                this.apiToken,
+                this.canvasBaseUrl,
+                this.schoolService,
+            );
+        }
+        return this._userService;
     }
 };

@@ -1,3 +1,4 @@
+import type { insertUser } from "@/db/schema.js";
 import type { JWTData, PartialUser } from "@/lib/types.js";
 
 import type { SchoolService } from "../schools/school.service.js";
@@ -17,7 +18,7 @@ export class UserService {
 
     /**
      * Function to upsert user and verify that there is a school fk
-     * @param userId user Id to find: string
+     * @param data JWTData
      */
     async syncUserFacade(data: JWTData) {
         const user = await this.repo.fetchOneUserByIdWithSchoolInfo(data.userId);
@@ -36,5 +37,9 @@ export class UserService {
             schoolColor: schoolInfo.schoolColor,
         };
         return returnInfo;
+    };
+
+    async insertUser(user: insertUser) {
+        return await this.repo.upsertUser(user);
     }
 }
