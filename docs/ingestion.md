@@ -15,7 +15,7 @@
 ### Stratagies
 
 - The jobs will be completed by background workers using the bullMQ library.
-- There will be a shared redis instance the will the source of truth for the jobs.
+- There will be a shared redis instance that will be the source of truth for the jobs.
 - The AI chatbot will be locked on the frontend until full ingestion is completed.
 
 ## Lifecycle of a request

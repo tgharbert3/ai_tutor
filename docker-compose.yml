@@ -1,11 +1,15 @@
 services:
-  api:
-    build: 
-      context: ./auth
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./auth/.env
-      - ./auth/.env.local
-    volumes:
-      - ./auth/dev.db:/usr/src/app/dev.db
+  redis:
+    image: redis:alpine
+    ports: 
+      - "${REDIS_PORT}:6379"
+  
+  postgres: 
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
+    ports: 
+      - "${DB_PORT}:5432"
