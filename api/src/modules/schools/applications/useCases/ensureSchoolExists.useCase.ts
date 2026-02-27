@@ -1,4 +1,4 @@
-import type { EnsureSchoolExistsDeps, PartialSchool } from "../../domain/types.js";
+import type { EnsureSchoolExistsDeps, InsertSchool } from "../../domain/types.js";
 
 export class EnsureSchoolExists {
     constructor(
@@ -12,7 +12,7 @@ export class EnsureSchoolExists {
         };
         const primaryColor: string | undefined = await this.deps.canvasClient.getPrimaryColor();
         // Check to see if the api returned the primary color or use the default
-        const school: PartialSchool = primaryColor
+        const school: InsertSchool = primaryColor
             ? { canvasBaseUrl: this.deps.canvasBaseUrl, schoolColor: primaryColor }
             : { canvasBaseUrl: this.deps.canvasBaseUrl };
 

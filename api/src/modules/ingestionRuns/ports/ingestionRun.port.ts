@@ -1,5 +1,5 @@
-import type { PartialRun, StartIngestionResult } from "../types.js";
+import type { InsertIngestionRunPort, StartIngestionResult } from "../types.js";
 
 export interface IngestionRunPort {
-    create: (newIngestionRun: PartialRun) => Promise<StartIngestionResult>;
+    create: (newIngestionRun: InsertIngestionRunPort) => Promise<StartIngestionResult>;
 }

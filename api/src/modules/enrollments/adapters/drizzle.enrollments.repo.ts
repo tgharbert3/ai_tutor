@@ -5,7 +5,9 @@ import type { db } from "@/lib/types.js";
 
 import { userEnrollments } from "@/infrastructure/db/schema.js";
 
-export class EnrollmentRepository {
+import type { EnrollmentRepoPort } from "../ports/enrollment.port.js";
+
+export class DrizzleEnrollmentRepository implements EnrollmentRepoPort {
     constructor(private db: db) {}
 
     async upsertManyEnrollments(enrollments: insertUserEnrollment[]) {

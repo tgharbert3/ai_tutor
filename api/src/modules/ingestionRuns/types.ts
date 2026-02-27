@@ -1,8 +1,8 @@
-import type { ingestionStatusEnum } from "@/infrastructure/db/schema.js";
+import type { ingestionStatusEnum, insertIngestonRun } from "@/infrastructure/db/schema.js";
 
 export type ingestionStatus = (typeof ingestionStatusEnum.enumValues)[number];
 
-export interface PartialRun {
+export interface InsertIngestionRunPort {
     status: ingestionStatus;
     userId: string;
     schoolId: number;
@@ -14,3 +14,7 @@ export interface StartIngestionResult {
     userId: string;
     schoolId: number;
 }
+
+// drizzle types
+
+export type InsertIngestion = Pick<insertIngestonRun, "status" | "userId" | "schoolId">;

@@ -1,6 +1,6 @@
 import { EnsureSchoolExists } from "@/modules/schools/applications/useCases/ensureSchoolExists.useCase.js";
 
-import type { PartialUser, SyncUserDeps } from "../../types.js";
+import type { InsertUserInput, SyncUserDeps } from "../../types.js";
 
 export class SyncUserUseCase {
     constructor(private deps: SyncUserDeps) {};
@@ -22,7 +22,7 @@ export class SyncUserUseCase {
             canvasBaseUrl: this.deps.canvasBaseUrl,
         });
         const schoolInfo = await ensureSchoolExists.execute();
-        const userToInsert: PartialUser = {
+        const userToInsert: InsertUserInput = {
             id: this.deps.userId,
             email: this.deps.email,
             schoolId: schoolInfo.schoolId,

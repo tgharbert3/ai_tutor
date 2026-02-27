@@ -216,3 +216,6 @@ export type insertAssignment = typeof assignments.$inferInsert;
 
 export type getCourseActivityStream = typeof courseActivityStream.$inferSelect;
 export type insertCourseActivityStream = typeof courseActivityStream.$inferInsert;
+
+export type getIngestionRuns = typeof ingestionRuns.$inferSelect;
+export type insertIngestonRun = typeof ingestionRuns.$inferInsert;

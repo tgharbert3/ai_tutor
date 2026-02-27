@@ -3,7 +3,7 @@ import type { db } from "@/lib/types.js";
 import { users } from "@/infrastructure/db/schema.js";
 
 import type { UserRepositoryPort } from "../ports/user.repo.port.js";
-import type { PartialUser, UserDto } from "../types.js";
+import type { InsertUserInput, UserDto } from "../types.js";
 
 export class DrizzleUserRepository implements UserRepositoryPort {
     constructor(private db: db) {}
@@ -22,7 +22,7 @@ export class DrizzleUserRepository implements UserRepositoryPort {
         return user ?? undefined;
     };
 
-    async upsertUser(user: PartialUser): Promise<UserDto> {
+    async upsertUser(user: InsertUserInput): Promise<UserDto> {
         const [row] = await this.db.insert(users).values(user).onConflictDoUpdate({
             target: users.id,
             set: {

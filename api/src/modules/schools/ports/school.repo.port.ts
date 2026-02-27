@@ -1,6 +1,6 @@
-import type { PartialSchool, SchoolDto } from "../domain/types.js";
+import type { InsertSchool, SchoolDto } from "../domain/types.js";
 
 export interface SchoolRepositoryPort {
-    upsertSchool: (school: PartialSchool) => Promise<SchoolDto>;
+    upsertSchool: (school: InsertSchool) => Promise<SchoolDto>;
     fetchOneSchoolByUrl: (url: string) => Promise<SchoolDto>;
 };

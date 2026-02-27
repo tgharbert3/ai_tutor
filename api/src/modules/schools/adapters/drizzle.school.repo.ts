@@ -4,13 +4,13 @@ import type { db } from "@/lib/types.js";
 
 import { schools } from "@/infrastructure/db/schema.js";
 
-import type { PartialSchool, SchoolDto } from "../domain/types.js";
+import type { SchoolDto, UpsertSchoolInput } from "../domain/types.js";
 import type { SchoolRepositoryPort } from "../ports/school.repo.port.js";
 
 export class DrizzleSchoolRepository implements SchoolRepositoryPort {
     constructor(private db: db) {}
 
-    async upsertSchool(schoolData: PartialSchool): Promise<SchoolDto> {
+    async upsertSchool(schoolData: UpsertSchoolInput): Promise<SchoolDto> {
         const [school] = await this.db.insert(schools).values(schoolData).returning().onConflictDoUpdate({
             target: schools.canvasBaseUrl,
             set: {

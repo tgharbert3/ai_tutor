@@ -1,7 +1,11 @@
+import type { QueueOptions } from "bullmq";
+
 import { CanvasClient } from "@/infrastructure/canvas/canvas-client.js";
 import { SyncUserUseCase } from "@/modules/users/applications/useCases/syncUser.useCase.js";
 
-import type { AppQueues, AppRepos, Context } from "./types.js";
+import type { AppQueues, AppRepos, Context } from "../../app/composition/types.js";
+
+import { startWorkers } from "../background/workers/index.js";
 
 export class IngestionScope {
     public readonly canvas: CanvasClient;
@@ -9,6 +13,7 @@ export class IngestionScope {
         private readonly ctx: Context,
         private readonly repos: AppRepos,
         private readonly queues: AppQueues,
+        private readonly redis: QueueOptions,
     ) {
         this.canvas = new CanvasClient(this.ctx.apiToken, this.ctx.canvasBaseUrl);
     };
@@ -32,5 +37,9 @@ export class IngestionScope {
         });
 
         return { ingestionId: handoff.ingestionId, status: handoff.status };
+    }
+
+    startWorkers() {
+        const workers = startWorkers(this.redis);
     }
 }

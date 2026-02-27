@@ -1,3 +1,5 @@
+import type { CanvasEnrollment } from "./types.js";
+
 import { CanvasHttpError } from "./errors.js";
 
 export class CanvasClient {
@@ -16,7 +18,16 @@ export class CanvasClient {
         const color = (response as any)["ic-brand-primary"];
         // Make sure it is a string
         return typeof color === "string" ? color : undefined;
-    }
+    };
+
+    async getCanvasEnrollments(): Promise<CanvasEnrollment[] | undefined> {
+        const response = await this.get<unknown>("users/self/enrollments");
+
+        if (!this.isCanvasEnrollmentArray(response)) {
+            return undefined;
+        }
+        return response;
+    };
 
     build(path: string): string {
         return new URL(`/api/v1/${path}`, this.canvasBaseUrl).toString();
@@ -38,5 +49,22 @@ export class CanvasClient {
             console.error("CanvasSession GET error:", error);
             throw new Error(`Canvas GET failed for path: ${path}`);
         }
+    }
+
+    isCanvasEnrollment(obj: any): obj is CanvasEnrollment {
+        return (
+            typeof obj === "object"
+            && obj !== null
+            && obj.id === "number"
+            && obj.courseId === "number"
+            && obj.enrollmentState === "string"
+        );
+    };
+
+    isCanvasEnrollmentArray(data: unknown): data is CanvasEnrollment[] {
+        return (
+            Array.isArray(data)
+            && data.every(this.isCanvasEnrollment)
+        );
     }
 }

@@ -1,4 +1,5 @@
 import type { CanvasClient } from "@/infrastructure/canvas/canvas-client.js";
+import type { insertUser } from "@/infrastructure/db/schema.js";
 
 import type { IngestionRunPort } from "../ingestionRuns/ports/ingestionRun.port.js";
 import type { SchoolRepositoryPort } from "../schools/ports/school.repo.port.js";
@@ -20,12 +21,6 @@ export interface UserDto {
     schoolId: number;
 }
 
-export interface PartialUser {
-    id: string;
-    email: string;
-    schoolId: number;
-}
-
 export interface SyncUserDeps {
     userRepo: UserRepositoryPort;
     userId: string;
@@ -35,3 +30,7 @@ export interface SyncUserDeps {
     canvasBaseUrl: string;
     ingestionRunRepo: IngestionRunPort;
 }
+
+// Drizzle types
+
+export type InsertUserInput = Omit<insertUser, "created_at" | "updated_at">;
