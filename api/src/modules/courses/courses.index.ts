@@ -1,5 +1,5 @@
+import { ServiceContainerMiddleware } from "@/app/http/middlewares/services.js";
 import { CreateRouter } from "@/lib/create-app.js";
-import { ServiceContainerMiddleware } from "@/middlewares/services.js";
 
 import * as handlers from "./courses.controller.js";
 

@@ -1,15 +1,14 @@
-import { fetchAssignmentsFromCanvas } from "./assignments.client.js";
+import type { AssignmentRepository } from "./assignment.repo.js";
 
-export class AssignmentsService {
-    private apiToken: string;
-    private canvasBaseUrl: string;
-
-    constructor(apiToken: string, canvasBaseUrl: string) {
-        this.apiToken = apiToken;
-        this.canvasBaseUrl = canvasBaseUrl;
+export class AssignmentService {
+    constructor(
+        private readonly repo: AssignmentRepository,
+        private apiToken: string,
+        private canvasBaseUrl: string,
+    ) {
     }
 
-    async fetchAssignments(courseId: number) {
-        const response = await fetchAssignmentsFromCanvas(this.apiToken, this.canvasBaseUrl, courseId);
-    }
+    // async fetchAssignments(courseId: number) {
+    //     const response = await this.repo.fetchAssignmentsFromCanvas(this.apiToken, this.canvasBaseUrl, courseId);
+    // }
 }

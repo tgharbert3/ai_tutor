@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { insertSchools, insertUser } from "@/db/schema.js";
+import type { insertSchools, insertUser } from "@/infrastructure/db/schema.js";
 import type { JWTData } from "@/lib/types.js";
 
+import { getRedisConfig } from "@/infrastructure/config/redis.js";
 import env from "@/env.js";
 import { createTestDb } from "@/lib/test.utils.js";
 
@@ -13,8 +14,9 @@ describe("user Routes", () => {
 
     beforeEach(async () => {
         const db = await createTestDb();
+        const redisConfig = await getRedisConfig();
 
-        serviceContainer = new ServiceContainer(db, env.API_TOKEN, env.CANVAS_BASE_URL);
+        serviceContainer = new ServiceContainer(db, redisConfig, env.API_TOKEN, env.CANVAS_BASE_URL);
     });
 
     // Tests the case where there is already a user with school info

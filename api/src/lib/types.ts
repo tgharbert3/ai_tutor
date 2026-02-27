@@ -5,23 +5,25 @@ import type { JWTPayload } from "jose";
 
 import * as z from "zod";
 
+import type { AppContainer } from "@/app/composition/app.composititon.js";
 import type { ServiceContainer } from "@/modules/services.container.js";
 
-import type * as schema from "../db/schema.js";
+import type * as schema from "../infrastructure/db/schema.js";
 
-export type AppBindings = {
+export interface AppBindings {
     Variables: {
         logger: PinoLogger;
+        appContainer: AppContainer;
         services: ServiceContainer;
         user: JWTData;
     };
-};
+}
 
 export type AppEnv = "development" | "production" | "test";
 
 export type db = PgliteDatabase<typeof schema> | NodePgDatabase<typeof schema>;
 
-export type CanvasAssignmentType = {
+export interface CanvasAssignmentType {
     id: number;
     description: string | null;
     points_possible: number;
@@ -29,9 +31,9 @@ export type CanvasAssignmentType = {
     course_id: number;
     name: string;
     html_url: string;
-};
+}
 
-export type AssignmentType = {
+export interface AssignmentType {
     assignmentId: number;
     assignmentName: string;
     description: string;
@@ -39,46 +41,19 @@ export type AssignmentType = {
     courseId: number;
     pointsPossible: number;
     url: string;
-};
+}
 
-export type Enrollment = {
-    canvasUserId: number;
-    canvasCourseId: number;
-    enrollmentState: string;
-};
-
-export type PartialCourse = {
+export interface PartialCourse {
     courseId: number;
     schoolId: number;
-};
-
-export type PartialUser = {
-    id: string;
-    email: string;
-    schoolId: number;
-};
+}
 
 export type JWTData = {
     userId: string;
     email: string;
-    fullurl: string;
-    canvasToken: string;
+    canvasBaseUrl: string;
+    apiToken: string;
 } & JWTPayload;
-
-// Bull Jobs
-
-export type fetchAssignmentJob = {
-    apiToken: string;
-    canvasBaseUrl: string;
-    courseId: number;
-};
-
-export type fetchEnrollmentsJob = {
-    apiToken: string;
-    canvasBaseUrl: string;
-    userId: string;
-    schoolId: number;
-};
 
 // zod types
 

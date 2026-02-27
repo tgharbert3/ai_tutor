@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import path from "node:path";
 
-import * as schema from "@/db/schema.js";
+import * as schema from "@/infrastructure/db/schema.js";
 
 export async function createTestDb() {
     const client = new PGlite();

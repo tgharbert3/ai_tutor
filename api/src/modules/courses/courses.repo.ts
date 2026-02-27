@@ -1,7 +1,7 @@
-import type { insertCourseType } from "@/db/schema.js";
+import type { insertCourseType } from "@/infrastructure/db/schema.js";
 import type { db, PartialCourse } from "@/lib/types.js";
 
-import { courses } from "@/db/schema.js";
+import { courses } from "@/infrastructure/db/schema.js";
 
 export class CourseRepository {
     constructor(private db: db) {}

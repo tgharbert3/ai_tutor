@@ -1,0 +1,1 @@
+export type BrnadVariables = Record<string, string>;

@@ -1,8 +1,8 @@
-import type { insertUser } from "@/db/schema.js";
+import type { insertUser } from "@/infrastructure/db/schema.js";
 import type { JWTData, PartialUser } from "@/lib/types.js";
 
 import type { SchoolService } from "../schools/school.service.js";
-import type { UserRepository } from "./user.repo.js";
+import type { UserRepository } from "./adapters/drizzle.user.repo.js";
 
 export class UserService {
     constructor(
@@ -11,10 +11,6 @@ export class UserService {
         private readonly canvasBaseUrl: string,
         private readonly schoolService: SchoolService,
     ) {}
-
-    // async fetchUserById(userId: string) {
-    //     return await this.repo.fetchOneUserById(userId);
-    // }
 
     /**
      * Function to upsert user and verify that there is a school fk
@@ -31,12 +27,9 @@ export class UserService {
             email: data.email!,
             schoolId: schoolInfo.id,
         };
-        const [newUser] = await this.repo.upsertUser(userData);
-        const returnInfo = {
-            userId: newUser.id,
-            schoolColor: schoolInfo.schoolColor,
-        };
-        return returnInfo;
+        const upsertedUser = await this.repo.upsertUser(userData);
+        const newUser = await this.repo.fetchOneUserByIdWithSchoolInfo(upsertedUser.userId);
+        return newUser;
     };
 
     async insertUser(user: insertUser) {

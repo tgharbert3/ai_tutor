@@ -1,7 +1,5 @@
-import type { insertCourseType } from "@/db/schema.js";
+import type { insertCourseType } from "@/infrastructure/db/schema.js";
 import type { PartialCourse } from "@/lib/types.js";
-
-import { addSyncCouresJob } from "@/background/courses/sync.courses.queue.js";
 
 import type { CourseRepository } from "./courses.repo.js";
 
@@ -15,9 +13,9 @@ export class CourseService {
         private readonly canvasBaseUrl: string,
     ) {}
 
-    async triggerSyncCourses() {
-        return await addSyncCouresJob(this.apiToken, this.canvasBaseUrl);
-    }
+    // async triggerSyncCourses() {
+    //     return await addSyncCouresJob(this.apiToken, this.canvasBaseUrl);
+    // }
 
     async syncCourses(): Promise<insertCourseType[]> {
         const rawCourses = await CanvasClient.fetchCoursesFromCanvas(this.apiToken, this.canvasBaseUrl);
