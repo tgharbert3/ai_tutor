@@ -56,4 +56,8 @@ export class DrizzleEnrollmentRepository implements EnrollmentRepoPort {
             )
             .returning();
     }
+
+    async fetchEnrollments() {
+
+    }
 }

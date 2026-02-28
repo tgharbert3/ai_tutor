@@ -40,3 +40,13 @@ export async function findOneUserById(userIdToFind: string): Promise<safeUserTyp
 export async function findOneUserByEmail(email: string): Promise<getOneUserType | undefined> {
     return await db.query.users.findFirst({ where: eq(users.email, email) });
 }
+
+export async function getCanvasTokenByUserId(userId: string)  {
+    const [token] = await db.select({
+        canvasToken: users.canvasToken
+    })
+    .from(users)
+    .where(eq(users.id, userId));
+
+    return token
+}

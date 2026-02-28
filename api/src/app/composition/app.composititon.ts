@@ -12,7 +12,6 @@ import type { UserRepositoryPort } from "@/modules/users/ports/user.repo.port.js
 
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { BullMQEnrollmentQueue } from "@/modules/background/enrollments/enrollment.queue.js";
-import { startWorkers } from "@/modules/background/workers/index.js";
 import { DrizzleEnrollmentRepository } from "@/modules/enrollments/adapters/drizzle.enrollments.repo.js";
 import { DrizzleIngestionRunRepository } from "@/modules/ingestionRuns/adapters/drizzle.IR.repo.js";
 import { DrizzleSchoolRepository } from "@/modules/schools/adapters/drizzle.school.repo.js";
@@ -25,7 +24,7 @@ export class AppContainer {
     public readonly repos: {
         users: UserRepositoryPort;
         schools: SchoolRepositoryPort;
-        ingestionRun: IngestionRunPort;
+        ingestionRuns: IngestionRunPort;
         enrollments: EnrollmentRepoPort;
     };
 
@@ -57,7 +56,7 @@ export class AppContainer {
         return new IngestionScope(ctx, this.repos, this.queues, this.redis, this.canvasFactory);
     }
 
-    startWorkers() {
-        const workers = startWorkers(this.redis);
-    }
+    // startWorkers() {
+    //     const workers = startWorkers(this.redis);
+    // }
 };

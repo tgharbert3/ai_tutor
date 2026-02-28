@@ -32,6 +32,7 @@ const BaseSchema = z.object({
     CANVAS_BASE_URL: z.string().min(1),
     REDIS_PORT: z.coerce.number(),
     REDIS_HOST: z.string().min(1),
+    INTERNAL_AUTH: z.string().min(1),
 });
 
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [

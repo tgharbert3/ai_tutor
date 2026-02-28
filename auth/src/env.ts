@@ -32,6 +32,7 @@ const BaseSchema = z.object({
     TOKEN_ENC: z.string(),
     TOKEN_ALG: z.string(),
     ACCESS_EXPIRATION: z.coerce.number(),
+    INTERNAL_AUTH: z.string(),
 });
 
 const EnvSchema = z.discriminatedUnion("NODE_ENV", [

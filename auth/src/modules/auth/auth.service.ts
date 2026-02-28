@@ -100,4 +100,9 @@ export class AuthService {
         }
         return false
     }
+
+    async getCanvasToken(userId: string) {
+        console.log(userId)
+        return await UserRepo.getCanvasTokenByUserId(userId);
+    }
 }

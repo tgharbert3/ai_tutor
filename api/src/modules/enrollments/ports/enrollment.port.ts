@@ -1,5 +1,3 @@
-import type { Enrollment } from "../domain/types.js";
-
 export interface EnrollmentRepoPort {
-    fetchEnrollments: (userId: string) => Promise<Enrollment>[];
+    fetchEnrollments: (userId: string) => Promise<void>;
 }

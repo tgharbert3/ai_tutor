@@ -3,8 +3,5 @@ export interface ClientApiPort {
 }
 
 export interface ClientApiPortFactory {
-    create: (deps: {
-        apiToken: string;
-        canvasBaseUrl: string;
-    }) => ClientApiPort;
+    create: (userId: string) => ClientApiPort;
 }
