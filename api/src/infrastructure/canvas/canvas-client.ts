@@ -1,10 +1,11 @@
+import type { CanvasApiPort, CanvasApiPortFactory } from "./ports/cavans.api.port.js";
 import type { CanvasEnrollment } from "./types.js";
 
 import { CanvasHttpError } from "./errors.js";
 
-export class CanvasClient {
+export class CanvasClient implements CanvasApiPort {
     constructor(
-        private readonly apiToken: string,
+        private readonly canvasToken: string,
         private readonly canvasBaseUrl: string,
     ) {};
 
@@ -29,15 +30,15 @@ export class CanvasClient {
         return response;
     };
 
-    build(path: string): string {
+    private build(path: string): string {
         return new URL(`/api/v1/${path}`, this.canvasBaseUrl).toString();
     };
 
-    async get<T>(path: string): Promise<T> {
+    private async get<T>(path: string): Promise<T> {
         const builtUrl = this.build(path);
         try {
             const response = await fetch(builtUrl, {
-                headers: { Authorization: `Bearer ${this.apiToken}` },
+                headers: { Authorization: `Bearer ${this.canvasToken}` },
             });
 
             if (!response.ok) {
@@ -51,7 +52,7 @@ export class CanvasClient {
         }
     }
 
-    isCanvasEnrollment(obj: any): obj is CanvasEnrollment {
+    private isCanvasEnrollment(obj: any): obj is CanvasEnrollment {
         return (
             typeof obj === "object"
             && obj !== null
@@ -61,10 +62,16 @@ export class CanvasClient {
         );
     };
 
-    isCanvasEnrollmentArray(data: unknown): data is CanvasEnrollment[] {
+    private isCanvasEnrollmentArray(data: unknown): data is CanvasEnrollment[] {
         return (
             Array.isArray(data)
             && data.every(this.isCanvasEnrollment)
         );
     }
+}
+
+export class CanvasClientFactory implements CanvasApiPortFactory {
+    create(deps: { apiToken: string; canvasBaseUrl: string }): CanvasApiPort {
+        return new CanvasClient(deps.apiToken, deps.canvasBaseUrl);
+    };
 }

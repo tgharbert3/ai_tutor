@@ -7,6 +7,7 @@ export class EnsureSchoolExists {
 
     async execute() {
         const schoolInfo = await this.deps.schoolRepo.fetchOneSchoolByUrl(this.deps.canvasBaseUrl);
+
         if (schoolInfo) {
             return schoolInfo;
         };
@@ -15,7 +16,6 @@ export class EnsureSchoolExists {
         const school: InsertSchool = primaryColor
             ? { canvasBaseUrl: this.deps.canvasBaseUrl, schoolColor: primaryColor }
             : { canvasBaseUrl: this.deps.canvasBaseUrl };
-
         return await this.deps.schoolRepo.upsertSchool(school);
     }
 }

@@ -3,6 +3,8 @@ import type { Context } from "hono";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 
+import type { JWTData } from "@/lib/types.js";
+
 import { tokenService } from "@/modules/auth/token.service.js";
 
 const ACCESS_TOKEN_NAME = "__Host-at";
@@ -10,7 +12,7 @@ const ACCESS_TOKEN_NAME = "__Host-at";
 export function getAccessCookie(c: Context) {
     return getCookie(c, ACCESS_TOKEN_NAME);
 }
-
+// need try catch to handle a bad token
 export const AuthMiddleware = createMiddleware(async (c, next) => {
     const at = getAccessCookie(c);
     if (!at) {
@@ -20,6 +22,12 @@ export const AuthMiddleware = createMiddleware(async (c, next) => {
         );
     }
     const tokenData = await tokenService.decryptAcesssToken(at);
-    c.set("user", tokenData);
+    const data = {
+        userId: tokenData.sub!,
+        canvasBaseUrl: tokenData.canvasBaseUrl,
+        email: tokenData.email,
+        canvasToken: tokenData.canvasToken,
+    } satisfies JWTData;
+    c.set("user", data);
     await next();
 });

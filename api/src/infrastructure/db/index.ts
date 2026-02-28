@@ -3,6 +3,8 @@ import pg from "pg";
 
 import env from "@/env.js";
 
+import * as schema from "./schema.js";
+
 let _db: any;
 
 export function getDb() {
@@ -11,7 +13,7 @@ export function getDb() {
     }
     if (!_db) {
         const pool = new pg.Pool({ connectionString: env.DATABASE_URL });
-        _db = drizzle(pool);
+        _db = drizzle(pool, { schema });
     }
     return _db;
 }

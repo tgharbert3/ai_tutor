@@ -1,6 +1,6 @@
 {
-  "id": "8d8ccd7d-4fdc-45c8-afda-6af7506ef3dc",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "cb43d957-d4d7-4559-842f-33fa5b29097b",
+  "prevId": "8d8ccd7d-4fdc-45c8-afda-6af7506ef3dc",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -144,8 +144,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "full_url": {
-          "name": "full_url",
+        "canvas_base_url": {
+          "name": "canvas_base_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true

@@ -27,10 +27,11 @@ export const registerHandlers = factory.createHandlers(
     zValidator("json", registerDTO, (result, c) => handleZodValidationRegisterError(result, c, HttpStatusCodes.BAD_REQUEST)),
     ServiceContainerMiddleware,
     async (c) => {
+        
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.registerUser(data);
-        const validUrl = await services.urlCheck(data.canvasToken, data.fullUrl);
+        const validUrl = await services.urlCheck(data.canvasToken, data.canvasBaseUrl);
         if (validUrl) {
             setAuthCookies(c, response.accessToken, response.refreshToken);
             return c.json({message: "Successfully registered"}, HttpStatusCodes.CREATED);

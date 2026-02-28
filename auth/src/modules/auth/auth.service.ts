@@ -15,7 +15,7 @@ export class AuthService {
     async loginUser(data: loginDtoType): Promise<TokenResponse> {
         const user = await this.verifyUser(data);
 
-        const accessToken = await tokenService.generateAccessTokenFacade(user.email, String(user.id), user.canvasToken, user.fullUrl);
+        const accessToken = await tokenService.generateAccessTokenFacade(user.email, String(user.id), user.canvasToken, user.canvasBaseUrl);
         const refreshToken = await tokenService.generateRefreshTokenFacade(String(user.id), null, null);
 
         return {accessToken, refreshToken};
@@ -28,14 +28,15 @@ export class AuthService {
             passwordHash: hasedPassword,
             username: data.username,
             canvasToken: data.canvasToken,
-            fullUrl: data.fullUrl,
+            canvasBaseUrl: data.canvasBaseUrl,
         };
+    
         const insertedUser = await UserRepo.insertOneUser(userToInsert);
         if (!insertedUser) {
             throw new HTTPException(HttpStatusCodes.INTERNAL_SERVER_ERROR, { message: "Failed to create user" });
         }
         
-        const accessToken = await tokenService.generateAccessTokenFacade(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken, insertedUser.fullUrl);
+        const accessToken = await tokenService.generateAccessTokenFacade(insertedUser.email, String(insertedUser.id), insertedUser.canvasToken, insertedUser.canvasBaseUrl);
         const refreshToken = await tokenService.generateRefreshTokenFacade(String(insertedUser.id), null, null);
 
 
@@ -64,7 +65,7 @@ export class AuthService {
             jti: string,
         };
         
-        const user = await UserRepo.findOneUserById(Number(userId));
+        const user = await UserRepo.findOneUserById(userId);
         if (!user) throw new UserNotFoundError("cant find user");
 
         const rt = await tokenService.generateRefreshTokenFacade(
@@ -77,7 +78,7 @@ export class AuthService {
             user.email,
             String(user.id),
             user.canvasToken,
-            user.fullUrl
+            user.canvasBaseUrl
         );
 
         return { at, rt };

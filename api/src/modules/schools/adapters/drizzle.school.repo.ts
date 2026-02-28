@@ -32,9 +32,7 @@ export class DrizzleSchoolRepository implements SchoolRepositoryPort {
             schoolColor: schools.schoolColor,
         })
             .from(schools)
-            .where(eq(schools.canvasBaseUrl, url))
-            .limit(1);
-
+            .where(eq(schools.canvasBaseUrl, url));
         return school;
     }
 }

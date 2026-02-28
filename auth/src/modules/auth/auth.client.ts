@@ -1,6 +1,6 @@
 export async function urlHealthCheck (API_TOKEN: string, url: string) {
     try {
-        const courses = await fetch(`${url}/courses`, {
+        const courses = await fetch(`${url}api/v1/courses`, {
             method: "GET",
             headers: { Authorization: `Bearer ${API_TOKEN}` },
         });

@@ -1,0 +1,1 @@
+ALTER TABLE "auth"."users" RENAME COLUMN "full_url" TO "canvas_base_url";

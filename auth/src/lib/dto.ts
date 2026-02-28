@@ -10,7 +10,7 @@ export const registerDTO = z.object({
     password: z.string().min(8, "Password must be 8 charcters long").max(100),
     username: z.string().min(3),
     canvasToken: z.string().min(1, "Canvas Token is required").trim(),
-    fullUrl: z.string().min(1, "School Url is requried").trim(),
+    canvasBaseUrl: z.string().min(1, "School Url is requried").trim(),
 });
 
 export type loginDtoType = z.infer<typeof loginDTO>;

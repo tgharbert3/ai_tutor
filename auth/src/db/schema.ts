@@ -1,15 +1,18 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { pgSchema, text, timestamp } from "drizzle-orm/pg-core";
+import { uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import z from "zod";
 
+const authSchema = pgSchema("auth");
+
 //TODO: update this to Pgtable
-export const users = sqliteTable("users", {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+export const users = authSchema.table("users", {
+    id: uuid("id").primaryKey().defaultRandom(),
     username: text("username").notNull(),
     email: text("email").notNull().unique(),
     passwordHash: text("password").notNull(),
     canvasToken: text("canvas_token").notNull(),
-    fullUrl: text("full_url").notNull(),
+    canvasBaseUrl: text("canvas_base_url").notNull(),
 });
 
 export const selectUserSchema = createSelectSchema(users);
@@ -23,28 +26,28 @@ export const insertUserSchema = createInsertSchema(
         passwordHash: schema => schema.min(8),
         email: schema => schema.email(),
         canvasToken: schema => schema.min(1),
-        fullUrl: schema => schema.url(),
+        canvasBaseUrl: schema => schema.url(),
     },
 )
     .omit({
         id: true,
     });
 
-export type getOneUserType = typeof users.$inferSelect;
-export type insertUserType = typeof users.$inferInsert;
-export type safeUserType = z.infer<typeof safeSelectUserSchema>;
-
-export const refresh_tokens = sqliteTable("refresh_tokens", {
-    id: integer("id", { mode: "number" }).primaryKey(),
-    userId: integer("user_id", {mode: "number"}).references(() => users.id).notNull(),
+export const refresh_tokens = authSchema.table("refresh_tokens", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
     token: text("token").notNull().unique(),
     familyJti: text("family_jti").notNull(),
     jti: text("jti").notNull().unique(),
     parentJti: text("parent_jti").unique(),
-    isRevoked: integer("is_revoked", {mode: "timestamp"}),
-    expiredAt: integer("expired_at", {mode: "timestamp"}).notNull(),
-    createdAt: integer("created_at", {mode: "timestamp"}).notNull(),
+    isRevoked: timestamp("is_revoked"),
+    expiredAt: timestamp("expired_at").notNull(),
+    createdAt: timestamp("created_at").notNull(),
 });
+
+export type getOneUserType = typeof users.$inferSelect;
+export type insertUserType = typeof users.$inferInsert;
+export type safeUserType = z.infer<typeof safeSelectUserSchema>;
 
 export const insertRefreshSchema = createInsertSchema(refresh_tokens);
 export const selectRefreshSchema = createSelectSchema(refresh_tokens);

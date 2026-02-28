@@ -1,4 +1,4 @@
-import type { CanvasClient } from "@/infrastructure/canvas/canvas-client.js";
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
 import type { insertSchools } from "@/infrastructure/db/schema.js";
 
 import type { SchoolRepositoryPort } from "../ports/school.repo.port.js";
@@ -16,7 +16,7 @@ export interface SchoolDto {
 
 export interface EnsureSchoolExistsDeps {
     schoolRepo: SchoolRepositoryPort;
-    canvasClient: CanvasClient;
+    canvasClient: CanvasApiPort;
     canvasBaseUrl: string;
 }
 

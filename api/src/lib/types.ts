@@ -52,7 +52,7 @@ export type JWTData = {
     userId: string;
     email: string;
     canvasBaseUrl: string;
-    apiToken: string;
+    canvasToken: string;
 } & JWTPayload;
 
 // zod types

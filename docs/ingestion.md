@@ -2,15 +2,15 @@
 
 ## Services:
 
-### API Service:
+### API :
 
-- The scope of this service is to handle the fetching, extracting, and loading data from the canvas api to my local db.
+- The scope of this is to handle the fetching, extracting, and loading data from the canvas api to my local db.
 - It is also responsible for all the logic handling stale data.
 - Handling the websocket connection with the front end.
 
-### AI Service:
+### AI:
 
-- The scope of this service is to complete the vectorization of the data and insert it into the vector db.
+- The scope of this is to complete the vectorization of the data and insert it into the vector db.
 
 ### Stratagies
 
@@ -20,25 +20,43 @@
 
 ## Lifecycle of a request
 
+### Phase one:
+
 1. Fetch the user enrollments from the canvas api
-2. Fetch the user enrollments from the local db
-3. Upsert any courses that do not exist yet with their id and null to prevent any FK constraint errors.
-4. Compare the enrollments and update the user enrollments table as needed.
-5. Enrollment fork: See cases (1-3).
-6. Fetch the users activity stream from canvas
-7. Compare the latest stream id from local db to the canvas.
-8. If nothing has changed, return.
-9. If new items, pull the full stream, and start the logic for checking the stale data.
-10. Parse each stream item and enqueue an job to fetch, extract, load, and vectorize until the streamid equals the one in the db (see cases 4-5).
+2. Fetch the user enrollments from the local db 
+3. Compare the enrollments for added/existing courses see Phase 2
+4. For dropped courses mark the course in the user_enrollments table as false
 
-### Cases:
+### Phase 2:
 
-- Case 1: User has no enrollments, mark all coureses as inactive in the user enrollments table
-- Case 2: User has enrollments from canvas but none in db, this means new user to the app, update user enrollments.
-- Case 3: Existing user with new enrollments, add new enrollments to user enrollments and then proceed.
-- Case 4: The api service will handle the etl from canvas and the ai servive will handle the vectorizing.
-- Case 5: Each stream activity will be parsed by the url to identify what needs to be updated
+5. Perform a global check against the courses table from the added user enrollments
+   - Conditon 1: If the course is missing from the courses table
+   - Action: Run a heavy ingestion flow of all course materials and mark the user as active in the user_enrollments table
+
+   - Conditon 2: The course exists
+   - Action: fetch the course activity stream and compare it to the local activity stream.
+     - If not up to date, enqueue a lightweight job to ingest the new data
+     - If up to date, mark the job as done.
+
+6. Ingestion is complete when all of the courses are updated and the new vectors have been added in the vector db.
+   - This means that every delta for every course has been checked for that user.
+
+### BullMQ view
+
+- Request is received
+- Job is added to enrollment queue
+- Enrollment worker picks up the job and fetchs both the canvas and local db enrollments
+- Enrollment worker compares the two, it addeds the new/existing courses to one array and dropped courses to a new array
+- It then iterates over the added/existing array and added each course to a course queue
+- The course worker than grabs a course from the queue, pulls the activity stream form the local db and canvas
+- It compares the two. If up to date, then completes the job, if new item, then will start a flow producer for that specific
+  new item (assignment, announcment, etc)
+- The flow producer will then etl for their specific domain.
+
+- The enrollment queue is itself a flow producer to keep track of all the jobs that need to completed.
 
 ### Notes:
 
+- The api service will handle the etl from canvas and the ai servive will handle the vectorizing.
+- Each stream activity will be parsed by the url to identify what needs to be updated
 - Add way to clear old vectors out of the vector db.

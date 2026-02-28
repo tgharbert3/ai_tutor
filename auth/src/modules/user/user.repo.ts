@@ -22,18 +22,18 @@ export async function insertOneUser(userToInsert: insertUserType): Promise<safeU
         if (isUniqueConstraintError(error)) {
             throw new HTTPException(HttpStatusCodes.CONFLICT, { message: "Email already exists" });
         }
-        throw Error;
+        throw new Error(`inserted user failed ${error}`, {cause: error as any});
     }
 }
 
-export async function findOneUserById(userIdToFind: number): Promise<safeUserType | undefined> {
+export async function findOneUserById(userIdToFind: string): Promise<safeUserType | undefined> {
     return await db.query.users.findFirst({ where: eq(users.id, userIdToFind), columns: {
         id: true,
         username: true,
         email: true,
         canvasToken: true,
         passwordHash: false,
-        fullUrl: true,
+        canvasBaseUrl: true,
     } });
 };
 

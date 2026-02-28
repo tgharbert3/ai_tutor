@@ -46,7 +46,7 @@ export class TokenService {
         const tokenHash = this.#hashToken(token)
 
         const data: insertTokenType = {
-            userId: Number(id),
+            userId: id,
             createdAt: new Date(),
             expiredAt: refreshExpiration,
             jti: refreshJti,
@@ -145,7 +145,7 @@ export class TokenService {
         const tokenHash = this.#hashToken(newToken);
 
         const data: insertTokenType = {
-            userId: Number(id),
+            userId: id,
             createdAt: new Date(),
             expiredAt: refreshExpiration,
             jti: refreshJti,

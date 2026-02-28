@@ -1,3 +1,4 @@
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
 import type { EnrollmentQueuePort } from "@/modules/background/enrollments/ports/enrollment.queue.port.js";
 import type { IngestionRunPort } from "@/modules/ingestionRuns/ports/ingestionRun.port.js";
 import type { SchoolRepositoryPort } from "@/modules/schools/ports/school.repo.port.js";
@@ -13,9 +14,13 @@ export type Context = Readonly<{
 export type AppRepos = Readonly<{
     users: UserRepositoryPort;
     schools: SchoolRepositoryPort;
-    ingestionRun: IngestionRunPort;
+    ingestionRuns: IngestionRunPort;
 }>;
 
 export type AppQueues = Readonly<{
     enrollmentQueue: EnrollmentQueuePort;
+}>;
+
+export type AppClients = Readonly<{
+    canvasClient: CanvasApiPort;
 }>;

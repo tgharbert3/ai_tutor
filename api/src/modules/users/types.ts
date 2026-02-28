@@ -1,4 +1,4 @@
-import type { CanvasClient } from "@/infrastructure/canvas/canvas-client.js";
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
 import type { insertUser } from "@/infrastructure/db/schema.js";
 
 import type { IngestionRunPort } from "../ingestionRuns/ports/ingestionRun.port.js";
@@ -26,7 +26,7 @@ export interface SyncUserDeps {
     userId: string;
     email: string;
     schoolRepo: SchoolRepositoryPort;
-    canvasClient: CanvasClient;
+    canvasClient: CanvasApiPort;
     canvasBaseUrl: string;
     ingestionRunRepo: IngestionRunPort;
 }

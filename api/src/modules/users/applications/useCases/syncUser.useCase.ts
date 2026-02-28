@@ -15,7 +15,6 @@ export class SyncUserUseCase {
                 schoolId: existingUser.schoolId,
             });
         }
-
         const ensureSchoolExists = new EnsureSchoolExists({
             schoolRepo: this.deps.schoolRepo,
             canvasClient: this.deps.canvasClient,

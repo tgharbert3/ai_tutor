@@ -2,7 +2,7 @@ import { relations } from "drizzle-orm";
 import { bigint, boolean, pgEnum, pgSchema, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-export const ingestionStatusEnum = pgEnum("status", ["queued", "running", "noop", "complete", "failed"]);
+export const ingestionStatusEnum = pgEnum("ingestion_status", ["queued", "running", "noop", "complete", "failed"]);
 
 export const apiSchema = pgSchema("ai");
 
@@ -14,7 +14,7 @@ const timestamps = {
 export const schools = apiSchema.table("schools", {
     id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
     canvasBaseUrl: text("canvas_base_url").notNull().unique(),
-    schoolColor: text().default("#6B7280").notNull(),
+    schoolColor: text("school_color").default("#6B7280").notNull(),
     ...timestamps,
 });
 // TODO: add canvasUserId
@@ -87,13 +87,13 @@ export const courseActivityStream = apiSchema.table("course_activity_stream", {
 export const ingestionRuns = apiSchema.table("ingestion_runs", {
     id: uuid("id").primaryKey().defaultRandom(),
     status: ingestionStatusEnum().notNull(),
-    startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-    finishedAt: timestamp(),
-    checkpointStart: bigint({ mode: "number" }),
-    checkpointEnd: bigint ({ mode: "number" }),
-    error: text(),
-    userId: uuid().references(() => users.id).notNull(),
-    schoolId: bigint({ mode: "number" }).references(() => schools.id).notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    finishedAt: timestamp("finished_at"),
+    checkpointStart: bigint("checkpoint_start", { mode: "number" }),
+    checkpointEnd: bigint ("checkpoint_end", { mode: "number" }),
+    error: text("error"),
+    userId: uuid("user_id").references(() => users.id).notNull(),
+    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
 });
 
 // Relations:
