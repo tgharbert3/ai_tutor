@@ -20,67 +20,67 @@ export const schools = apiSchema.table("schools", {
 // TODO: add canvasUserId
 export const users = apiSchema.table("users", {
     id: uuid("id").primaryKey(),
-    email: text().notNull(),
+    email: text("email").notNull(),
     schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
     ...timestamps,
 });
 
 export const courses = apiSchema.table("courses", {
-    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-    courseId: bigint({ mode: "number" }).unique(),
-    courseCode: text(),
-    courseName: text(),
+    id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    courseId: bigint("course_id", { mode: "number" }).unique(),
+    courseCode: text("course_code"),
+    courseName: text("course_name"),
     // TODO: make this an enum
-    workflowState: text(),
-    canvasUpdatedAt: timestamp(),
-    lastSyncedAt: timestamp(),
-    schoolId: bigint({ mode: "number" }).references(() => schools.id).notNull(),
+    workflowState: text("workflow_state"),
+    canvasUpdatedAt: timestamp("canvas_updated_at"),
+    lastSyncedAt: timestamp("last_synced_at"),
+    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
     ...timestamps,
 });
 
 export const userEnrollments = apiSchema.table("user_enrollments", {
-    userId: uuid().references(() => users.id).notNull(),
-    courseId: bigint({ mode: "number" }).references(() => courses.id).notNull(),
-    enrollmentState: text(),
-    canvasUserId: bigint({ mode: "number" }),
-    isActive: boolean(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
+    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id).notNull(),
+    enrollmentState: text("enrollment_state"),
+    canvasUserId: bigint("canvas_user_id", { mode: "number" }),
+    isActive: boolean("is_active"),
     ...timestamps,
 }, table => [
     primaryKey({ columns: [table.userId, table.courseId] }),
 ]);
 
 export const userSync = apiSchema.table("user_sync", {
-    userId: uuid().references(() => users.id).notNull(),
-    courseId: bigint({ mode: "number" }).references(() => courses.id).notNull(),
-    lastStreamId: bigint({ mode: "number" }),
-    lastCheckAt: timestamp(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
+    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id).notNull(),
+    lastStreamId: bigint("last_stream_id", { mode: "number" }),
+    lastCheckAt: timestamp("last_check_at"),
     // TODO: make this an enum
-    status: text(),
+    status: text("status"),
 }, table => [
     primaryKey({ columns: [table.userId, table.courseId] }),
 ]);
 
 export const assignments = apiSchema.table("assignments", {
     id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-    assignmentId: bigint({ mode: "number" }),
-    name: text(),
-    description: text(),
-    dueAt: timestamp(),
+    assignmentId: bigint("assignment_id", { mode: "number" }),
+    name: text("name"),
+    description: text("description"),
+    dueAt: timestamp("due_at"),
     // TODO: make this an enum
-    workflowState: text(),
-    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    workflowState: text("workflow_state"),
+    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id),
     ...timestamps,
 });
 
 export const courseActivityStream = apiSchema.table("course_activity_stream", {
-    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-    canvasStreamId: bigint({ mode: "number" }),
-    entityType: text(),
-    htmlUrl: text(),
-    eventTime: timestamp(),
-    dedupHash: text().unique(),
-    status: text(),
-    courseId: bigint({ mode: "number" }).references(() => courses.id),
+    id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    canvasStreamId: bigint("canvas_stream_id", { mode: "number" }),
+    entityType: text("entity_type"),
+    htmlUrl: text("html_url"),
+    eventTime: timestamp("event_time"),
+    dedupHash: text("dedup_hash").unique(),
+    status: text("status"),
+    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id),
     ...timestamps,
 });
 
