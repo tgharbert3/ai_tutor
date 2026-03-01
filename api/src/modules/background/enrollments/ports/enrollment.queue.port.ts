@@ -1,3 +1,3 @@
 export interface EnrollmentQueuePort {
-    enqueueEnrollmentFlow: (data: { ingestionId: string; userId: string; schoolId: number }) => Promise<void>;
+    enqueueEnrollmentFlow: (data: { ingestionId: string; userId: string; canvasBaseUrl: string }) => Promise<void>;
 }

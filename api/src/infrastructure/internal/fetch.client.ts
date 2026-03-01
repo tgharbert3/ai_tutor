@@ -34,7 +34,7 @@ export class FetchClient implements ClientApiPort {
     }
 }
 
-export class CanvasClientFactory implements ClientApiPortFactory {
+export class ClientFactory implements ClientApiPortFactory {
     create(userId: string): ClientApiPort {
         return new FetchClient(userId);
     };

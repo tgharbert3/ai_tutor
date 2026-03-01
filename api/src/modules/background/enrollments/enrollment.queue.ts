@@ -7,7 +7,7 @@ export class BullMQEnrollmentQueue implements EnrollmentQueuePort {
         private flowProducer: FlowProducer,
     ) {};
 
-    async enqueueEnrollmentFlow(data: { ingestionId: string; userId: string; schoolId: number }) {
+    async enqueueEnrollmentFlow(data: { ingestionId: string; userId: string; canvasBaseUrl: string }) {
         await this.flowProducer.add(
             {
                 name: `enrollment:${data.ingestionId}`,

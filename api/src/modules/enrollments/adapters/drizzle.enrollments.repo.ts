@@ -30,7 +30,7 @@ export class DrizzleEnrollmentRepository implements EnrollmentRepoPort {
             ));
     };
 
-    async findAllActiveEnrollmetIds(userId: string) {
+    async findAllActiveEnrollmentIds(userId: string) {
         const rows = await this.db
             .select({
                 courseId: userEnrollments.courseId,
@@ -45,13 +45,13 @@ export class DrizzleEnrollmentRepository implements EnrollmentRepoPort {
         return rows.map(r => r.courseId);
     };
 
-    async setActiveToFalse(userId: string, canvasId: number[]) {
-        return await this.db.update(userEnrollments)
+    async setActiveToFalse(userId: string, courseIds: number[]): Promise<void> {
+        await this.db.update(userEnrollments)
             .set({ isActive: false })
             .where(
                 and(
                     eq(userEnrollments.userId, userId),
-                    inArray(userEnrollments.canvasUserId, canvasId),
+                    inArray(userEnrollments.canvasUserId, courseIds),
                 ),
             )
             .returning();

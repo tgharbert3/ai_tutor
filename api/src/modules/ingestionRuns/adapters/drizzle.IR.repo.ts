@@ -1,9 +1,11 @@
+import { eq } from "drizzle-orm";
+
 import type { db } from "@/lib/types.js";
 
 import { ingestionRuns } from "@/infrastructure/db/schema.js";
 
 import type { IngestionRunPort } from "../ports/ingestionRun.port.js";
-import type { InsertIngestion, StartIngestionResult } from "../types.js";
+import type { ingestionStatus, InsertIngestion, StartIngestionResult } from "../types.js";
 
 export class DrizzleIngestionRunRepository implements IngestionRunPort {
     constructor(private readonly db: db) {};
@@ -16,5 +18,9 @@ export class DrizzleIngestionRunRepository implements IngestionRunPort {
             schoolId: newRun.schoolId,
             userId: newRun.userId,
         };
+    }
+
+    async updateRunStatus(newStatus: ingestionStatus, ingestionId: string): Promise<void> {
+        await this.db.update(ingestionRuns).set({ status: newStatus }).where(eq(ingestionRuns.id, ingestionId));
     }
 }
