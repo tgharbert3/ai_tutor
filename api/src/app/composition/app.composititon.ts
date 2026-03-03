@@ -1,31 +1,39 @@
-import type { Job, Processor, QueueOptions, Worker } from "bullmq";
-
-import { FlowProducer } from "bullmq";
+import type { Queue as BullQueue, Worker as BullWorker, Job, Processor, QueueOptions } from "bullmq";
 
 import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { db, JWTData } from "@/lib/types.js";
 import type { EnrollmentJob } from "@/modules/background/domain/types.js";
-import type { EnrollmentQueuePort } from "@/modules/background/enrollments/ports/enrollment.queue.port.js";
+import type { CourseActivityStreamRepositoryPort } from "@/modules/courseActivityStream/ports/courseActivityStream.port.js";
+import type { CoursesRepositoryPort } from "@/modules/courses/ports/courses.repo.port.js";
 import type { EnrollmentRepoPort } from "@/modules/enrollments/ports/enrollment.port.js";
+import type { WorkerDeps } from "@/modules/ingestion/domain/types.js";
 import type { IngestionRunPort } from "@/modules/ingestionRuns/ports/ingestionRun.port.js";
+import type { IngestionTaskPort } from "@/modules/ingestionTasks/ports/ingestionTask.port.js";
 import type { SchoolRepositoryPort } from "@/modules/schools/ports/school.repo.port.js";
 import type { UserRepositoryPort } from "@/modules/users/ports/user.repo.port.js";
 
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
-import { BullMQEnrollmentQueue } from "@/modules/background/enrollments/enrollment.queue.js";
-import { createWorker } from "@/modules/background/workers/worker.factory.js";
+import { createQueue } from "@/modules/background/factories/queue.factory.js";
+import { createWorker } from "@/modules/background/factories/worker.factory.js";
+import { DrizzleCourseActivityStreamRepository } from "@/modules/courseActivityStream/adapters/drizzle.CAS.repo.js";
+import { DrizzleCourseRepository } from "@/modules/courses/adapters/drizzle.courses.repo.js";
 import { DrizzleEnrollmentRepository } from "@/modules/enrollments/adapters/drizzle.enrollments.repo.js";
-import { EnrollmentWorkerScope } from "@/modules/ingestion/EnrollmentWorker.scope.js";
+import { CoursePlanWorkerScope } from "@/modules/ingestion/scopes/CourseWorker.scope.js";
+import { EnrollmentWorkerScope } from "@/modules/ingestion/scopes/EnrollmentWorker.scope.js";
+import { FetchCanvasWorkerScope } from "@/modules/ingestion/scopes/FetchCanvasWorkerScope.js";
+import { FullIngestionScope } from "@/modules/ingestion/scopes/FullIngestionScope.js";
+import { PreIngestionScope } from "@/modules/ingestion/scopes/PreIngestion.scope.js";
 import { DrizzleIngestionRunRepository } from "@/modules/ingestionRuns/adapters/drizzle.IR.repo.js";
+import { DrizzleIngestionTasksRepo } from "@/modules/ingestionTasks/adapters/drizzle.ingestionTasks.repo.js";
 import { DrizzleSchoolRepository } from "@/modules/schools/adapters/drizzle.school.repo.js";
 import { DrizzleUserRepository } from "@/modules/users/adapters/drizzle.user.repo.js";
 
-import { PreIngestionScope } from "../../modules/ingestion/PreIngestion.scope.js";
+import type { AppQueues, AppRepos } from "./types.js";
 
 export class AppContainer {
-    workers: Worker[] = [];
+    workers: BullWorker[] = [];
     readonly canvasFactory: CanvasApiPortFactory;
     readonly clientFacotry: ClientApiPortFactory;
     public readonly repos: {
@@ -33,10 +41,17 @@ export class AppContainer {
         schools: SchoolRepositoryPort;
         ingestionRuns: IngestionRunPort;
         enrollments: EnrollmentRepoPort;
+        courses: CoursesRepositoryPort;
+        ingestionTasks: IngestionTaskPort;
+        courseActivityStream: CourseActivityStreamRepositoryPort;
     };
 
     public readonly queues: {
-        enrollmentQueue: EnrollmentQueuePort;
+        enrollments: BullQueue;
+        courses: BullQueue;
+        canvasFetch: BullQueue;
+        courseFullIngest: BullQueue;
+        courseChange: BullQueue;
     };
 
     constructor(
@@ -46,18 +61,24 @@ export class AppContainer {
         // Have to use a factory because each client needs to be request scoped
         this.canvasFactory = new CanvasClientFactory();
         this.clientFacotry = new ClientFactory();
-        const enrollmentFlowProducer = new FlowProducer({ connection: this.redis });
 
         this.repos = {
             users: new DrizzleUserRepository(this.db),
             schools: new DrizzleSchoolRepository(this.db),
             ingestionRuns: new DrizzleIngestionRunRepository(this.db),
             enrollments: new DrizzleEnrollmentRepository(this.db),
-        };
+            courses: new DrizzleCourseRepository(this.db),
+            ingestionTasks: new DrizzleIngestionTasksRepo(this.db),
+            courseActivityStream: new DrizzleCourseActivityStreamRepository(this.db),
+        } satisfies AppRepos;
 
         this.queues = {
-            enrollmentQueue: new BullMQEnrollmentQueue(enrollmentFlowProducer),
-        };
+            enrollments: createQueue("enrollments", this.redis),
+            courses: createQueue("courses", this.redis),
+            canvasFetch: createQueue("canvasFetch", this.redis),
+            courseFullIngest: createQueue("courseFullIngest", this.redis),
+            courseChange: createQueue("courseChange", this.redis),
+        } satisfies AppQueues;
     }
 
     createPreIngestionScope(ctx: JWTData) {
@@ -66,30 +87,80 @@ export class AppContainer {
 
     // Define the scope for the enrollment worker
     // The enrollmet worker scope is the orchestrator for the actual enrollment worker job
-    createEnrollmentWorkerScope(jobData: EnrollmentJob) {
+    createEnrollmentWorkerScope(job: Job<EnrollmentJob>) {
         return new EnrollmentWorkerScope({
-            jobData,
+            job,
             ingestionRunsRepo: this.repos.ingestionRuns,
             clientFactory: this.clientFacotry,
             canvasFactory: this.canvasFactory,
             enrollmentsRepo: this.repos.enrollments,
+            ingestionTasksRepo: this.repos.ingestionTasks,
+            coursesQueue: this.queues.courses,
         });
     }
 
     // Define the processor method for the worker
     // This is the bridge between app and request scope
-    createWorkerProcessor(): Processor {
-        return async (job: Job<EnrollmentJob>) => {
-            const scope = this.createEnrollmentWorkerScope(job.data);
+    createEnrollmentWorkerProcessor(): Processor<EnrollmentJob, void, string> {
+        return async (job: Job<EnrollmentJob, void, string>) => {
+            const scope = this.createEnrollmentWorkerScope(job);
             return await scope.execute();
         };
     };
+
+    createCoursePlanWorkerScope(job: Job<WorkerDeps>) {
+        return new CoursePlanWorkerScope({
+            job,
+            repos: this.repos,
+            queues: this.queues,
+            canvasFactory: this.canvasFactory,
+            clientFactory: this.clientFacotry,
+        });
+    }
+
+    // TODO: possibly added a check to make sure there are course Ids
+    createCoursesWorkerProcessor() {
+        return async (job: Job<WorkerDeps>) => {
+            const scope = this.createCoursePlanWorkerScope(job);
+            return await scope.execute();
+        };
+    }
+
+    createCanvasFetchScope(courseId: number) {
+        return new FetchCanvasWorkerScope(courseId);
+    }
+
+    createCanvasFetchWorkerProcessor() {
+        return async (job: Job<number>) => {
+            const scope = this.createCanvasFetchScope(job.data);
+            return await scope.execute();
+        };
+    };
+
+    createFullIngestionScope(job: Job<WorkerDeps>) {
+        return new FullIngestionScope({
+            job,
+            ingestionTaskRepo: this.repos.ingestionTasks,
+            ingestionRunRepo: this.repos.ingestionRuns,
+            fetchQueue: this.queues.canvasFetch,
+        });
+    }
+
+    createFullIngestionWorkerProcessor() {
+        return async (job: Job<WorkerDeps>) => {
+            const scope = this.createFullIngestionScope(job);
+            return await scope.execute();
+        };
+    }
 
     // Method that gets called during app bootstap to start the workers
     startWorkers() {
         // Retain a refrenece to them so when shut them down gracefully
         this.workers = [
-            createWorker("enrollment", this.createWorkerProcessor(), this.redis, 1),
+            createWorker("enrollments", this.createEnrollmentWorkerProcessor(), this.redis, 1),
+            createWorker("courses", this.createCoursesWorkerProcessor(), this.redis, 1),
+            createWorker("canvasFetch", this.createCanvasFetchWorkerProcessor(), this.redis, 1),
+            createWorker("courseFullIngest", this.createFullIngestionWorkerProcessor(), this.redis, 1),
         ];
     }
 };

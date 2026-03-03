@@ -12,7 +12,7 @@ export const ingestionHandler = factory.createHandlers(
         try {
             const jweData = c.get("user");
             const appContainer = c.get("appContainer");
-            const scope = appContainer.createIngestionScope(jweData);
+            const scope = appContainer.createPreIngestionScope(jweData);
             const result = await scope.execute();
             // TODO: update to websocket
             return c.json(result, 202);

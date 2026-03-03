@@ -23,9 +23,9 @@ export class SyncUserEnrollmentsUseCase {
         this.setEnrollmentsToFalseUC = new SetEnrollmentsToFalseUseCase(this.syncUserEnrollmentDeps.enrollmentsRepo);
     };
 
-    // Possibly wrap in try catch or result pattern to be able to update to failed if the job fails
-    async execute(): Promise<number[]> {
-        const { ingestionId, userId, canvasBaseUrl } = this.syncUserEnrollmentDeps.jobData;
+    // TODO: Possibly wrap in try catch or result pattern to be able to update to failed if the job fails
+    async execute() {
+        const { ingestionId, userId, canvasBaseUrl, schoolId } = this.syncUserEnrollmentDeps.job.data;
         // Update the ingestion run status
         await this.updateStatusUC.execute(ingestionId, "running");
 
@@ -48,8 +48,13 @@ export class SyncUserEnrollmentsUseCase {
         const dropped = getDroppedEnrollments(canvasEnrollmentSet, localEnrollmentSet);
         await this.setEnrollmentsToFalseUC.execute(userId, Array.from(dropped));
 
-        // Extract just the course Ids an return to start the next step in the FP
         const canvasCourseIds = usersCanvasEnrollments.map(element => element.courseId);
-        return canvasCourseIds;
+        // Insert new course plan tasks so the course workers can pick them up
+        const taskIds = await this.syncUserEnrollmentDeps.ingestionTasksRepo.insertCoursePlansFromArray(ingestionId, canvasCourseIds, schoolId);
+        await Promise.all(
+            taskIds.map(taskId => this.syncUserEnrollmentDeps.coursesQueue.add("course_plan", { ingestionId, taskId })),
+        );
+
+        this.syncUserEnrollmentDeps.job.updateProgress(100);
     }
 }

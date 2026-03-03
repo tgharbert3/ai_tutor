@@ -12,5 +12,6 @@ export class EnrollmentWorkerScope {
 
     // Possibly wrap in try catch or result pattern to be able to update to failed if the job fails
     async execute() {
+        return this.syncUserEnrollmentUC.execute();
     }
 }

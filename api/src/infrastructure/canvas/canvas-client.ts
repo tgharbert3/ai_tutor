@@ -1,5 +1,5 @@
 import type { CanvasApiPort, CanvasApiPortFactory } from "./ports/cavans.api.port.js";
-import type { CanvasEnrollment } from "./types.js";
+import type { CanvasEnrollment, StreamActivityItem } from "./types.js";
 
 import { CanvasHttpError } from "./errors.js";
 
@@ -30,6 +30,15 @@ export class CanvasClient implements CanvasApiPort {
         return response;
     };
 
+    async getCanvasCourseActivityStream(courseId: number): Promise<StreamActivityItem[] | undefined> {
+        const response = await this.get<unknown>(`courses/${courseId}/activity_stream`);
+
+        if (!this.isCanvasStreamArray(response)) {
+            return undefined;
+        }
+        return response;
+    }
+
     private build(path: string): string {
         return new URL(`/api/v1/${path}`, this.canvasBaseUrl).toString();
     };
@@ -50,6 +59,23 @@ export class CanvasClient implements CanvasApiPort {
             console.error("CanvasSession GET error:", error);
             throw new Error(`Canvas GET failed for path: ${path}`);
         }
+    }
+
+    private isCanvasActivityStreamItem(obj: any): obj is StreamActivityItem {
+        return (
+            typeof obj === "object"
+            && obj !== null
+            && obj.id === "number"
+            && obj.courseId === "number"
+            && obj.message === "string"
+        );
+    }
+
+    private isCanvasStreamArray(data: unknown): data is StreamActivityItem[] {
+        return (
+            Array.isArray(data)
+            && data.every(this.isCanvasActivityStreamItem)
+        );
     }
 
     private isCanvasEnrollment(obj: any): obj is CanvasEnrollment {

@@ -28,12 +28,14 @@ export class SyncUserUseCase {
         };
 
         const upsertedUser = await this.deps.userRepo.upsertUser(userToInsert);
-        return await this.deps.ingestionRunRepo.create(
+        const newRun = await this.deps.ingestionRunRepo.create(
             {
                 status: "queued",
                 userId: upsertedUser.id,
                 schoolId: upsertedUser.schoolId,
             },
         );
+
+        return { ...newRun, canvasBaseUrl: schoolInfo.canvasBaseUrl };
     }
 }

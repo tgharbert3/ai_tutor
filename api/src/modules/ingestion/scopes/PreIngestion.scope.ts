@@ -1,9 +1,10 @@
+import type { AppQueues, AppRepos } from "@/app/composition/types.js";
 import type { CanvasApiPort, CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
 import type { JWTData } from "@/lib/types.js";
 
 import { SyncUserUseCase } from "@/modules/users/applications/useCases/syncUser.useCase.js";
 
-import type { AppQueues, AppRepos } from "../../app/composition/types.js";
+import type { EnrollmentJob } from "../../background/domain/types.js";
 
 export class PreIngestionScope {
     private syncUserUC: SyncUserUseCase;
@@ -29,11 +30,13 @@ export class PreIngestionScope {
     async execute() {
         const handoff = await this.syncUserUC.execute();
         // TODO: Catch any enrollment queue errors
-        await this.queues.enrollmentQueue.enqueueEnrollmentFlow({
+        await this.queues.enrollments.add("enrollment", {
             ingestionId: handoff.ingestionId,
             userId: handoff.userId,
+            schoolId: handoff.schoolId,
+            // Using the user input here. It has been through. Could lead to bugs down the road
             canvasBaseUrl: this.ctx.canvasBaseUrl,
-        });
+        } satisfies EnrollmentJob);
 
         return { ingestionId: handoff.ingestionId, status: handoff.status };
     }

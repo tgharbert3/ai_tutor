@@ -9,6 +9,7 @@ function bootstrap() {
     const db = getDb();
     const redis = getRedisConfig();
     const appContainer = new AppContainer(db, redis);
+    appContainer.startWorkers();
     const app = createApp(appContainer);
     const routes = [
         sync(),
