@@ -1,9 +1,9 @@
 import { FetchUsersCanvasEnrollmentsUseCase } from "@/infrastructure/canvas/applications/fetchUsersCanvasEnrollmets.useCase.js";
 import { FetchUsersCanvasTokenUseCase } from "@/infrastructure/internal/application/fetchUsersCanvasToken.useCase.js";
-import { getDroppedEnrollments } from "@/modules/enrollments/application/diffEnrollments.js";
-import { FetchUsersLocalEnrollmentsUseCase } from "@/modules/enrollments/application/fetchLocalEnrollments.useCase.js";
-import { SetEnrollmentsToFalseUseCase } from "@/modules/enrollments/application/setEnrollmentsToFalse.useCase.js";
-import { UpdateIngestionRunStatusUseCase } from "@/modules/ingestionRuns/application/updateStatus.useCase.js";
+import { getDroppedEnrollments } from "@/modules/ingestion/enrollments/application/diffEnrollments.js";
+import { FetchUsersLocalEnrollmentsUseCase } from "@/modules/ingestion/enrollments/application/fetchLocalEnrollments.useCase.js";
+import { SetEnrollmentsToFalseUseCase } from "@/modules/ingestion/enrollments/application/setEnrollmentsToFalse.useCase.js";
+import { UpdateIngestionRunStatusUseCase } from "@/modules/ingestion/ingestionRuns/application/updateStatus.useCase.js";
 
 import type { SyncUserEnrollmentsUseCaseDeps } from "../domain/types.js";
 
@@ -42,7 +42,7 @@ export class SyncUserEnrollmentsUseCase {
         const canvasEnrollmentSet = new Set<number>(
             usersCanvasEnrollments.map(e => e.courseId),
         );
-        const localEnrollmentSet = new Set(localEnrollments);
+        const localEnrollmentSet = new Set<number>(localEnrollments);
 
         // Calculate the dropped courses and set them to false in the userEnrollments table
         const dropped = getDroppedEnrollments(canvasEnrollmentSet, localEnrollmentSet);

@@ -1,6 +1,6 @@
-import type { SyncUserEnrollmentsUseCaseDeps } from "./domain/types.js";
+import type { SyncUserEnrollmentsUseCaseDeps } from "../domain/types.js";
 
-import { SyncUserEnrollmentsUseCase } from "./applications/syncUserEnrollments.useCase.js";
+import { SyncUserEnrollmentsUseCase } from "../applications/syncUserEnrollments.useCase.js";
 
 export class EnrollmentWorkerScope {
     private readonly syncUserEnrollmentUC: SyncUserEnrollmentsUseCase;

@@ -1,34 +1,34 @@
 import type { Queue as BullQueue, Worker as BullWorker, Job, Processor, QueueOptions } from "bullmq";
 
 import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
+import type { IIngestionRun } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionTask } from "@/infrastructure/interfaces/ingestionTaskt.interface.js";
+import type { ISchoolRepository } from "@/infrastructure/interfaces/school.repo.interface.js";
+import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { db, JWTData } from "@/lib/types.js";
-import type { EnrollmentJob } from "@/modules/background/domain/types.js";
-import type { CourseActivityStreamRepositoryPort } from "@/modules/courseActivityStream/ports/courseActivityStream.port.js";
-import type { CoursesRepositoryPort } from "@/modules/courses/ports/courses.repo.port.js";
-import type { EnrollmentRepoPort } from "@/modules/enrollments/ports/enrollment.port.js";
+import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
 import type { WorkerDeps } from "@/modules/ingestion/domain/types.js";
-import type { IngestionRunPort } from "@/modules/ingestionRuns/ports/ingestionRun.port.js";
-import type { IngestionTaskPort } from "@/modules/ingestionTasks/ports/ingestionTask.port.js";
-import type { SchoolRepositoryPort } from "@/modules/schools/ports/school.repo.port.js";
-import type { UserRepositoryPort } from "@/modules/users/ports/user.repo.port.js";
 
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
+import { DrizzleCourseActivityStreamRepository } from "@/infrastructure/drizzle/repos/drizzle.CAS.repo.js";
+import { DrizzleCourseRepository } from "@/infrastructure/drizzle/repos/drizzle.courses.repo.js";
+import { DrizzleEnrollmentRepository } from "@/infrastructure/drizzle/repos/drizzle.enrollments.repo.js";
+import { DrizzleIngestionTasksRepo } from "@/infrastructure/drizzle/repos/drizzle.ingestionTasks.repo.js";
+import { DrizzleIngestionRunRepository } from "@/infrastructure/drizzle/repos/drizzle.IR.repo.js";
+import { DrizzleSchoolRepository } from "@/infrastructure/drizzle/repos/drizzle.school.repo.js";
+import { DrizzleUserRepository } from "@/infrastructure/drizzle/repos/drizzle.user.repo.js";
 import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
-import { createQueue } from "@/modules/background/factories/queue.factory.js";
-import { createWorker } from "@/modules/background/factories/worker.factory.js";
-import { DrizzleCourseActivityStreamRepository } from "@/modules/courseActivityStream/adapters/drizzle.CAS.repo.js";
-import { DrizzleCourseRepository } from "@/modules/courses/adapters/drizzle.courses.repo.js";
-import { DrizzleEnrollmentRepository } from "@/modules/enrollments/adapters/drizzle.enrollments.repo.js";
+import { createQueue } from "@/modules/ingestion/background/factories/queue.factory.js";
+import { createWorker } from "@/modules/ingestion/background/factories/worker.factory.js";
 import { CoursePlanWorkerScope } from "@/modules/ingestion/scopes/CourseWorker.scope.js";
 import { EnrollmentWorkerScope } from "@/modules/ingestion/scopes/EnrollmentWorker.scope.js";
 import { FetchCanvasWorkerScope } from "@/modules/ingestion/scopes/FetchCanvasWorkerScope.js";
 import { FullIngestionScope } from "@/modules/ingestion/scopes/FullIngestionScope.js";
 import { PreIngestionScope } from "@/modules/ingestion/scopes/PreIngestion.scope.js";
-import { DrizzleIngestionRunRepository } from "@/modules/ingestionRuns/adapters/drizzle.IR.repo.js";
-import { DrizzleIngestionTasksRepo } from "@/modules/ingestionTasks/adapters/drizzle.ingestionTasks.repo.js";
-import { DrizzleSchoolRepository } from "@/modules/schools/adapters/drizzle.school.repo.js";
-import { DrizzleUserRepository } from "@/modules/users/adapters/drizzle.user.repo.js";
 
 import type { AppQueues, AppRepos } from "./types.js";
 
@@ -37,13 +37,13 @@ export class AppContainer {
     readonly canvasFactory: CanvasApiPortFactory;
     readonly clientFacotry: ClientApiPortFactory;
     public readonly repos: {
-        users: UserRepositoryPort;
-        schools: SchoolRepositoryPort;
-        ingestionRuns: IngestionRunPort;
-        enrollments: EnrollmentRepoPort;
-        courses: CoursesRepositoryPort;
-        ingestionTasks: IngestionTaskPort;
-        courseActivityStream: CourseActivityStreamRepositoryPort;
+        users: IUserRepository;
+        schools: ISchoolRepository;
+        ingestionRuns: IIngestionRun;
+        enrollments: IEnrollmentRepo;
+        courses: ICoursesRepository;
+        ingestionTasks: IIngestionTask;
+        courseActivityStream: ICourseActivityStreamRepository;
     };
 
     public readonly queues: {

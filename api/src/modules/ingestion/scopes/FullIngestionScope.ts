@@ -1,4 +1,4 @@
-import type { IngestionTaskKind } from "@/modules/ingestionTasks/domain/types.js";
+import type { IngestionTaskKind } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
 import type { FullIngestionScopeDeps } from "../domain/types.js";
 

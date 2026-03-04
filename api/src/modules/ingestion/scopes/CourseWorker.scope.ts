@@ -2,8 +2,8 @@ import { FetchUsersCanvasTokenUseCase } from "@/infrastructure/internal/applicat
 
 import type { CourseWorkerDeps } from "../domain/types.js";
 
-import { courseExistsInLocalDb } from "../../courses/application/diffCourses.js";
-import { FetchAllLocalCoursesUseCase } from "../../courses/application/fetchLocalCourses.useCase.js";
+import { courseExistsInLocalDb } from "../courses/application/diffCourses.js";
+import { FetchAllLocalCoursesUseCase } from "../courses/application/fetchLocalCourses.useCase.js";
 
 export class CoursePlanWorkerScope {
     private readonly fetchAllLocalCoursesUC: FetchAllLocalCoursesUseCase;
