@@ -1,8 +1,10 @@
-import type { CoursesRepositoryPort } from "../../../infrastructure/drizzle/interfaces/courses.repo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 
-export class FetchAllLocalCoursesUseCase {
+;
+
+export class FetchAllLocalCourses {
     constructor(
-        private readonly coursesRepo: CoursesRepositoryPort,
+        private readonly coursesRepo: ICoursesRepository,
     ) {}
 
     async execute(schoolId: number) {

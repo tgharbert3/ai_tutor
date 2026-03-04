@@ -1,8 +1,7 @@
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
+import type { IngestionTask, IngestionTaskKind, IngestionTaskStatus } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
-import type { IngestionTask, IngestionTaskKind, IngestionTaskStatus } from "../../../modules/ingestion/ingestionTasks/domain/types.js";
-
-export interface IIngestionTask {
+export interface IIngestionTaskRepository {
 
     insertCoursePlansFromArray: (ingestionRunId: string, courseIds: number[], schoolId: number) => Promise<string[]>;
     insertNewCourseFullIngest: (ingestionRunId: string, courseId: number, schoolId: number) => Promise<string>;
@@ -22,7 +21,7 @@ export interface IIngestionTask {
      * @param taskId
      * @returns The full task or undefined if DNE
      */
-    claimCourseIngestionTask: (taskId: string) => Promise<IngestionTask>;
+    claimIngestionTask: (taskId: string) => Promise<IngestionTask>;
 
     insertCanvasFetchTaskForFullIngestion: (ingestionRunId: string, fetchType: IngestionTaskKind[], courseId: number, schoolId: number) => Promise<string[]>;
 }

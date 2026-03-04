@@ -4,8 +4,8 @@ import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.por
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
 import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
-import type { IIngestionRun } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTask } from "@/infrastructure/interfaces/ingestionTaskt.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
 import type { ISchoolRepository } from "@/infrastructure/interfaces/school.repo.interface.js";
 import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.interface.js";
 
@@ -19,10 +19,10 @@ export type Context = Readonly<{
 export type AppRepos = Readonly<{
     users: IUserRepository;
     schools: ISchoolRepository;
-    ingestionRuns: IIngestionRun;
+    ingestionRuns: IIngestionRunRepository;
     enrollments: IEnrollmentRepo;
     courses: ICoursesRepository;
-    ingestionTasks: IIngestionTask;
+    ingestionTasks: IIngestionTaskRepository;
     courseActivityStream: ICourseActivityStreamRepository;
 }>;
 

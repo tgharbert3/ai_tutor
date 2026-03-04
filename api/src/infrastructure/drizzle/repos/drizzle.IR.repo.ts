@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
 
-import type { IIngestionRun } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { ingestionRuns, schools } from "@/infrastructure/db/schema.js";
 
 import type { ingestionStatus, InsertIngestion, StartIngestionResult } from "../../../modules/ingestion/ingestionRuns/domain/types.js";
 
-export class DrizzleIngestionRunRepository implements IIngestionRun {
+export class DrizzleIngestionRunRepository implements IIngestionRunRepository {
     constructor(private readonly db: db) {};
 
     async create(newIngestionRun: InsertIngestion): Promise<StartIngestionResult> {

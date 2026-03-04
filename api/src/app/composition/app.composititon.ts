@@ -4,8 +4,8 @@ import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
 import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
-import type { IIngestionRun } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTask } from "@/infrastructure/interfaces/ingestionTaskt.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
 import type { ISchoolRepository } from "@/infrastructure/interfaces/school.repo.interface.js";
 import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
@@ -24,7 +24,8 @@ import { DrizzleUserRepository } from "@/infrastructure/drizzle/repos/drizzle.us
 import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
 import { createQueue } from "@/modules/ingestion/background/factories/queue.factory.js";
 import { createWorker } from "@/modules/ingestion/background/factories/worker.factory.js";
-import { CoursePlanWorkerScope } from "@/modules/ingestion/scopes/CourseWorker.scope.js";
+import { handleWorkerError } from "@/modules/ingestion/ingestionTasks/domain/errors/handleWorkerError.js";
+import { CoursePlanWorkerScope } from "@/modules/ingestion/scopes/CoursePlanWorker.scope.js";
 import { EnrollmentWorkerScope } from "@/modules/ingestion/scopes/EnrollmentWorker.scope.js";
 import { FetchCanvasWorkerScope } from "@/modules/ingestion/scopes/FetchCanvasWorkerScope.js";
 import { FullIngestionScope } from "@/modules/ingestion/scopes/FullIngestionScope.js";
@@ -39,10 +40,10 @@ export class AppContainer {
     public readonly repos: {
         users: IUserRepository;
         schools: ISchoolRepository;
-        ingestionRuns: IIngestionRun;
+        ingestionRuns: IIngestionRunRepository;
         enrollments: IEnrollmentRepo;
         courses: ICoursesRepository;
-        ingestionTasks: IIngestionTask;
+        ingestionTasks: IIngestionTaskRepository;
         courseActivityStream: ICourseActivityStreamRepository;
     };
 
@@ -111,18 +112,27 @@ export class AppContainer {
     createCoursePlanWorkerScope(job: Job<WorkerDeps>) {
         return new CoursePlanWorkerScope({
             job,
-            repos: this.repos,
-            queues: this.queues,
+            courses: this.repos.courses,
+            ingestionTasks: this.repos.ingestionTasks,
+            ingestionRuns: this.repos.ingestionRuns,
+            courseActivityStream: this.repos.courseActivityStream,
+            courseChange: this.queues.courseChange,
+            courseFullIngest: this.queues.courseFullIngest,
             canvasFactory: this.canvasFactory,
             clientFactory: this.clientFacotry,
         });
     }
 
     // TODO: possibly added a check to make sure there are course Ids
-    createCoursesWorkerProcessor() {
+    createCoursePlanWorkerProcessor() {
         return async (job: Job<WorkerDeps>) => {
-            const scope = this.createCoursePlanWorkerScope(job);
-            return await scope.execute();
+            try {
+                const scope = this.createCoursePlanWorkerScope(job);
+                return await scope.execute();
+            }
+            catch (e) {
+                handleWorkerError(e, job, this.repos.ingestionTasks, job.data.taskId);
+            }
         };
     }
 
@@ -158,7 +168,7 @@ export class AppContainer {
         // Retain a refrenece to them so when shut them down gracefully
         this.workers = [
             createWorker("enrollments", this.createEnrollmentWorkerProcessor(), this.redis, 1),
-            createWorker("courses", this.createCoursesWorkerProcessor(), this.redis, 1),
+            createWorker("courses", this.createCoursePlanWorkerProcessor(), this.redis, 1),
             createWorker("canvasFetch", this.createCanvasFetchWorkerProcessor(), this.redis, 1),
             createWorker("courseFullIngest", this.createFullIngestionWorkerProcessor(), this.redis, 1),
         ];

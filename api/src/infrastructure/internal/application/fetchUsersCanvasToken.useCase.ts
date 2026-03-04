@@ -1,6 +1,6 @@
 import type { ClientApiPortFactory } from "../fetch.port.js";
 
-export class FetchUsersCanvasTokenUseCase {
+export class FetchUsersCanvasToken {
     constructor(
         private readonly fetchClientFactory: ClientApiPortFactory,
     ) {};

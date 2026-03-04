@@ -1,10 +1,11 @@
 import type { Job, Queue } from "bullmq";
 
-import type { AppQueues, AppRepos } from "@/app/composition/types.js";
 import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
-import type { IIngestionRun } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTask } from "@/infrastructure/interfaces/ingestionTaskt.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
 
@@ -15,9 +16,9 @@ export interface WorkerDeps {
 
 export interface SyncUserEnrollmentsUseCaseDeps {
     job: Job<EnrollmentJob>;
-    ingestionRunsRepo: IIngestionRun;
+    ingestionRunsRepo: IIngestionRunRepository;
     enrollmentsRepo: IEnrollmentRepo;
-    ingestionTasksRepo: IIngestionTask;
+    ingestionTasksRepo: IIngestionTaskRepository;
     clientFactory: ClientApiPortFactory;
     canvasFactory: CanvasApiPortFactory;
     coursesQueue: Queue;
@@ -25,8 +26,12 @@ export interface SyncUserEnrollmentsUseCaseDeps {
 
 export interface CourseWorkerDeps {
     job: Job<WorkerDeps>;
-    repos: AppRepos;
-    queues: AppQueues;
+    ingestionTasks: IIngestionTaskRepository;
+    ingestionRuns: IIngestionRunRepository;
+    courses: ICoursesRepository;
+    courseActivityStream: ICourseActivityStreamRepository;
+    courseFullIngest: Queue;
+    courseChange: Queue;
     clientFactory: ClientApiPortFactory;
     canvasFactory: CanvasApiPortFactory;
 }
@@ -38,7 +43,7 @@ export interface FetchCanvasWorkerDeps {
 
 export interface FullIngestionScopeDeps {
     job: Job<WorkerDeps>;
-    ingestionTaskRepo: IIngestionTask;
-    ingestionRunRepo: IIngestionRun;
+    ingestionTaskRepo: IIngestionTaskRepository;
+    ingestionRunRepo: IIngestionRunRepository;
     fetchQueue: Queue;
 }

@@ -2,14 +2,14 @@ import { eq } from "drizzle-orm";
 
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
 import type { insertCourseActivityStream, insertIngestonTask } from "@/infrastructure/db/schema.js";
-import type { IIngestionTask } from "@/infrastructure/interfaces/ingestionTaskt.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { courseActivityStream, ingestionTasks } from "@/infrastructure/db/schema.js";
 
 import type { IngestionTask, IngestionTaskKind, IngestionTaskStatus } from "../../../modules/ingestion/ingestionTasks/domain/types.js";
 
-export class DrizzleIngestionTasksRepo implements IIngestionTask {
+export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
     constructor(
         private db: db,
     ) {};
@@ -97,7 +97,7 @@ export class DrizzleIngestionTasksRepo implements IIngestionTask {
         );
     }
 
-    async claimCourseIngestionTask(taskId: string): Promise<IngestionTask> {
+    async claimIngestionTask(taskId: string): Promise<IngestionTask> {
         return await this.db.transaction(async (tx) => {
             const task = await tx.query.ingestionTasks.findFirst({
                 columns: {

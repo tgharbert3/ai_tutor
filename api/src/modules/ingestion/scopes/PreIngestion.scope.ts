@@ -34,7 +34,7 @@ export class PreIngestionScope {
             ingestionId: handoff.ingestionId,
             userId: handoff.userId,
             schoolId: handoff.schoolId,
-            // Using the user input here. It has been through. Could lead to bugs down the road
+            // Using the user input here. Could lead to bugs down the road
             canvasBaseUrl: this.ctx.canvasBaseUrl,
         } satisfies EnrollmentJob);
 
