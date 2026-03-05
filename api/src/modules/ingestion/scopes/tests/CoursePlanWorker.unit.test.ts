@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
 
+import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
+
 import { CoursePlanWorkerScope } from "../CoursePlanWorker.scope.js";
 import { getScopeDeps, makeMockJob, makeMockTask, makeMockWorkerDeps } from "./CoursePlanSetup.js";
 
@@ -57,7 +59,33 @@ describe("unit tests for CoursePlanWorker", () => {
         expect(mockDeps.canvasClient.getCanvasCourseActivityStream).toHaveBeenCalledExactlyOnceWith(998);
 
         expect(mockDeps.courseFullIngest.add).not.toHaveBeenCalled();
-        expect(mockDeps.ingestionTasks.insertCanvasFetchTaskForFullIngestion).not.toHaveBeenCalled();
         expect(mockDeps.courseChange.add).not.toHaveBeenCalled();
+    });
+
+    it("should enqueue course change tasks after determining a new stream item", async () => {
+        const mockJob = makeMockJob("job_2", { ingestionRunId: "run_2", taskId: "task_2" });
+        const mockDeps = makeMockWorkerDeps(mockJob, mockScopeDeps);
+        const task = makeMockTask(1, 1, "task_2", "course:Plan", "course", "12345", "queued");
+        const newStreamItem = { id: 10, courseId: 12345, entityType: "Message", htmlUrl: "testUrl2", updated_at: new Date() } satisfies StreamActivityItem;
+        coursePlanWorkerScope = new CoursePlanWorkerScope(mockDeps);
+
+        mockDeps.ingestionTasks.claimIngestionTask.mockResolvedValue(task);
+        mockDeps.courses.findAllCourseIdsForSchool.mockResolvedValue([12345]);
+        mockDeps.ingestionRuns.fetchUserIdAndUrl.mockResolvedValue({ userId: "1", canvasBaseUrl: "testUrl" });
+        mockDeps.clientFactory.create.mockReturnValue(mockDeps.internalClient);
+        mockDeps.internalClient.getUsersCanvasToken.mockResolvedValue("testToken2");
+        mockDeps.canvasFactory.create.mockReturnValue(mockDeps.canvasClient);
+        mockDeps.courseActivityStream.findMostRecentStreamItemId.mockResolvedValue(1);
+        mockDeps.canvasClient.getCanvasCourseActivityStream.mockResolvedValue([newStreamItem]);
+        mockDeps.ingestionTasks.insertCourseChangeTasks.mockResolvedValue("3");
+
+        await expect(coursePlanWorkerScope.execute()).resolves.toBeUndefined();
+
+        expect(mockDeps.ingestionTasks.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
+        expect(mockDeps.courses.findAllCourseIdsForSchool).toHaveBeenCalledExactlyOnceWith(task.schoolId);
+        expect(mockDeps.canvasClient.getCanvasCourseActivityStream).toHaveBeenCalledExactlyOnceWith(12345);
+        expect(mockDeps.courseChange.add).toHaveBeenCalledOnce();
+
+        expect(mockDeps.courseFullIngest.add).not.toHaveBeenCalledExactlyOnceWith("course_change", { ingestionRunId: mockDeps.job.data.ingestionRunId, taskId: "3" });
     });
 });
