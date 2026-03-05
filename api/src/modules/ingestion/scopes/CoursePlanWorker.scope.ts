@@ -78,7 +78,7 @@ export class CoursePlanWorkerScope {
         schoolId: number,
     ) {
         const newTaskId = await ingestionTasks.insertNewCourseFullIngest(ingestionRunId, canvasCourseId, schoolId);
-        await courseFullIngest.add("full_ingest", { ingestionRunId, newTaskId });
+        await courseFullIngest.add("full_ingest", { ingestionRunId, taskId: newTaskId });
     };
 
     private async getCourseActivityStream(ingestionRunId: string, schoolId: number, canvasCourseId: number) {
