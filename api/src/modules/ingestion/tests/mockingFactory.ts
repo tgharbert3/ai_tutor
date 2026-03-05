@@ -1,4 +1,4 @@
-import type { Queue } from "bullmq";
+import type { Job, Queue } from "bullmq";
 import type { Mocked } from "vitest";
 
 import { vi } from "vitest";
@@ -9,6 +9,8 @@ import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.rep
 import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
 import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
 import type { ClientApiPort, ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
+
+import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../ingestionTasks/domain/types.js";
 
 export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
     return {
@@ -80,4 +82,32 @@ export function makeMockCanvasClient(): Mocked<CanvasApiPort> {
         getCanvasCourseActivityStream: vi.fn(),
         getCanvasEnrollments: vi.fn(),
     };
+}
+
+export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskId: string }) {
+    return {
+        id: jobId,
+        data,
+        updateProgress: vi.fn(),
+    } as unknown as Job;
+}
+
+export function makeMockTask(
+    courseId: number,
+    schoolId: number,
+    taskId: string,
+    kind: IngestionTaskKind,
+    entityType: IngestionTaskET,
+    entityId: string,
+    status: IngestionTaskStatus,
+) {
+    return {
+        courseId,
+        schoolId,
+        taskId,
+        kind,
+        entityType,
+        entityId,
+        status,
+    } satisfies IngestionTask;
 }

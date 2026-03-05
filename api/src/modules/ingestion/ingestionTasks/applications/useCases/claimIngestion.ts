@@ -15,7 +15,7 @@ export class ClaimIngestionTask {
      */
     async execute(taskId: string) {
         const task = await this.ingestionTasks.claimIngestionTask(taskId);
-        if (!task || !task.taskId) {
+        if (!task || !task.taskId || task.status !== "queued") {
             throw new TaskNotClaimable("Task must exist to process");
         }
         return task;

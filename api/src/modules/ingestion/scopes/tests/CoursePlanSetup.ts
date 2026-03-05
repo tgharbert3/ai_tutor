@@ -1,9 +1,6 @@
 import type { Job } from "bullmq";
 
-import { vi } from "vitest";
-
 import type { CourseWorkerDeps } from "../../domain/types.js";
-import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../../ingestionTasks/domain/types.js";
 import type { scopeDepsReturnType } from "./CoursePlanWorker.unit.test.js";
 
 import { makeMockCanvasClient, makeMockCanvasFactory, makeMockClient, makeMockClientFactory, makeMockCourseActivityStreamRepo, makeMockCourseChangeQueue, makeMockCoursesRepo, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo } from "../../tests/mockingFactory.js";
@@ -32,34 +29,6 @@ export function getScopeDeps() {
         canvasClient,
         internalClient,
     };
-}
-
-export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskId: string }) {
-    return {
-        id: jobId,
-        data,
-        updateProgress: vi.fn(),
-    } as unknown as Job;
-}
-
-export function makeMockTask(
-    courseId: number,
-    schoolId: number,
-    taskId: string,
-    kind: IngestionTaskKind,
-    entityType: IngestionTaskET,
-    entityId: string,
-    status: IngestionTaskStatus,
-) {
-    return {
-        courseId,
-        schoolId,
-        taskId,
-        kind,
-        entityType,
-        entityId,
-        status,
-    } satisfies IngestionTask;
 }
 
 export function makeMockWorkerDeps(job: Job, deps: scopeDepsReturnType) {

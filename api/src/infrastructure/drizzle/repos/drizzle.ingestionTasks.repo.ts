@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
 import type { insertCourseActivityStream, insertIngestonTask } from "@/infrastructure/db/schema.js";
@@ -109,7 +109,10 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
                     schoolId: true,
                     courseId: true,
                 },
-                where: eq(ingestionTasks.taskId, taskId),
+                where: and(
+                    eq(ingestionTasks.taskId, taskId),
+                    eq(ingestionTasks.status, "queued"),
+                ),
             });
             if (!task) {
                 tx.rollback();
