@@ -15,7 +15,7 @@ export class FullIngestionScope {
         // Items that the CanvasFetch worker needs to fetch.
         const itemsToFetch: IngestionTaskKind[] = [
             "fetchSyllabus",
-            // "fetchAllAssignments",
+            "fetchAllAssignments",
         ];
 
         const taskIds = await this.fullIngestionScopeDeps.ingestionTaskRepo.insertCanvasFetchTaskForFullIngestion(

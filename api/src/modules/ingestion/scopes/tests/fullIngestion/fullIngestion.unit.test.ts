@@ -29,8 +29,8 @@ describe("unit test for full ingestion", () => {
         await expect(fullIngestionScope.execute()).resolves.toBeUndefined();
 
         expect(mockDeps.ingestionTaskRepo.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
-        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: syllabusTask.taskId });
-        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: assignmentsTask.taskId });
+        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: syllabusTask.taskId }, { jobId: `fetch:${syllabusTask.taskId}` });
+        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: assignmentsTask.taskId }, { jobId: `fetch:${assignmentsTask.taskId}` });
         expect(mockDeps.ingestionTaskRepo.updateTaskStatus).toHaveBeenCalledExactlyOnceWith("success", mockJob.data.taskId);
         expect(mockDeps.job.updateProgress).toHaveBeenCalledWith(100);
     });
