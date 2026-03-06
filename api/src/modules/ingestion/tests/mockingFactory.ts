@@ -58,6 +58,12 @@ export function makeMockCourseChangeQueue(): Mocked<Queue> {
     } as unknown as Mocked<Queue>;
 };
 
+export function makeMockCanvasFetchQueue(): Mocked<Queue> {
+    return {
+        add: vi.fn(),
+    } as unknown as Mocked<Queue>;
+}
+
 export function makeMockCanvasFactory(): Mocked<CanvasApiPortFactory> {
     return {
         create: vi.fn(),

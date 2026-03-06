@@ -1,5 +1,5 @@
 import { FetchUsersCanvasEnrollmentsUseCase } from "@/infrastructure/canvas/applications/fetchUsersCanvasEnrollmets.useCase.js";
-import { FetchUsersCanvasTokenUseCase } from "@/infrastructure/internal/application/fetchUsersCanvasToken.useCase.js";
+import { FetchUsersCanvasToken } from "@/infrastructure/internal/application/fetchUsersCanvasToken.useCase.js";
 import { getDroppedEnrollments } from "@/modules/ingestion/enrollments/application/diffEnrollments.js";
 import { FetchUsersLocalEnrollmentsUseCase } from "@/modules/ingestion/enrollments/application/fetchLocalEnrollments.useCase.js";
 import { SetEnrollmentsToFalseUseCase } from "@/modules/ingestion/enrollments/application/setEnrollmentsToFalse.useCase.js";
@@ -9,7 +9,7 @@ import type { SyncUserEnrollmentsUseCaseDeps } from "../domain/types.js";
 
 export class SyncUserEnrollmentsUseCase {
     private readonly updateStatusUC: UpdateIngestionRunStatusUseCase;
-    private readonly fetchCanvasTokenUC: FetchUsersCanvasTokenUseCase;
+    private readonly fetchCanvasTokenUC: FetchUsersCanvasToken;
     private readonly fetchEnrollmentsUC: FetchUsersCanvasEnrollmentsUseCase;
     private readonly fetchLocalEnrollmentsUC: FetchUsersLocalEnrollmentsUseCase;
     private readonly setEnrollmentsToFalseUC: SetEnrollmentsToFalseUseCase;
@@ -17,7 +17,7 @@ export class SyncUserEnrollmentsUseCase {
         private readonly syncUserEnrollmentDeps: SyncUserEnrollmentsUseCaseDeps,
     ) {
         this.updateStatusUC = new UpdateIngestionRunStatusUseCase(this.syncUserEnrollmentDeps.ingestionRunsRepo);
-        this.fetchCanvasTokenUC = new FetchUsersCanvasTokenUseCase(this.syncUserEnrollmentDeps.clientFactory);
+        this.fetchCanvasTokenUC = new FetchUsersCanvasToken(this.syncUserEnrollmentDeps.clientFactory);
         this.fetchEnrollmentsUC = new FetchUsersCanvasEnrollmentsUseCase(this.syncUserEnrollmentDeps.canvasFactory);
         this.fetchLocalEnrollmentsUC = new FetchUsersLocalEnrollmentsUseCase(this.syncUserEnrollmentDeps.enrollmentsRepo);
         this.setEnrollmentsToFalseUC = new SetEnrollmentsToFalseUseCase(this.syncUserEnrollmentDeps.enrollmentsRepo);

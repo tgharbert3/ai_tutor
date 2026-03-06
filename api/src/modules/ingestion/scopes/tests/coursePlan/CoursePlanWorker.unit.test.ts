@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
 
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
 
-import { makeMockJob, makeMockTask } from "../../tests/mockingFactory.js";
-import { CoursePlanWorkerScope } from "../CoursePlanWorker.scope.js";
+import { makeMockJob, makeMockTask } from "../../../tests/mockingFactory.js";
+import { CoursePlanWorkerScope } from "../../CoursePlanWorker.scope.js";
 import { getScopeDeps, makeMockWorkerDeps } from "./CoursePlanSetup.js";
 
 export type scopeDepsReturnType = ReturnType<typeof getScopeDeps>;

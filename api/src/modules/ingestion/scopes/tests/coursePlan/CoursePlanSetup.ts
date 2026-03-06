@@ -1,9 +1,9 @@
 import type { Job } from "bullmq";
 
-import type { CourseWorkerDeps } from "../../domain/types.js";
+import type { CourseWorkerDeps } from "../../../domain/types.js";
 import type { scopeDepsReturnType } from "./CoursePlanWorker.unit.test.js";
 
-import { makeMockCanvasClient, makeMockCanvasFactory, makeMockClient, makeMockClientFactory, makeMockCourseActivityStreamRepo, makeMockCourseChangeQueue, makeMockCoursesRepo, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo } from "../../tests/mockingFactory.js";
+import { makeMockCanvasClient, makeMockCanvasFactory, makeMockClient, makeMockClientFactory, makeMockCourseActivityStreamRepo, makeMockCourseChangeQueue, makeMockCoursesRepo, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo } from "../../../tests/mockingFactory.js";
 
 export function getScopeDeps() {
     const ingestionTasks = makeMockIngestionTaskRepo();
