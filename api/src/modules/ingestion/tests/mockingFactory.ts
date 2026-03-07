@@ -3,8 +3,10 @@ import type { Mocked } from "vitest";
 
 import { vi } from "vitest";
 
-import type { CanvasApiPort, CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPort, CanvasApiPortFactory } from "@/infrastructure/canvas/ports/canvas.api.port.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
 import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
 import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
@@ -21,6 +23,8 @@ export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
         findCourseIngestionTask: vi.fn(),
         claimIngestionTask: vi.fn(),
         insertCanvasFetchTaskForFullIngestion: vi.fn(),
+        insertMappingTask: vi.fn(),
+        insertDbWriteTask: vi.fn(),
     };
 };
 
@@ -46,6 +50,20 @@ export function makeMockCourseActivityStreamRepo(): Mocked<ICourseActivityStream
     };
 };
 
+export function makeMockCanvasRawDocumentsRepo(): Mocked<ICanvasRawDocumentsRepository> {
+    return {
+        insertCanvasRawDocument: vi.fn(),
+    };
+};
+
+export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
+    return {
+        insertCourseInfo: vi.fn(),
+        insertCourseTabs: vi.fn(),
+        insertCousrseSyllabus: vi.fn(),
+    };
+}
+
 export function makeMockCourseFullIngestQueue(): Mocked<Queue> {
     return {
         add: vi.fn(),
@@ -59,6 +77,18 @@ export function makeMockCourseChangeQueue(): Mocked<Queue> {
 };
 
 export function makeMockCanvasFetchQueue(): Mocked<Queue> {
+    return {
+        add: vi.fn(),
+    } as unknown as Mocked<Queue>;
+}
+
+export function makeMockMappingQueue(): Mocked<Queue> {
+    return {
+        add: vi.fn(),
+    } as unknown as Mocked<Queue>;
+}
+
+export function makeMockDbWriteQueue(): Mocked<Queue> {
     return {
         add: vi.fn(),
     } as unknown as Mocked<Queue>;
@@ -87,6 +117,7 @@ export function makeMockCanvasClient(): Mocked<CanvasApiPort> {
         getPrimaryColor: vi.fn(),
         getCanvasCourseActivityStream: vi.fn(),
         getCanvasEnrollments: vi.fn(),
+        getCourseInfo: vi.fn(),
     };
 }
 

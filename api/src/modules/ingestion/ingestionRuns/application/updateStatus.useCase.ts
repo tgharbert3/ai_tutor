@@ -1,5 +1,5 @@
-import type { IngestionRunPort } from "../ports/ingestionRun.port.js";
 import type { ingestionStatus } from "../domain/types.js";
+import type { IngestionRunPort } from "../ports/ingestionRun.port.js";
 
 export class UpdateIngestionRunStatusUseCase {
     constructor(

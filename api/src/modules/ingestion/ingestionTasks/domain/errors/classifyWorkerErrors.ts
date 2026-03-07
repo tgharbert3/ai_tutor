@@ -1,9 +1,9 @@
-import { TaskNotClaiambale } from "./errorsTypes.js";
+import { TaskNotClaimable } from "./errorsTypes.js";
 
 type WorkerErrorAction = "retry" | "failed" | "bug";
 
 export function classifyWorkerError(error: unknown): WorkerErrorAction {
-    if (error instanceof TaskNotClaiambale) {
+    if (error instanceof TaskNotClaimable) {
         return "failed";
     }
     return "bug";

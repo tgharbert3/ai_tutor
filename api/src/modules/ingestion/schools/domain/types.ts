@@ -1,4 +1,4 @@
-import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
 import type { insertSchools } from "@/infrastructure/db/schema.js";
 
 import type { SchoolRepositoryPort } from "../ports/school.repo.port.js";

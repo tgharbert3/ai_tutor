@@ -1,7 +1,9 @@
 import type { Queue as BullQueue, Worker as BullWorker, Job, Processor, QueueOptions } from "bullmq";
 
-import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/canvas.api.port.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
 import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
 import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
@@ -11,11 +13,13 @@ import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.inte
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { db, JWTData } from "@/lib/types.js";
 import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
-import type { WorkerDeps } from "@/modules/ingestion/domain/types.js";
+import type { CanvasFetchWorkerDeps, WorkerDeps } from "@/modules/ingestion/domain/types.js";
 
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { DrizzleCourseActivityStreamRepository } from "@/infrastructure/drizzle/repos/drizzle.CAS.repo.js";
+import { DrizzleCourseInfoRepository } from "@/infrastructure/drizzle/repos/drizzle.courseInfo.repo.js";
 import { DrizzleCourseRepository } from "@/infrastructure/drizzle/repos/drizzle.courses.repo.js";
+import { DrizzleCanvasRawDocuments } from "@/infrastructure/drizzle/repos/drizzle.CRD.repo.js";
 import { DrizzleEnrollmentRepository } from "@/infrastructure/drizzle/repos/drizzle.enrollments.repo.js";
 import { DrizzleIngestionTasksRepo } from "@/infrastructure/drizzle/repos/drizzle.ingestionTasks.repo.js";
 import { DrizzleIngestionRunRepository } from "@/infrastructure/drizzle/repos/drizzle.IR.repo.js";
@@ -25,9 +29,9 @@ import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
 import { createQueue } from "@/modules/ingestion/background/factories/queue.factory.js";
 import { createWorker } from "@/modules/ingestion/background/factories/worker.factory.js";
 import { handleWorkerError } from "@/modules/ingestion/ingestionTasks/domain/errors/handleWorkerError.js";
+import { CanvasFetchWorkerScope } from "@/modules/ingestion/scopes/canvasFetchWorkerScope.js";
 import { CoursePlanWorkerScope } from "@/modules/ingestion/scopes/CoursePlanWorker.scope.js";
 import { EnrollmentWorkerScope } from "@/modules/ingestion/scopes/EnrollmentWorker.scope.js";
-import { FetchCanvasWorkerScope } from "@/modules/ingestion/scopes/FetchCanvasWorkerScope.js";
 import { FullIngestionScope } from "@/modules/ingestion/scopes/FullIngestionScope.js";
 import { PreIngestionScope } from "@/modules/ingestion/scopes/PreIngestion.scope.js";
 
@@ -45,6 +49,8 @@ export class AppContainer {
         courses: ICoursesRepository;
         ingestionTasks: IIngestionTaskRepository;
         courseActivityStream: ICourseActivityStreamRepository;
+        canvasRawDocuments: ICanvasRawDocumentsRepository;
+        courseInfo: ICourseInfoRepository;
     };
 
     public readonly queues: {
@@ -53,6 +59,8 @@ export class AppContainer {
         canvasFetch: BullQueue;
         courseFullIngest: BullQueue;
         courseChange: BullQueue;
+        mapping: BullQueue;
+        dbWrite: BullQueue;
     };
 
     constructor(
@@ -71,6 +79,8 @@ export class AppContainer {
             courses: new DrizzleCourseRepository(this.db),
             ingestionTasks: new DrizzleIngestionTasksRepo(this.db),
             courseActivityStream: new DrizzleCourseActivityStreamRepository(this.db),
+            canvasRawDocuments: new DrizzleCanvasRawDocuments(this.db),
+            courseInfo: new DrizzleCourseInfoRepository(this.db),
         } satisfies AppRepos;
 
         this.queues = {
@@ -79,6 +89,8 @@ export class AppContainer {
             canvasFetch: createQueue("canvasFetch", this.redis),
             courseFullIngest: createQueue("courseFullIngest", this.redis),
             courseChange: createQueue("courseChange", this.redis),
+            mapping: createQueue("mapping", this.redis),
+            dbWrite: createQueue("dbWrite", this.redis),
         } satisfies AppQueues;
     }
 
@@ -136,13 +148,23 @@ export class AppContainer {
         };
     }
 
-    createCanvasFetchScope(courseId: number) {
-        return new FetchCanvasWorkerScope(courseId);
+    createCanvasFetchScope(job: Job<WorkerDeps>) {
+        return new CanvasFetchWorkerScope({
+            job,
+            ingestionTasks: this.repos.ingestionTasks,
+            ingestionRun: this.repos.ingestionRuns,
+            canvasRawDocuments: this.repos.canvasRawDocuments,
+            courseInfo: this.repos.courseInfo,
+            clientFactory: this.clientFacotry,
+            canvasFactory: this.canvasFactory,
+            mappingQueue: this.queues.mapping,
+            dbWrite: this.queues.dbWrite,
+        } satisfies CanvasFetchWorkerDeps);
     }
 
     createCanvasFetchWorkerProcessor() {
-        return async (job: Job<number>) => {
-            const scope = this.createCanvasFetchScope(job.data);
+        return async (job: Job<WorkerDeps>) => {
+            const scope = this.createCanvasFetchScope(job);
             return await scope.execute();
         };
     };

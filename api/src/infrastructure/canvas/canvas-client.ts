@@ -1,5 +1,5 @@
-import type { CanvasApiPort, CanvasApiPortFactory } from "./ports/cavans.api.port.js";
-import type { CanvasEnrollment, StreamActivityItem } from "./types.js";
+import type { CanvasApiPort, CanvasApiPortFactory } from "./ports/canvas.api.port.js";
+import type { CanvasCourse, CanvasEnrollment, CanvasTab, StreamActivityItem } from "./types.js";
 
 import { CanvasHttpError } from "./errors.js";
 
@@ -34,6 +34,14 @@ export class CanvasClient implements CanvasApiPort {
         const response = await this.get<unknown>(`courses/${courseId}/activity_stream`);
 
         if (!this.isCanvasStreamArray(response)) {
+            return undefined;
+        }
+        return response;
+    }
+
+    async getCourseInfo(courseId: number): Promise<CanvasCourse | undefined> {
+        const response = await this.get<any>(`courses/${courseId}?include[]=syllabus_body&include[]=tabs`);
+        if (!this.isCanvasCourse(response)) {
             return undefined;
         }
         return response;
@@ -92,6 +100,34 @@ export class CanvasClient implements CanvasApiPort {
         return (
             Array.isArray(data)
             && data.every(this.isCanvasEnrollment)
+        );
+    }
+
+    private isCanvasCourse(obj: any): obj is CanvasCourse {
+        return (
+            typeof obj === "object"
+            && obj !== null
+            && obj.id === "number"
+            && obj.name === "string"
+            && obj.course_code === "string"
+            && obj.syllabus_body === "string"
+            && obj.workflow_state === "string"
+            && this.isTabArray(obj.tabs)
+        );
+    }
+
+    private isTabArray(data: unknown): data is CanvasTab[] {
+        return (
+            Array.isArray(data)
+            && data.every(this.isTab)
+        );
+    }
+
+    private isTab(obj: any): obj is CanvasTab {
+        return (
+            typeof obj === "object"
+            && obj.id === "string"
+            && obj.html_url === "string"
         );
     }
 }

@@ -1,5 +1,5 @@
 import type { AppQueues, AppRepos } from "@/app/composition/types.js";
-import type { CanvasApiPort, CanvasApiPortFactory } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPort, CanvasApiPortFactory } from "@/infrastructure/canvas/ports/canvas.api.port.js";
 import type { JWTData } from "@/lib/types.js";
 
 import { SyncUserUseCase } from "@/modules/ingestion/users/applications/useCases/syncUser.useCase.js";

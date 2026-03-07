@@ -7,7 +7,7 @@ import type { db } from "@/lib/types.js";
 
 import { courseActivityStream, ingestionTasks } from "@/infrastructure/db/schema.js";
 
-import type { IngestionTask, IngestionTaskKind, IngestionTaskStatus } from "../../../modules/ingestion/ingestionTasks/domain/types.js";
+import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../../../modules/ingestion/ingestionTasks/domain/types.js";
 
 export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
     constructor(
@@ -139,4 +139,19 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
 
         return rows.map(r => r.taskId);
     }
+
+    async insertDbWriteTask(ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, docId: string, entityType: IngestionTaskET): Promise<string> {
+        const task = {
+            entityType,
+            status: "queued",
+            schoolId,
+            courseId,
+            kind: taskKind,
+            entityId: docId,
+            ingestionRunId,
+        } satisfies insertIngestonTask;
+
+        const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
+        return newTask.taskId;
+    };
 }

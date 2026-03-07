@@ -3,7 +3,7 @@ import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.
 
 import { FetchUsersCanvasToken } from "@/infrastructure/internal/application/fetchUsersCanvasToken.useCase.js";
 
-import type { CanvasApiPort, CanvasApiPortFactory } from "../ports/cavans.api.port.js";
+import type { CanvasApiPort, CanvasApiPortFactory } from "../ports/canvas.api.port.js";
 
 export class CreateCanvasClient {
     private readonly fetchUsersCanvasToken: FetchUsersCanvasToken;

@@ -15,3 +15,19 @@ export interface StreamActivityItem {
 };
 
 export type StreamActivityType = "DiscussionTopic" | "Conversation " | "Message" | "Submission " | "Conference" | "Collaboration" | "AssessmentRequest" | "Announcement";
+
+export interface CanvasCourse {
+    id: number;
+    name: string;
+    course_code: string;
+    syllabus_body: string;
+    workflow_state: string;
+    tabs: object;
+}
+
+export interface CanvasTab {
+    id: string;
+    html_url: string;
+    normalizedUrl: string;
+    canvasInfoId: string;
+}

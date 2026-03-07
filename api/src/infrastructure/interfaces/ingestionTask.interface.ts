@@ -1,5 +1,5 @@
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
-import type { IngestionTask, IngestionTaskKind, IngestionTaskStatus } from "@/modules/ingestion/ingestionTasks/domain/types.js";
+import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
 export interface IIngestionTaskRepository {
 
@@ -24,4 +24,5 @@ export interface IIngestionTaskRepository {
     claimIngestionTask: (taskId: string) => Promise<IngestionTask>;
 
     insertCanvasFetchTaskForFullIngestion: (ingestionRunId: string, fetchType: IngestionTaskKind[], courseId: number, schoolId: number) => Promise<string[]>;
+    insertDbWriteTask: (ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, docId: string, entityType: IngestionTaskET) => Promise<string>;
 }

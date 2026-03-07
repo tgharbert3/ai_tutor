@@ -1,7 +1,9 @@
 import type { Queue } from "bullmq";
 
-import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
 import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
 import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
 import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
@@ -24,6 +26,8 @@ export type AppRepos = Readonly<{
     courses: ICoursesRepository;
     ingestionTasks: IIngestionTaskRepository;
     courseActivityStream: ICourseActivityStreamRepository;
+    canvasRawDocuments: ICanvasRawDocumentsRepository;
+    courseInfo: ICourseInfoRepository;
 }>;
 
 export type AppQueues = Readonly<{
@@ -32,6 +36,8 @@ export type AppQueues = Readonly<{
     canvasFetch: Queue;
     courseFullIngest: Queue;
     courseChange: Queue;
+    mapping: Queue;
+    dbWrite: Queue;
 }>;
 
 export type AppClients = Readonly<{

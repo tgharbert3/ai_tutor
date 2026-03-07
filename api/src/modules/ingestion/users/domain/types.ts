@@ -1,4 +1,4 @@
-import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
 import type { insertUser } from "@/infrastructure/db/schema.js";
 
 import type { IngestionRunPort } from "../ingestion/ingestionRuns/ports/ingestionRun.port.js";

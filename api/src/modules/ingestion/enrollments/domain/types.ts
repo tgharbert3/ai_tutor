@@ -1,4 +1,4 @@
-import type { CanvasApiPort } from "@/infrastructure/canvas/ports/cavans.api.port.js";
+import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
 
 export interface Enrollment {
     canvasUserId: number;

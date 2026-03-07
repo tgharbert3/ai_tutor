@@ -1,738 +1,738 @@
 {
-  "id": "c15b7cb8-9ad5-4092-862b-ca20c0d666eb",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "7",
-  "dialect": "postgresql",
-  "tables": {
-    "ai.assignments": {
-      "name": "assignments",
-      "schema": "ai",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "assignments_id_seq",
+    "id": "c15b7cb8-9ad5-4092-862b-ca20c0d666eb",
+    "prevId": "00000000-0000-0000-0000-000000000000",
+    "version": "7",
+    "dialect": "postgresql",
+    "tables": {
+        "ai.assignments": {
+            "name": "assignments",
             "schema": "ai",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "9223372036854775807",
-            "cache": "1",
-            "cycle": false
-          }
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "bigint",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "identity": {
+                        "type": "always",
+                        "name": "assignments_id_seq",
+                        "schema": "ai",
+                        "increment": "1",
+                        "startWith": "1",
+                        "minValue": "1",
+                        "maxValue": "9223372036854775807",
+                        "cache": "1",
+                        "cycle": false
+                    }
+                },
+                "assignment_id": {
+                    "name": "assignment_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "description": {
+                    "name": "description",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "due_at": {
+                    "name": "due_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "workflow_state": {
+                    "name": "workflow_state",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "course_id": {
+                    "name": "course_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "assignments_course_id_courses_id_fk": {
+                    "name": "assignments_course_id_courses_id_fk",
+                    "tableFrom": "assignments",
+                    "tableTo": "courses",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "course_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "assignment_id": {
-          "name": "assignment_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "due_at": {
-          "name": "due_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "workflow_state": {
-          "name": "workflow_state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "course_id": {
-          "name": "course_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "assignments_course_id_courses_id_fk": {
-          "name": "assignments_course_id_courses_id_fk",
-          "tableFrom": "assignments",
-          "tableTo": "courses",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "ai.course_activity_stream": {
-      "name": "course_activity_stream",
-      "schema": "ai",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "course_activity_stream_id_seq",
+        "ai.course_activity_stream": {
+            "name": "course_activity_stream",
             "schema": "ai",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "9223372036854775807",
-            "cache": "1",
-            "cycle": false
-          }
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "bigint",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "identity": {
+                        "type": "always",
+                        "name": "course_activity_stream_id_seq",
+                        "schema": "ai",
+                        "increment": "1",
+                        "startWith": "1",
+                        "minValue": "1",
+                        "maxValue": "9223372036854775807",
+                        "cache": "1",
+                        "cycle": false
+                    }
+                },
+                "canvas_stream_id": {
+                    "name": "canvas_stream_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "entity_type": {
+                    "name": "entity_type",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "html_url": {
+                    "name": "html_url",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "event_time": {
+                    "name": "event_time",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "dedup_hash": {
+                    "name": "dedup_hash",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "status": {
+                    "name": "status",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "course_id": {
+                    "name": "course_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "course_activity_stream_course_id_courses_id_fk": {
+                    "name": "course_activity_stream_course_id_courses_id_fk",
+                    "tableFrom": "course_activity_stream",
+                    "tableTo": "courses",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "course_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {
+                "course_activity_stream_dedupHash_unique": {
+                    "name": "course_activity_stream_dedupHash_unique",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "dedup_hash"
+                    ]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "canvas_stream_id": {
-          "name": "canvas_stream_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "entity_type": {
-          "name": "entity_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "html_url": {
-          "name": "html_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "event_time": {
-          "name": "event_time",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "dedup_hash": {
-          "name": "dedup_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "course_id": {
-          "name": "course_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "course_activity_stream_course_id_courses_id_fk": {
-          "name": "course_activity_stream_course_id_courses_id_fk",
-          "tableFrom": "course_activity_stream",
-          "tableTo": "courses",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "course_activity_stream_dedupHash_unique": {
-          "name": "course_activity_stream_dedupHash_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "dedup_hash"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "ai.courses": {
-      "name": "courses",
-      "schema": "ai",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "courses_id_seq",
+        "ai.courses": {
+            "name": "courses",
             "schema": "ai",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "9223372036854775807",
-            "cache": "1",
-            "cycle": false
-          }
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "bigint",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "identity": {
+                        "type": "always",
+                        "name": "courses_id_seq",
+                        "schema": "ai",
+                        "increment": "1",
+                        "startWith": "1",
+                        "minValue": "1",
+                        "maxValue": "9223372036854775807",
+                        "cache": "1",
+                        "cycle": false
+                    }
+                },
+                "course_id": {
+                    "name": "course_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "course_code": {
+                    "name": "course_code",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "course_name": {
+                    "name": "course_name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "workflow_state": {
+                    "name": "workflow_state",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "canvas_updated_at": {
+                    "name": "canvas_updated_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "last_synced_at": {
+                    "name": "last_synced_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "school_id": {
+                    "name": "school_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "courses_school_id_schools_id_fk": {
+                    "name": "courses_school_id_schools_id_fk",
+                    "tableFrom": "courses",
+                    "tableTo": "schools",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "school_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {
+                "courses_courseId_unique": {
+                    "name": "courses_courseId_unique",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "course_id"
+                    ]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "course_id": {
-          "name": "course_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "course_code": {
-          "name": "course_code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "course_name": {
-          "name": "course_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "workflow_state": {
-          "name": "workflow_state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "canvas_updated_at": {
-          "name": "canvas_updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_synced_at": {
-          "name": "last_synced_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "school_id": {
-          "name": "school_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "courses_school_id_schools_id_fk": {
-          "name": "courses_school_id_schools_id_fk",
-          "tableFrom": "courses",
-          "tableTo": "schools",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "school_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "courses_courseId_unique": {
-          "name": "courses_courseId_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "course_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "ai.ingestion_runs": {
-      "name": "ingestion_runs",
-      "schema": "ai",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "status": {
-          "name": "status",
-          "type": "ingestion_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "started_at": {
-          "name": "started_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "finished_at": {
-          "name": "finished_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "checkpoint_start": {
-          "name": "checkpoint_start",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "checkpoint_end": {
-          "name": "checkpoint_end",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "error": {
-          "name": "error",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "school_id": {
-          "name": "school_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "ingestion_runs_user_id_users_id_fk": {
-          "name": "ingestion_runs_user_id_users_id_fk",
-          "tableFrom": "ingestion_runs",
-          "tableTo": "users",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "ingestion_runs_school_id_schools_id_fk": {
-          "name": "ingestion_runs_school_id_schools_id_fk",
-          "tableFrom": "ingestion_runs",
-          "tableTo": "schools",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "school_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "ai.schools": {
-      "name": "schools",
-      "schema": "ai",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "schools_id_seq",
+        "ai.ingestion_runs": {
+            "name": "ingestion_runs",
             "schema": "ai",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "9223372036854775807",
-            "cache": "1",
-            "cycle": false
-          }
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "uuid",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "default": "gen_random_uuid()"
+                },
+                "status": {
+                    "name": "status",
+                    "type": "ingestion_status",
+                    "typeSchema": "public",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "started_at": {
+                    "name": "started_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                },
+                "finished_at": {
+                    "name": "finished_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "checkpoint_start": {
+                    "name": "checkpoint_start",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "checkpoint_end": {
+                    "name": "checkpoint_end",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "error": {
+                    "name": "error",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "uuid",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "school_id": {
+                    "name": "school_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "ingestion_runs_user_id_users_id_fk": {
+                    "name": "ingestion_runs_user_id_users_id_fk",
+                    "tableFrom": "ingestion_runs",
+                    "tableTo": "users",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "user_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "ingestion_runs_school_id_schools_id_fk": {
+                    "name": "ingestion_runs_school_id_schools_id_fk",
+                    "tableFrom": "ingestion_runs",
+                    "tableTo": "schools",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "school_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "canvas_base_url": {
-          "name": "canvas_base_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
+        "ai.schools": {
+            "name": "schools",
+            "schema": "ai",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "bigint",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "identity": {
+                        "type": "always",
+                        "name": "schools_id_seq",
+                        "schema": "ai",
+                        "increment": "1",
+                        "startWith": "1",
+                        "minValue": "1",
+                        "maxValue": "9223372036854775807",
+                        "cache": "1",
+                        "cycle": false
+                    }
+                },
+                "canvas_base_url": {
+                    "name": "canvas_base_url",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "school_color": {
+                    "name": "school_color",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "'#6B7280'"
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {
+                "schools_canvas_base_url_unique": {
+                    "name": "schools_canvas_base_url_unique",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "canvas_base_url"
+                    ]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "school_color": {
-          "name": "school_color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'#6B7280'"
+        "ai.user_enrollments": {
+            "name": "user_enrollments",
+            "schema": "ai",
+            "columns": {
+                "user_id": {
+                    "name": "user_id",
+                    "type": "uuid",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "course_id": {
+                    "name": "course_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "enrollment_state": {
+                    "name": "enrollment_state",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "canvas_user_id": {
+                    "name": "canvas_user_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "is_active": {
+                    "name": "is_active",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "user_enrollments_user_id_users_id_fk": {
+                    "name": "user_enrollments_user_id_users_id_fk",
+                    "tableFrom": "user_enrollments",
+                    "tableTo": "users",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "user_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "user_enrollments_course_id_courses_id_fk": {
+                    "name": "user_enrollments_course_id_courses_id_fk",
+                    "tableFrom": "user_enrollments",
+                    "tableTo": "courses",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "course_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "user_enrollments_user_id_course_id_pk": {
+                    "name": "user_enrollments_user_id_course_id_pk",
+                    "columns": [
+                        "user_id",
+                        "course_id"
+                    ]
+                }
+            },
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
+        "ai.user_sync": {
+            "name": "user_sync",
+            "schema": "ai",
+            "columns": {
+                "user_id": {
+                    "name": "user_id",
+                    "type": "uuid",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "course_id": {
+                    "name": "course_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "last_stream_id": {
+                    "name": "last_stream_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "last_check_at": {
+                    "name": "last_check_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "status": {
+                    "name": "status",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "user_sync_user_id_users_id_fk": {
+                    "name": "user_sync_user_id_users_id_fk",
+                    "tableFrom": "user_sync",
+                    "tableTo": "users",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "user_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "user_sync_course_id_courses_id_fk": {
+                    "name": "user_sync_course_id_courses_id_fk",
+                    "tableFrom": "user_sync",
+                    "tableTo": "courses",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "course_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "user_sync_user_id_course_id_pk": {
+                    "name": "user_sync_user_id_course_id_pk",
+                    "columns": [
+                        "user_id",
+                        "course_id"
+                    ]
+                }
+            },
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+        "ai.users": {
+            "name": "users",
+            "schema": "ai",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "uuid",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "email": {
+                    "name": "email",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "school_id": {
+                    "name": "school_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "users_school_id_schools_id_fk": {
+                    "name": "users_school_id_schools_id_fk",
+                    "tableFrom": "users",
+                    "tableTo": "schools",
+                    "schemaTo": "ai",
+                    "columnsFrom": [
+                        "school_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "schools_canvas_base_url_unique": {
-          "name": "schools_canvas_base_url_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "canvas_base_url"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
     },
-    "ai.user_enrollments": {
-      "name": "user_enrollments",
-      "schema": "ai",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "course_id": {
-          "name": "course_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "enrollment_state": {
-          "name": "enrollment_state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "canvas_user_id": {
-          "name": "canvas_user_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+    "enums": {
+        "public.ingestion_status": {
+            "name": "ingestion_status",
+            "schema": "public",
+            "values": [
+                "queued",
+                "running",
+                "noop",
+                "complete",
+                "failed"
+            ]
         }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_enrollments_user_id_users_id_fk": {
-          "name": "user_enrollments_user_id_users_id_fk",
-          "tableFrom": "user_enrollments",
-          "tableTo": "users",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "user_enrollments_course_id_courses_id_fk": {
-          "name": "user_enrollments_course_id_courses_id_fk",
-          "tableFrom": "user_enrollments",
-          "tableTo": "courses",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "user_enrollments_user_id_course_id_pk": {
-          "name": "user_enrollments_user_id_course_id_pk",
-          "columns": [
-            "user_id",
-            "course_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
     },
-    "ai.user_sync": {
-      "name": "user_sync",
-      "schema": "ai",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "course_id": {
-          "name": "course_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "last_stream_id": {
-          "name": "last_stream_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_check_at": {
-          "name": "last_check_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_sync_user_id_users_id_fk": {
-          "name": "user_sync_user_id_users_id_fk",
-          "tableFrom": "user_sync",
-          "tableTo": "users",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "user_sync_course_id_courses_id_fk": {
-          "name": "user_sync_course_id_courses_id_fk",
-          "tableFrom": "user_sync",
-          "tableTo": "courses",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "user_sync_user_id_course_id_pk": {
-          "name": "user_sync_user_id_course_id_pk",
-          "columns": [
-            "user_id",
-            "course_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+    "schemas": {
+        "ai": "ai"
     },
-    "ai.users": {
-      "name": "users",
-      "schema": "ai",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "school_id": {
-          "name": "school_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "users_school_id_schools_id_fk": {
-          "name": "users_school_id_schools_id_fk",
-          "tableFrom": "users",
-          "tableTo": "schools",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "school_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+    "sequences": {},
+    "roles": {},
+    "policies": {},
+    "views": {},
+    "_meta": {
+        "columns": {},
+        "schemas": {},
+        "tables": {}
     }
-  },
-  "enums": {
-    "public.ingestion_status": {
-      "name": "ingestion_status",
-      "schema": "public",
-      "values": [
-        "queued",
-        "running",
-        "noop",
-        "complete",
-        "failed"
-      ]
-    }
-  },
-  "schemas": {
-    "ai": "ai"
-  },
-  "sequences": {},
-  "roles": {},
-  "policies": {},
-  "views": {},
-  "_meta": {
-    "columns": {},
-    "schemas": {},
-    "tables": {}
-  }
 }

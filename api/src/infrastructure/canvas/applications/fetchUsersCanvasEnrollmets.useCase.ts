@@ -1,4 +1,4 @@
-import type { CanvasApiPortFactory } from "../ports/cavans.api.port.js";
+import type { CanvasApiPortFactory } from "../ports/canvas.api.port.js";
 import type { CanvasEnrollment } from "../types.js";
 
 export class FetchUsersCanvasEnrollmentsUseCase {

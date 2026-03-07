@@ -4,7 +4,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const ingestionStatusEnum = pgEnum("ingestion_status", ["queued", "running", "noop", "complete", "failed"]);
 // Identifier for the worker
-export const ingestionTaskKind = pgEnum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetchAllAssignments", "fetchSyllabus"]);
+export const ingestionTaskKind = pgEnum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetchAllAssignments", "fetchCourseInfo", "mapping", "write:Course"]);
 // Specifies what the entityId user for. If 'assignment' then entityId is assignmentId
 export const ingestionTaskEntityType = pgEnum("ingestion_task_entity_type", ["syllabus", "assignment", "course"]);
 export const ingestionTaskStatus = pgEnum("ingestion_task_status", ["queued", "running", "success", "failed", "processing", "processed"]);
@@ -35,11 +35,8 @@ export const users = apiSchema.table("users", {
 export const courses = apiSchema.table("courses", {
     id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
     canvasCourseId: bigint("course_id", { mode: "number" }).notNull(),
-    courseCode: text("course_code"),
-    courseName: text("course_name"),
     // TODO: make this an enum
     workflowState: text("workflow_state"),
-    canvasUpdatedAt: timestamp("canvas_updated_at"),
     lastSyncedAt: timestamp("last_synced_at"),
     schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
     ...timestamps,
@@ -54,17 +51,6 @@ export const userEnrollments = apiSchema.table("user_enrollments", {
     canvasUserId: bigint("canvas_user_id", { mode: "number" }),
     isActive: boolean("is_active"),
     ...timestamps,
-}, table => [
-    primaryKey({ columns: [table.userId, table.courseId] }),
-]);
-
-export const userSync = apiSchema.table("user_sync", {
-    userId: uuid("user_id").references(() => users.id).notNull(),
-    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id).notNull(),
-    lastStreamId: bigint("last_stream_id", { mode: "number" }),
-    lastCheckAt: timestamp("last_check_at"),
-    // TODO: make this an enum
-    status: text("status"),
 }, table => [
     primaryKey({ columns: [table.userId, table.courseId] }),
 ]);
@@ -116,6 +102,44 @@ export const ingestionTasks = apiSchema.table("ingestion_tasks", {
     ...timestamps,
 });
 
+export const canvasRawDocuments = apiSchema.table("canvas_raw_documents", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityType: ingestionTaskEntityType().notNull(),
+    entityId: text().notNull(),
+    payload: text().notNull(),
+    schoolId: bigint("school_id", { mode: "number" }).notNull().references(() => schools.id),
+    courseId: bigint("course_id", { mode: "number" }).notNull().references(() => courses.id),
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).defaultNow().notNull(),
+}, t => [
+    unique().on(t.schoolId, t.schoolId, t.entityType, t.entityId),
+]);
+
+export const courseInfo = apiSchema.table("course_info", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    courseCode: text("course_code").notNull(),
+    name: text("name").notNull(),
+    canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull().references(() => courses.id),
+});
+
+export const courseSyllabus = apiSchema.table("course_syllabus", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    sanitizedSyllabus: text("sanitized_syllabus"),
+    rawSyllabus: text("raw_syllabus").notNull(),
+    plainText: text("plain_text"),
+    hash: text().unique(),
+    status: ingestionStatusEnum().notNull(),
+    courseInfoId: text("course_info_id").notNull().references(() => courseInfo.id),
+});
+
+export const courseTabs = apiSchema.table("course_tabs", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tabId: text("tab_id").notNull(),
+    htmlUrl: text("html_url").notNull(),
+    normalizedUrl: text("raw_html"),
+    status: ingestionStatusEnum().notNull(),
+    courseInfoId: text("course_info_id").notNull().references(() => courseInfo.id),
+});
+
 // Relations:
 // 1. Schools Relations
 export const schoolsRelations = relations(schools, ({ many }) => ({
@@ -131,7 +155,6 @@ export const usersRelations = relations(users, ({ one, many }) => ({
         references: [schools.id],
     }),
     userEnrollments: many(userEnrollments),
-    userSync: many(userSync),
     ingestionRuns: many(ingestionRuns),
 }));
 
@@ -142,7 +165,6 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
         references: [schools.id],
     }),
     userEnrollments: many(userEnrollments),
-    userSync: many(userSync),
     assignments: many(assignments),
     courseActivityStream: many(courseActivityStream),
 }));
@@ -155,18 +177,6 @@ export const userEnrollmentsRelations = relations(userEnrollments, ({ one }) => 
     }),
     course: one(courses, {
         fields: [userEnrollments.courseId],
-        references: [courses.id],
-    }),
-}));
-
-// 5. User Sync Relations
-export const userSyncRelations = relations(userSync, ({ one }) => ({
-    user: one(users, {
-        fields: [userSync.userId],
-        references: [users.id],
-    }),
-    course: one(courses, {
-        fields: [userSync.courseId],
         references: [courses.id],
     }),
 }));
@@ -211,6 +221,28 @@ export const ingestionTaskRelations = relations(ingestionTasks, ({ one }) => ({
     }),
 }));
 
+export const courseInfoRelations = relations(courseInfo, ({ one, many }) => ({
+    courseTabs: many(courseTabs),
+    courseSyllabus: one(courseSyllabus, {
+        fields: [courseInfo.id],
+        references: [courseSyllabus.courseInfoId],
+    }),
+}));
+
+export const courseSyllabusRelations = relations(courseSyllabus, ({ one }) => ({
+    courseInfo: one(courseInfo, {
+        fields: [courseSyllabus.courseInfoId],
+        references: [courseInfo.id],
+    }),
+}));
+
+export const courseTabsRelations = relations(courseTabs, ({ one }) => ({
+    courseInfo: one(courseInfo, {
+        fields: [courseTabs.courseInfoId],
+        references: [courseInfo.id],
+    }),
+}));
+
 // Schemas
 export const selectCourseSchema = createSelectSchema(courses)
     .omit({
@@ -238,9 +270,6 @@ export type insertSchools = typeof schools.$inferInsert;
 export type getUserEnrollments = typeof userEnrollments.$inferSelect;
 export type insertUserEnrollment = typeof userEnrollments.$inferInsert;
 
-export type getUserSync = typeof userSync.$inferSelect;
-export type insertUserSync = typeof userSync.$inferInsert;
-
 export type getAssignments = typeof assignments.$inferSelect;
 export type insertAssignment = typeof assignments.$inferInsert;
 
@@ -252,3 +281,7 @@ export type insertIngestonRun = typeof ingestionRuns.$inferInsert;
 
 export type getIngestionTask = typeof ingestionTasks.$inferSelect;
 export type insertIngestonTask = typeof ingestionTasks.$inferInsert;
+
+export type insertTabs = typeof courseTabs.$inferInsert;
+
+export type insertCourseInfo = typeof courseInfo.$inferInsert;
