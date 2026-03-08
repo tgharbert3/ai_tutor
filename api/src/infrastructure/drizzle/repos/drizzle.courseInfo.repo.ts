@@ -43,5 +43,9 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
         });
 
         return syllabusRow.rawSyllabus;
+    };
+
+    async insertSyllabus(syllabusId: string, sanitizedSyllabus: string, plainText: string, syllabusHash: string): Promise<void> {
+        await this.db.update(courseSyllabus).set({ sanitizedSyllabus, plainText, hash: syllabusHash }).where(eq(courseSyllabus.id, syllabusId)).returning();
     }
 }

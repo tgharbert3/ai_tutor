@@ -64,6 +64,7 @@ export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
     return {
         insertCourseInfo: vi.fn(),
         fetchRawSyllabus: vi.fn(),
+        insertSyllabus: vi.fn(),
     };
 }
 
@@ -131,7 +132,7 @@ export function makeMockCanvasClient(): Mocked<CanvasApiPort> {
     };
 }
 
-export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskId: string; docId?: string }) {
+export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskId: string }) {
     return {
         id: jobId,
         data,

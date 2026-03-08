@@ -1,3 +1,4 @@
+import type { CanvasCourse } from "@/infrastructure/canvas/types.js";
 import type { ingestionTaskEntityType, ingestionTaskKind, ingestionTaskStatus } from "@/infrastructure/db/schema.js";
 
 export type IngestionTaskStatus = (typeof ingestionTaskStatus.enumValues)[number];
@@ -13,3 +14,12 @@ export interface IngestionTask {
     schoolId: number;
     courseId: number;
 }
+
+export interface SanitizedSyllabus {
+    syllabusId: string;
+    sanitizedSyllabus: string;
+    plainText: string;
+    syllabusHash: string;
+}
+
+export type Payload = SanitizedSyllabus | CanvasCourse;

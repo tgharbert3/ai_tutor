@@ -1,3 +1,5 @@
+import type { Job } from "bullmq";
+
 import type { DbWriteScopeDeps } from "../domain/types.js";
 
 export class DbWriteScope {
@@ -9,6 +11,7 @@ export class DbWriteScope {
         const { ingestionRunId, taskId } = this.dbWriteScopeDeps.job.data;
         const task = await this.dbWriteScopeDeps.ingestionTasks.claimIngestionTask(taskId);
         const rawDoc = await this.dbWriteScopeDeps.canvasRawDocuments.fetchRawDocument(task.entityId);
+        // TODO: this is an any. make it typed
         const payload = JSON.parse(rawDoc.payload);
 
         switch (task.kind) {
@@ -18,8 +21,22 @@ export class DbWriteScope {
                 await this.dbWriteScopeDeps.processQueue.add("process", { ingestionRunId, taskId: syllabusTaskId });
                 const processTabsTaskId = await this.dbWriteScopeDeps.ingestionTasks.insertProcessCourseTabsTask(ingestionRunId, "process:Tabs", rawDoc.courseId, rawDoc.schoolId, "tabs", courseInfoId);
                 await this.dbWriteScopeDeps.processQueue.add("process", { ingestionRunId, taskId: processTabsTaskId });
-                await this.dbWriteScopeDeps.ingestionTasks.updateTaskStatus("success", taskId);
+                await this.markJobComplete(taskId, this.dbWriteScopeDeps.job);
+                // TODO: Enqueue a checkIngestionRunCompletion job
+                break;
+            };
+            case "write:Syllabus": {
+                const { syllabusId, sanitizedSyllabus, plainText, syllabusHash } = payload;
+                await this.dbWriteScopeDeps.courseInfo.insertSyllabus(syllabusId, sanitizedSyllabus, plainText, syllabusHash);
+                await this.markJobComplete(taskId, this.dbWriteScopeDeps.job);
+                // TODO: Enqueue a checkIngestionRunCompletion job
+                break;
             }
         }
+    }
+
+    private async markJobComplete(taskId: string, job: Job) {
+        await this.dbWriteScopeDeps.ingestionTasks.updateTaskStatus("success", taskId);
+        await job.updateProgress(100);
     }
 }

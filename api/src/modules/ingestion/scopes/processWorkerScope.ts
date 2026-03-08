@@ -1,4 +1,5 @@
 import type { ProcessWorkerDeps } from "../domain/types.js";
+import type { SanitizedSyllabus } from "../ingestionTasks/domain/types.js";
 
 export class ProcessWorkerScope {
     constructor(
@@ -20,12 +21,12 @@ export class ProcessWorkerScope {
                     sanitizedSyllabus,
                     plainText,
                     syllabusHash,
-                };
+                } satisfies SanitizedSyllabus;
                 const docId = await this.prcoessWorkerDeps.canvasRawDoc.insertCanvasRawDocument("syllabus", String(task.courseId), JSON.stringify(syllabusObj), new Date(), task.courseId, task.schoolId);
                 const newWriteTask = await this.prcoessWorkerDeps.ingestionTasks.insertWriteSyllabusTask(ingestionRunId, "write:Syllabus", task.courseId, task.schoolId, "rawDoc", docId);
                 await this.prcoessWorkerDeps.dbWrite.add("write", { ingestionRunId, taskId: newWriteTask });
                 await this.prcoessWorkerDeps.ingestionTasks.updateTaskStatus("success", taskId);
-            }
+            };
         }
     }
 }
