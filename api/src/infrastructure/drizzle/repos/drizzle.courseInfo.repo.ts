@@ -14,7 +14,7 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
             const info = {
                 courseCode,
                 name,
-                canvasCourseId,
+                courseId: canvasCourseId,
             } satisfies insertCourseInfo;
             const [courseInfoRow] = await tx.insert(courseInfo).values(info).returning();
             const courseInfoId = courseInfoRow.id;

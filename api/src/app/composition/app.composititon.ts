@@ -59,7 +59,7 @@ export class AppContainer {
         canvasFetch: BullQueue;
         courseFullIngest: BullQueue;
         courseChange: BullQueue;
-        mapping: BullQueue;
+        process: BullQueue;
         dbWrite: BullQueue;
     };
 
@@ -89,7 +89,7 @@ export class AppContainer {
             canvasFetch: createQueue("canvasFetch", this.redis),
             courseFullIngest: createQueue("courseFullIngest", this.redis),
             courseChange: createQueue("courseChange", this.redis),
-            mapping: createQueue("mapping", this.redis),
+            process: createQueue("mapping", this.redis),
             dbWrite: createQueue("dbWrite", this.redis),
         } satisfies AppQueues;
     }
@@ -157,7 +157,7 @@ export class AppContainer {
             courseInfo: this.repos.courseInfo,
             clientFactory: this.clientFacotry,
             canvasFactory: this.canvasFactory,
-            mappingQueue: this.queues.mapping,
+            processQueue: this.queues.process,
             dbWrite: this.queues.dbWrite,
         } satisfies CanvasFetchWorkerDeps);
     }

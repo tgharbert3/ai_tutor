@@ -23,8 +23,9 @@ export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
         findCourseIngestionTask: vi.fn(),
         claimIngestionTask: vi.fn(),
         insertCanvasFetchTaskForFullIngestion: vi.fn(),
-        insertMappingTask: vi.fn(),
         insertDbWriteTask: vi.fn(),
+        insertProcessCourseTabsTask: vi.fn(),
+        insertProcessSyllabusTask: vi.fn(),
     };
 };
 
@@ -53,14 +54,13 @@ export function makeMockCourseActivityStreamRepo(): Mocked<ICourseActivityStream
 export function makeMockCanvasRawDocumentsRepo(): Mocked<ICanvasRawDocumentsRepository> {
     return {
         insertCanvasRawDocument: vi.fn(),
+        fetchRawDocument: vi.fn(),
     };
 };
 
 export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
     return {
         insertCourseInfo: vi.fn(),
-        insertCourseTabs: vi.fn(),
-        insertCousrseSyllabus: vi.fn(),
     };
 }
 
@@ -82,7 +82,7 @@ export function makeMockCanvasFetchQueue(): Mocked<Queue> {
     } as unknown as Mocked<Queue>;
 }
 
-export function makeMockMappingQueue(): Mocked<Queue> {
+export function makeMockProcessQueue(): Mocked<Queue> {
     return {
         add: vi.fn(),
     } as unknown as Mocked<Queue>;
@@ -121,7 +121,7 @@ export function makeMockCanvasClient(): Mocked<CanvasApiPort> {
     };
 }
 
-export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskId: string }) {
+export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskId: string; docId?: string }) {
     return {
         id: jobId,
         data,

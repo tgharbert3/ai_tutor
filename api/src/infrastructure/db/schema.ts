@@ -4,9 +4,9 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const ingestionStatusEnum = pgEnum("ingestion_status", ["queued", "running", "noop", "complete", "failed"]);
 // Identifier for the worker
-export const ingestionTaskKind = pgEnum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetchAllAssignments", "fetchCourseInfo", "mapping", "write:Course"]);
+export const ingestionTaskKind = pgEnum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetch:AllAssignments", "fetch:CourseInfo", "process:Syllabus", "write:CourseInfo", "process:Tabs"]);
 // Specifies what the entityId user for. If 'assignment' then entityId is assignmentId
-export const ingestionTaskEntityType = pgEnum("ingestion_task_entity_type", ["syllabus", "assignment", "course"]);
+export const ingestionTaskEntityType = pgEnum("ingestion_task_entity_type", ["syllabus", "assignment", "course", "tabs", "rawDoc"]);
 export const ingestionTaskStatus = pgEnum("ingestion_task_status", ["queued", "running", "success", "failed", "processing", "processed"]);
 
 export const coursePlanStatus = typeof ingestionTaskStatus;
@@ -118,7 +118,7 @@ export const courseInfo = apiSchema.table("course_info", {
     id: uuid("id").primaryKey().defaultRandom(),
     courseCode: text("course_code").notNull(),
     name: text("name").notNull(),
-    canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull().references(() => courses.id),
+    courseId: bigint("canvas_course_id", { mode: "number" }).notNull().references(() => courses.id),
 });
 
 export const courseSyllabus = apiSchema.table("course_syllabus", {
@@ -285,3 +285,5 @@ export type insertIngestonTask = typeof ingestionTasks.$inferInsert;
 export type insertTabs = typeof courseTabs.$inferInsert;
 
 export type insertCourseInfo = typeof courseInfo.$inferInsert;
+
+export type getCanvasRawDocument = typeof canvasRawDocuments.$inferSelect;

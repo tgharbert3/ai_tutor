@@ -6,7 +6,6 @@ import type { JWTPayload } from "jose";
 import * as z from "zod";
 
 import type { AppContainer } from "@/app/composition/app.composititon.js";
-import type { ServiceContainer } from "@/modules/services.container.js";
 
 import type * as schema from "../infrastructure/db/schema.js";
 
@@ -14,7 +13,6 @@ export interface AppBindings {
     Variables: {
         logger: PinoLogger;
         appContainer: AppContainer;
-        services: ServiceContainer;
         user: JWTData;
     };
 }
@@ -63,4 +61,4 @@ export const CanvasCourseSchema = z.object({
     course_code: z.string(),
 });
 
-export type CanvasCourse = z.infer<typeof CanvasCourseSchema>;
+export type CanvasCourseSchema = z.infer<typeof CanvasCourseSchema>;

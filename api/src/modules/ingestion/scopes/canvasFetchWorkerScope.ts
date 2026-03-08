@@ -22,7 +22,7 @@ export class CanvasFetchWorkerScope {
         const canvasClient = this.canvasFetchWorkerDeps.canvasFactory.create({ apiToken: usersCanvasToken, canvasBaseUrl: clientDeps.canvasBaseUrl });
         switch (task.kind) {
             // case "fetchAllAssignments":
-            case "fetchCourseInfo": {
+            case "fetch:CourseInfo": {
                 const courseInfo = await canvasClient.getCourseInfo(task.courseId);
                 if (!courseInfo) {
                 // TODO: Update this error
@@ -47,7 +47,7 @@ export class CanvasFetchWorkerScope {
             courseId,
             schoolId,
         );
-        const insertCourseTaskId = await this.canvasFetchWorkerDeps.ingestionTasks.insertDbWriteTask(ingestionRunId, "write:Course", courseId, schoolId, insertCourseDocId, "course");
+        const insertCourseTaskId = await this.canvasFetchWorkerDeps.ingestionTasks.insertDbWriteTask(ingestionRunId, "write:CourseInfo", courseId, schoolId, insertCourseDocId, "rawDoc");
         await this.canvasFetchWorkerDeps.dbWrite.add("write", { ingestionRunId, taskId: insertCourseTaskId });
     }
 

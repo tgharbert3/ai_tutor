@@ -58,7 +58,19 @@ export interface CanvasFetchWorkerDeps {
     canvasRawDocuments: ICanvasRawDocumentsRepository;
     clientFactory: ClientApiPortFactory;
     canvasFactory: CanvasClientFactory;
-    mappingQueue: Queue;
+    processQueue: Queue;
     courseInfo: ICourseInfoRepository;
     dbWrite: Queue;
+}
+
+export interface DbWriteWorker extends WorkerDeps {
+    docId: string;
+}
+
+export interface DbWriteScopeDeps {
+    job: Job<DbWriteWorker>;
+    ingestionTasks: IIngestionTaskRepository;
+    canvasRawDocuments: ICanvasRawDocumentsRepository;
+    courseInfo: ICourseInfoRepository;
+    processQueue: Queue;
 }

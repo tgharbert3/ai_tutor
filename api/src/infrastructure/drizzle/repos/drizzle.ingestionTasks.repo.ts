@@ -154,4 +154,33 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
         return newTask.taskId;
     };
+
+    async insertProcessSyllabusTask(ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
+        const task = {
+            entityType,
+            status: "queued",
+            schoolId,
+            courseId,
+            kind: taskKind,
+            entityId: syllabusId,
+            ingestionRunId,
+        } satisfies insertIngestonTask;
+
+        const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
+        return newTask.taskId;
+    };
+
+    async insertProcessCourseTabsTask(ingestionRunId: string, kind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, courseInfoId: string): Promise<string> {
+        const task = {
+            entityType,
+            kind,
+            schoolId,
+            courseId,
+            entityId: courseInfoId,
+            ingestionRunId,
+            status: "queued",
+        } satisfies insertIngestonTask;
+        const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
+        return newTask.taskId;
+    };
 }

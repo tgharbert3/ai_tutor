@@ -1,5 +1,7 @@
 import type { IngestionTaskET } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
+import type { getCanvasRawDocument } from "../db/schema.js";
+
 export interface ICanvasRawDocumentsRepository {
     insertCanvasRawDocument: (
         entityType: IngestionTaskET,
@@ -9,4 +11,6 @@ export interface ICanvasRawDocumentsRepository {
         courseId: number,
         schoolId: number)
     => Promise<string>;
+
+    fetchRawDocument: (docId: string) => Promise<Omit<getCanvasRawDocument, "fetchedAt">>;
 }

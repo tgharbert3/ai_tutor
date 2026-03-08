@@ -36,7 +36,7 @@ export type AppQueues = Readonly<{
     canvasFetch: Queue;
     courseFullIngest: Queue;
     courseChange: Queue;
-    mapping: Queue;
+    process: Queue;
     dbWrite: Queue;
 }>;
 
