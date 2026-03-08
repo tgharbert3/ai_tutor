@@ -27,7 +27,5 @@ export interface CanvasCourse {
 
 export interface CanvasTab {
     id: string;
-    html_url: string;
-    normalizedUrl: string;
     canvasInfoId: string;
 }

@@ -40,8 +40,6 @@ describe("unit tests for the dbWriteScope", () => {
                 workflow_state: "active",
                 tabs: [{
                     id: "modules",
-                    html_url: "/url",
-                    normalizedUrl: "/url",
                     canvasInfoId: "1",
                 }] satisfies CanvasTab[],
             } satisfies CanvasCourse),
@@ -60,11 +58,9 @@ describe("unit tests for the dbWriteScope", () => {
         expect(mockDeps.canvasRawDocuments.fetchRawDocument).toHaveBeenCalledExactlyOnceWith(task.entityId);
         expect(mockDeps.courseInfo.insertCourseInfo).toHaveBeenCalledExactlyOnceWith("courseCode", "course1", 2, "<p> this is the syllabus</p>", [{
             id: "modules",
-            html_url: "/url",
-            normalizedUrl: "/url",
             canvasInfoId: "1",
         }]);
-        expect(mockDeps.processQueue.add).toHaveBeenCalledTimes(2);
+        expect(mockDeps.processQueue.add).toHaveBeenCalledTimes(1);
         expect(mockDeps.ingestionTasks.updateTaskStatus).toHaveBeenCalledExactlyOnceWith("success", mockJob.data.taskId);
         expect(mockDeps.job.updateProgress).toHaveBeenCalledExactlyOnceWith(100);
     });

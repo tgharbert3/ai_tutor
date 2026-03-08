@@ -16,11 +16,9 @@ export class DbWriteScope {
 
         switch (task.kind) {
             case "write:CourseInfo": {
-                const { courseInfoId, syllabusId } = await this.dbWriteScopeDeps.courseInfo.insertCourseInfo(payload.course_code, payload.name, rawDoc.courseId, payload.syllabus_body, payload.tabs);
+                const { syllabusId } = await this.dbWriteScopeDeps.courseInfo.insertCourseInfo(payload.course_code, payload.name, rawDoc.courseId, payload.syllabus_body, payload.tabs);
                 const syllabusTaskId = await this.dbWriteScopeDeps.ingestionTasks.insertProcessSyllabusTask(ingestionRunId, "process:Syllabus", rawDoc.courseId, rawDoc.schoolId, "syllabus", syllabusId);
                 await this.dbWriteScopeDeps.processQueue.add("process", { ingestionRunId, taskId: syllabusTaskId });
-                const processTabsTaskId = await this.dbWriteScopeDeps.ingestionTasks.insertProcessCourseTabsTask(ingestionRunId, "process:Tabs", rawDoc.courseId, rawDoc.schoolId, "tabs", courseInfoId);
-                await this.dbWriteScopeDeps.processQueue.add("process", { ingestionRunId, taskId: processTabsTaskId });
                 await this.markJobComplete(taskId, this.dbWriteScopeDeps.job);
                 // TODO: Enqueue a checkIngestionRunCompletion job
                 break;

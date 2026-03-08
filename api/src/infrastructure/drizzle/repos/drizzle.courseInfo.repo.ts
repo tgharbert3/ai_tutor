@@ -24,10 +24,7 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
             const [syllabusRow] = await tx.insert(courseSyllabus).values({ rawSyllabus, courseInfoId, status: "queued" }).returning();
             const tabsToInsert = tabs.map(tab => ({
                 tabId: tab.id,
-                htmlUrl: tab.html_url,
-                normalizedUrl: null,
                 courseInfoId,
-                status: "queued",
             } satisfies insertTabs));
             const newTabs = await tx.insert(courseTabs).values(tabsToInsert).returning();
             const newTabIds = newTabs.map(tab => tab.id);
@@ -46,6 +43,6 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
     };
 
     async insertSyllabus(syllabusId: string, sanitizedSyllabus: string, plainText: string, syllabusHash: string): Promise<void> {
-        await this.db.update(courseSyllabus).set({ sanitizedSyllabus, plainText, hash: syllabusHash }).where(eq(courseSyllabus.id, syllabusId)).returning();
+        await this.db.update(courseSyllabus).set({ sanitizedSyllabus, plainText, hash: syllabusHash, status: "complete" }).where(eq(courseSyllabus.id, syllabusId)).returning();
     }
 }

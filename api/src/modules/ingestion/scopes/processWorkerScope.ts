@@ -26,6 +26,7 @@ export class ProcessWorkerScope {
                 const newWriteTask = await this.prcoessWorkerDeps.ingestionTasks.insertWriteSyllabusTask(ingestionRunId, "write:Syllabus", task.courseId, task.schoolId, "rawDoc", docId);
                 await this.prcoessWorkerDeps.dbWrite.add("write", { ingestionRunId, taskId: newWriteTask });
                 await this.prcoessWorkerDeps.ingestionTasks.updateTaskStatus("success", taskId);
+                break;
             };
         }
     }

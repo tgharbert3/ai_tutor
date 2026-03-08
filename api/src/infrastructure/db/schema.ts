@@ -134,9 +134,6 @@ export const courseSyllabus = apiSchema.table("course_syllabus", {
 export const courseTabs = apiSchema.table("course_tabs", {
     id: uuid("id").primaryKey().defaultRandom(),
     tabId: text("tab_id").notNull(),
-    htmlUrl: text("html_url").notNull(),
-    normalizedUrl: text("raw_html"),
-    status: ingestionStatusEnum().notNull(),
     courseInfoId: text("course_info_id").notNull().references(() => courseInfo.id),
 });
 
