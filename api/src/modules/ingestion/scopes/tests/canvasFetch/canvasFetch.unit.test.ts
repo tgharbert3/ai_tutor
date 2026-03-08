@@ -43,8 +43,6 @@ describe("unit tests for canvasfetch Worker", () => {
             workflow_state: "available",
             tabs: [{
                 id: "modules",
-                html_url: "/url",
-                normalizedUrl: "/url",
                 canvasInfoId: "1",
             }] satisfies CanvasTab[],
         } satisfies CanvasCourse);

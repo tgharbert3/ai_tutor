@@ -25,9 +25,9 @@ export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
         claimIngestionTask: vi.fn(),
         insertCanvasFetchTaskForFullIngestion: vi.fn(),
         insertDbWriteTask: vi.fn(),
-        insertProcessCourseTabsTask: vi.fn(),
         insertProcessSyllabusTask: vi.fn(),
         insertWriteSyllabusTask: vi.fn(),
+        getRunCounts: vi.fn(),
     };
 };
 

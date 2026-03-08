@@ -14,7 +14,7 @@ import type { ISanitizeHtml } from "@/infrastructure/interfaces/sanitizeHtml/san
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { db, JWTData } from "@/lib/types.js";
 import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
-import type { CanvasFetchWorkerDeps, WorkerDeps } from "@/modules/ingestion/domain/types.js";
+import type { CanvasFetchWorkerDeps, DbWriteScopeDeps, ProcessWorkerDeps, WorkerDeps } from "@/modules/ingestion/domain/types.js";
 
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { DrizzleCourseActivityStreamRepository } from "@/infrastructure/drizzle/repos/drizzle.CAS.repo.js";
@@ -33,9 +33,11 @@ import { createWorker } from "@/modules/ingestion/background/factories/worker.fa
 import { handleWorkerError } from "@/modules/ingestion/ingestionTasks/domain/errors/handleWorkerError.js";
 import { CanvasFetchWorkerScope } from "@/modules/ingestion/scopes/canvasFetchWorkerScope.js";
 import { CoursePlanWorkerScope } from "@/modules/ingestion/scopes/CoursePlanWorker.scope.js";
+import { DbWriteScope } from "@/modules/ingestion/scopes/dbWriteWorkerScope.js";
 import { EnrollmentWorkerScope } from "@/modules/ingestion/scopes/EnrollmentWorker.scope.js";
 import { FullIngestionScope } from "@/modules/ingestion/scopes/FullIngestionScope.js";
 import { PreIngestionScope } from "@/modules/ingestion/scopes/PreIngestion.scope.js";
+import { ProcessWorkerScope } from "@/modules/ingestion/scopes/processWorkerScope.js";
 
 import type { AppQueues, AppRepos } from "./types.js";
 
@@ -64,6 +66,7 @@ export class AppContainer {
         courseChange: BullQueue;
         process: BullQueue;
         dbWrite: BullQueue;
+        checkRunCompletion: BullQueue;
     };
 
     constructor(
@@ -94,8 +97,9 @@ export class AppContainer {
             canvasFetch: createQueue("canvasFetch", this.redis),
             courseFullIngest: createQueue("courseFullIngest", this.redis),
             courseChange: createQueue("courseChange", this.redis),
-            process: createQueue("mapping", this.redis),
+            process: createQueue("process", this.redis),
             dbWrite: createQueue("dbWrite", this.redis),
+            checkRunCompletion: createQueue("checkRunCompletion", this.redis),
         } satisfies AppQueues;
     }
 
@@ -190,6 +194,41 @@ export class AppContainer {
         };
     }
 
+    createProcessScope(job: Job<WorkerDeps>) {
+        return new ProcessWorkerScope({
+            job,
+            ingestionTasks: this.repos.ingestionTasks,
+            courseInfo: this.repos.courseInfo,
+            canvasRawDoc: this.repos.canvasRawDocuments,
+            sanitizeHtml: this.sanitizeHtml,
+            dbWrite: this.queues.dbWrite,
+        } satisfies ProcessWorkerDeps);
+    }
+
+    createProcessWorkerProcessor() {
+        return async (job: Job<WorkerDeps>) => {
+            const scope = this.createProcessScope(job);
+            return await scope.execute();
+        };
+    }
+
+    createDbWriteScope(job: Job<WorkerDeps>) {
+        return new DbWriteScope({
+            job,
+            ingestionTasks: this.repos.ingestionTasks,
+            canvasRawDocuments: this.repos.canvasRawDocuments,
+            courseInfo: this.repos.courseInfo,
+            processQueue: this.queues.process,
+        } satisfies DbWriteScopeDeps);
+    }
+
+    createDbWriteWorkerProcessor() {
+        return async (job: Job<WorkerDeps>) => {
+            const scope = this.createDbWriteScope(job);
+            return await scope.execute();
+        };
+    }
+
     // Method that gets called during app bootstap to start the workers
     startWorkers() {
         // Retain a refrenece to them so when shut them down gracefully
@@ -198,6 +237,8 @@ export class AppContainer {
             createWorker("courses", this.createCoursePlanWorkerProcessor(), this.redis, 1),
             createWorker("canvasFetch", this.createCanvasFetchWorkerProcessor(), this.redis, 1),
             createWorker("courseFullIngest", this.createFullIngestionWorkerProcessor(), this.redis, 1),
+            createWorker("process", this.createProcessWorkerProcessor(), this.redis, 1),
+            createWorker("dbWrite", this.createDbWriteWorkerProcessor(), this.redis, 1),
         ];
     }
 };

@@ -38,6 +38,7 @@ export type AppQueues = Readonly<{
     courseChange: Queue;
     process: Queue;
     dbWrite: Queue;
+    checkRunCompletion: Queue;
 }>;
 
 export type AppClients = Readonly<{

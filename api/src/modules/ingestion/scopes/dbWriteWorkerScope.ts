@@ -20,14 +20,14 @@ export class DbWriteScope {
                 const syllabusTaskId = await this.dbWriteScopeDeps.ingestionTasks.insertProcessSyllabusTask(ingestionRunId, "process:Syllabus", rawDoc.courseId, rawDoc.schoolId, "syllabus", syllabusId);
                 await this.dbWriteScopeDeps.processQueue.add("process", { ingestionRunId, taskId: syllabusTaskId });
                 await this.markJobComplete(taskId, this.dbWriteScopeDeps.job);
-                // TODO: Enqueue a checkIngestionRunCompletion job
+                await this.dbWriteScopeDeps.checkRun.add("check", { ingestionRunId });
                 break;
             };
             case "write:Syllabus": {
                 const { syllabusId, sanitizedSyllabus, plainText, syllabusHash } = payload;
                 await this.dbWriteScopeDeps.courseInfo.insertSyllabus(syllabusId, sanitizedSyllabus, plainText, syllabusHash);
                 await this.markJobComplete(taskId, this.dbWriteScopeDeps.job);
-                // TODO: Enqueue a checkIngestionRunCompletion job
+                await this.dbWriteScopeDeps.checkRun.add("check", { ingestionRunId });
                 break;
             }
         }

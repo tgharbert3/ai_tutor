@@ -70,6 +70,7 @@ export interface DbWriteScopeDeps {
     canvasRawDocuments: ICanvasRawDocumentsRepository;
     courseInfo: ICourseInfoRepository;
     processQueue: Queue;
+    checkRun: Queue;
 }
 
 export interface ProcessWorkerDeps {
@@ -79,4 +80,10 @@ export interface ProcessWorkerDeps {
     canvasRawDoc: ICanvasRawDocumentsRepository;
     sanitizeHtml: ISanitizeHtml;
     dbWrite: Queue;
+}
+
+export interface checkRunCompletionDeps {
+    job: Job<{ ingestionRunId: string }>;
+    ingestionTasks: IIngestionTaskRepository;
+    ingestionRuns: IIngestionRunRepository;
 }

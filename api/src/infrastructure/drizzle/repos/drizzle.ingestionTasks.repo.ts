@@ -7,7 +7,7 @@ import type { db } from "@/lib/types.js";
 
 import { courseActivityStream, ingestionTasks } from "@/infrastructure/db/schema.js";
 
-import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../../../modules/ingestion/ingestionTasks/domain/types.js";
+import type { Counts, IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../../../modules/ingestion/ingestionTasks/domain/types.js";
 
 export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
     constructor(
@@ -183,5 +183,20 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
 
         const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
         return newTask.taskId;
+    }
+
+    async getRunCounts(ingestionRunId: string): Promise<Counts> {
+        const [counts] = await this.db.select(
+            {
+                queuedCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "queued")),
+                successCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "success")),
+                runningCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "running")),
+                failedCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "failed")),
+            },
+        )
+            .from(ingestionTasks)
+            .where(eq(ingestionTasks.ingestionRunId, ingestionRunId));
+
+        return counts;
     }
 }
