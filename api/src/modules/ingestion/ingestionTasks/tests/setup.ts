@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 
 import type { IngestionTask } from "../domain/types.js";
 

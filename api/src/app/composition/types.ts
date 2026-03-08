@@ -1,15 +1,15 @@
 import type { Queue } from "bullmq";
 
 import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
-import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
-import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
-import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
-import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
-import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
-import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
-import type { ISchoolRepository } from "@/infrastructure/interfaces/school.repo.interface.js";
-import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.interface.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/repos/canvasRawDocuments.interface.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/repos/enrollment.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
+import type { ISchoolRepository } from "@/infrastructure/interfaces/repos/school.repo.interface.js";
+import type { IUserRepository } from "@/infrastructure/interfaces/repos/user.repo.interface.js";
 
 export type Context = Readonly<{
     userId: string;

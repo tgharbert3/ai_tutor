@@ -1,7 +1,9 @@
+import { eq } from "drizzle-orm";
+
 import type { CanvasTab } from "@/infrastructure/canvas/types.js";
 import type { insertCourseInfo, insertTabs } from "@/infrastructure/db/schema.js";
 import type { InsertCourseInfo } from "@/infrastructure/domain/types.js";
-import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { courseInfo, courseSyllabus, courseTabs } from "@/infrastructure/db/schema.js";
@@ -33,5 +35,13 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
             return { courseInfoId, syllabusId: syllabusRow.id, tabIds: newTabIds };
         });
         return response;
+    }
+
+    async fetchRawSyllabus(syllabusId: string): Promise<string> {
+        const [syllabusRow] = await this.db.query.courseSyllabus.findMany({
+            where: eq(courseSyllabus.id, syllabusId),
+        });
+
+        return syllabusRow.rawSyllabus;
     }
 }

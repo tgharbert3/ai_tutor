@@ -4,12 +4,13 @@ import type { Mocked } from "vitest";
 import { vi } from "vitest";
 
 import type { CanvasApiPort, CanvasApiPortFactory } from "@/infrastructure/canvas/ports/canvas.api.port.js";
-import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
-import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
-import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
-import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
-import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/repos/canvasRawDocuments.interface.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
+import type { ISanitizeHtml } from "@/infrastructure/interfaces/sanitizeHtml/sanitizeHtml.interface.js";
 import type { ClientApiPort, ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 
 import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../ingestionTasks/domain/types.js";
@@ -26,6 +27,7 @@ export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
         insertDbWriteTask: vi.fn(),
         insertProcessCourseTabsTask: vi.fn(),
         insertProcessSyllabusTask: vi.fn(),
+        insertWriteSyllabusTask: vi.fn(),
     };
 };
 
@@ -61,6 +63,14 @@ export function makeMockCanvasRawDocumentsRepo(): Mocked<ICanvasRawDocumentsRepo
 export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
     return {
         insertCourseInfo: vi.fn(),
+        fetchRawSyllabus: vi.fn(),
+    };
+}
+
+export function makeMockSanitizeHtml(): Mocked<ISanitizeHtml> {
+    return {
+        sanitize: vi.fn(),
+        convertToPlainText: vi.fn(),
     };
 }
 

@@ -2,13 +2,14 @@ import type { Job, Queue } from "bullmq";
 
 import type { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/canvas.api.port.js";
-import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
-import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
-import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
-import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
-import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
-import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/repos/canvasRawDocuments.interface.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/repos/enrollment.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
+import type { ISanitizeHtml } from "@/infrastructure/interfaces/sanitizeHtml/sanitizeHtml.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
 
@@ -63,14 +64,19 @@ export interface CanvasFetchWorkerDeps {
     dbWrite: Queue;
 }
 
-export interface DbWriteWorker extends WorkerDeps {
-    docId: string;
-}
-
 export interface DbWriteScopeDeps {
-    job: Job<DbWriteWorker>;
+    job: Job<WorkerDeps>;
     ingestionTasks: IIngestionTaskRepository;
     canvasRawDocuments: ICanvasRawDocumentsRepository;
     courseInfo: ICourseInfoRepository;
     processQueue: Queue;
+}
+
+export interface ProcessWorkerDeps {
+    job: Job<WorkerDeps>;
+    ingestionTasks: IIngestionTaskRepository;
+    courseInfo: ICourseInfoRepository;
+    canvasRawDoc: ICanvasRawDocumentsRepository;
+    sanitizeHtml: ISanitizeHtml;
+    dbWrite: Queue;
 }

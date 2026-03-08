@@ -3,7 +3,7 @@ import type { Job, Queue } from "bullmq";
 import assert from "node:assert/strict";
 
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 
 import { CreateCanvasClient } from "@/infrastructure/canvas/applications/createCanvasClient.js";
 

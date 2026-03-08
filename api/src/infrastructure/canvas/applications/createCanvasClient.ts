@@ -1,4 +1,4 @@
-import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 
 import { FetchUsersCanvasToken } from "@/infrastructure/internal/application/fetchUsersCanvasToken.useCase.js";

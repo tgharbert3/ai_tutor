@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import type { getCanvasRawDocument } from "@/infrastructure/db/schema.js";
-import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/repos/canvasRawDocuments.interface.js";
 import type { db } from "@/lib/types.js";
 import type { IngestionTaskET } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 

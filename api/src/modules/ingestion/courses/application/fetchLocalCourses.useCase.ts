@@ -1,4 +1,4 @@
-import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
 
 ;
 

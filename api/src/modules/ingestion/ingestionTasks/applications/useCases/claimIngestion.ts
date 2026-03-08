@@ -1,4 +1,4 @@
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 
 import { TaskNotClaimable } from "../../domain/errors/errorsTypes.js";
 

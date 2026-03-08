@@ -1,15 +1,16 @@
 import type { Queue as BullQueue, Worker as BullWorker, Job, Processor, QueueOptions } from "bullmq";
 
 import type { CanvasApiPortFactory } from "@/infrastructure/canvas/ports/canvas.api.port.js";
-import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/canvasRawDocuments.interface.js";
-import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
-import type { ICourseInfoRepository } from "@/infrastructure/interfaces/courseInfo.interface.js";
-import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
-import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
-import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
-import type { ISchoolRepository } from "@/infrastructure/interfaces/school.repo.interface.js";
-import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.interface.js";
+import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/repos/canvasRawDocuments.interface.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
+import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/repos/enrollment.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
+import type { ISchoolRepository } from "@/infrastructure/interfaces/repos/school.repo.interface.js";
+import type { IUserRepository } from "@/infrastructure/interfaces/repos/user.repo.interface.js";
+import type { ISanitizeHtml } from "@/infrastructure/interfaces/sanitizeHtml/sanitizeHtml.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 import type { db, JWTData } from "@/lib/types.js";
 import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
@@ -26,6 +27,7 @@ import { DrizzleIngestionRunRepository } from "@/infrastructure/drizzle/repos/dr
 import { DrizzleSchoolRepository } from "@/infrastructure/drizzle/repos/drizzle.school.repo.js";
 import { DrizzleUserRepository } from "@/infrastructure/drizzle/repos/drizzle.user.repo.js";
 import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
+import { SanitizeHtml } from "@/infrastructure/sanitizeHtml/sanitizeHtml.js";
 import { createQueue } from "@/modules/ingestion/background/factories/queue.factory.js";
 import { createWorker } from "@/modules/ingestion/background/factories/worker.factory.js";
 import { handleWorkerError } from "@/modules/ingestion/ingestionTasks/domain/errors/handleWorkerError.js";
@@ -41,6 +43,7 @@ export class AppContainer {
     workers: BullWorker[] = [];
     readonly canvasFactory: CanvasApiPortFactory;
     readonly clientFacotry: ClientApiPortFactory;
+    readonly sanitizeHtml: ISanitizeHtml;
     public readonly repos: {
         users: IUserRepository;
         schools: ISchoolRepository;
@@ -70,6 +73,8 @@ export class AppContainer {
         // Have to use a factory because each client needs to be request scoped
         this.canvasFactory = new CanvasClientFactory();
         this.clientFacotry = new ClientFactory();
+
+        this.sanitizeHtml = new SanitizeHtml();
 
         this.repos = {
             users: new DrizzleUserRepository(this.db),

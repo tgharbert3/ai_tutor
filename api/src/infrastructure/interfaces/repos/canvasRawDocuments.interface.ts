@@ -1,6 +1,6 @@
 import type { IngestionTaskET } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
-import type { getCanvasRawDocument } from "../db/schema.js";
+import type { getCanvasRawDocument } from "../../db/schema.js";
 
 export interface ICanvasRawDocumentsRepository {
     insertCanvasRawDocument: (

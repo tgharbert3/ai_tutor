@@ -1,7 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 
 import type { insertUserEnrollment } from "@/infrastructure/db/schema.js";
-import type { IEnrollmentRepo } from "@/infrastructure/interfaces/enrollment.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/repos/enrollment.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { userEnrollments } from "@/infrastructure/db/schema.js";

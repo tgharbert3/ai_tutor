@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 
-import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/courseActivityStream.interface.js";
+import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { courseActivityStream } from "@/infrastructure/db/schema.js";

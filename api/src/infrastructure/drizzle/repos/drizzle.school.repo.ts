@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import type { ISchoolRepository } from "@/infrastructure/interfaces/school.repo.interface.js";
+import type { ISchoolRepository } from "@/infrastructure/interfaces/repos/school.repo.interface.js";
 import type { db } from "@/lib/types.js";
 import type { SchoolDto, UpsertSchoolInput } from "@/modules/ingestion/schools/domain/types.js";
 

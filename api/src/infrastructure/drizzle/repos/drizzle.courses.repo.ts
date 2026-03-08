@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import type { ICoursesRepository } from "@/infrastructure/interfaces/courses.repo.interface.js";
+import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { courses } from "@/infrastructure/db/schema.js";

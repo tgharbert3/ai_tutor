@@ -1,4 +1,4 @@
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 
 export class MarkTaskAsSuccess {
     constructor(

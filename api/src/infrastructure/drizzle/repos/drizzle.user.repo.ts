@@ -1,4 +1,4 @@
-import type { IUserRepository } from "@/infrastructure/interfaces/user.repo.interface.js";
+import type { IUserRepository } from "@/infrastructure/interfaces/repos/user.repo.interface.js";
 import type { db } from "@/lib/types.js";
 import type { InsertUserInput, UserDto } from "@/modules/ingestion/users/domain/types.js";
 

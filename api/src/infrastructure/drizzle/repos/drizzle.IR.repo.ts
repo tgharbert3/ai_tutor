@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import type { IIngestionRunRepository } from "@/infrastructure/interfaces/ingestionRun.interface.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { ingestionRuns, schools } from "@/infrastructure/db/schema.js";

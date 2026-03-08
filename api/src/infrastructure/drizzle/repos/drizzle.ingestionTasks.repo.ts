@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
 import type { insertCourseActivityStream, insertIngestonTask } from "@/infrastructure/db/schema.js";
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 import type { db } from "@/lib/types.js";
 
 import { courseActivityStream, ingestionTasks } from "@/infrastructure/db/schema.js";
@@ -183,4 +183,19 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
         return newTask.taskId;
     };
+
+    async insertWriteSyllabusTask(ingestionRunId: string, kind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
+        const task = {
+            entityType,
+            kind,
+            schoolId,
+            courseId,
+            entityId: syllabusId,
+            ingestionRunId,
+            status: "queued",
+        } satisfies insertIngestonTask;
+
+        const [newTask] = await this.db.insert(ingestionTasks).values(task).returning();
+        return newTask.taskId;
+    }
 }

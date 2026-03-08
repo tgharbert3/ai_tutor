@@ -1,6 +1,6 @@
 import type { Job } from "bullmq";
 
-import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/ingestionTask.interface.js";
+import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 
 import { classifyWorkerError } from "./classifyWorkerErrors.js";
 

@@ -27,4 +27,5 @@ export interface IIngestionTaskRepository {
     insertDbWriteTask: (ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, docId: string, entityType: IngestionTaskET) => Promise<string>;
     insertProcessSyllabusTask: (ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string) => Promise<string>;
     insertProcessCourseTabsTask: (ingestionRunId: string, kind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, courseInfoId: string) => Promise<string>;
+    insertWriteSyllabusTask: (ingestionRunId: string, kind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string) => Promise<string>;
 }
