@@ -2,9 +2,9 @@ import type { CanvasCourse, CanvasEnrollment, StreamActivityItem } from "../type
 
 export interface CanvasApiPort {
     getPrimaryColor: () => Promise<string | undefined>;
-    getCanvasEnrollments: () => Promise<CanvasEnrollment[] | undefined>;
-    getCanvasCourseActivityStream: (courseId: number) => Promise<StreamActivityItem[] | undefined>;
-    getCourseInfo: (courseId: number) => Promise<CanvasCourse | undefined>;
+    getCanvasEnrollments: () => Promise<CanvasEnrollment[]>;
+    getCanvasCourseActivityStream: (courseId: number) => Promise<StreamActivityItem[]>;
+    getCourseInfo: (courseId: number) => Promise<CanvasCourse>;
 }
 
 export interface CanvasApiPortFactory {

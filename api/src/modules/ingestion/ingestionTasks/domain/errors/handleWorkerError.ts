@@ -14,9 +14,23 @@ export async function handleWorkerError(error: unknown, job: Job, ingestionTasks
             await ingestionTasks.updateTaskStatus("failed", taskId);
             break;
 
-        case "retry":
-            throw error;
-
+        case "retry": {
+            try {
+                await job.retry("failed", {
+                    resetAttemptsMade: true,
+                });
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    console.error(`failed ${job.id} on retry. discarding`);
+                    await ingestionTasks.updateTaskStatusWithError("failed", taskId, error.message);
+                }
+                else {
+                    throw error;
+                }
+            }
+            break;
+        }
         case "bug":
         default:
             throw error;

@@ -6,6 +6,8 @@ import { FetchUsersCanvasToken } from "@/infrastructure/internal/application/fet
 
 import type { CanvasFetchWorkerDeps } from "../domain/types.js";
 
+import { UnhandledTaskError } from "../ingestionTasks/domain/errors/errorsTypes.js";
+
 export class CanvasFetchWorkerScope {
     private fetchUsersCanvasToken: FetchUsersCanvasToken;
     constructor(
@@ -24,16 +26,12 @@ export class CanvasFetchWorkerScope {
             // case "fetchAllAssignments":
             case "fetch:CourseInfo": {
                 const courseInfo = await canvasClient.getCourseInfo(task.canvasCourseId);
-                if (!courseInfo) {
-                    await this.markJobCompleteWithError(taskId, this.canvasFetchWorkerDeps.job);
-                    return;
-                }
                 await this.enqueueDbWriteForCourse(courseInfo, task.schoolId, task.canvasCourseId, ingestionRunId);
                 await this.markJobComplete(taskId, this.canvasFetchWorkerDeps.job);
                 break;
             }
             default: {
-                throw new Error(`Unhandled Task:${taskId}`);
+                throw new UnhandledTaskError(`Unhandled Task:${taskId}`);
             }
         }
     }
@@ -50,12 +48,6 @@ export class CanvasFetchWorkerScope {
         const insertCourseTaskId = await this.canvasFetchWorkerDeps.ingestionTasks.insertDbWriteTask(ingestionRunId, "write:NewCourse", canvasCourseId, schoolId, insertCourseDocId, "rawDoc");
         await this.canvasFetchWorkerDeps.dbWrite.add("write", { ingestionRunId, taskId: insertCourseTaskId });
         return { ingestionRunId, insertCourseTaskId };
-    }
-
-    private async markJobCompleteWithError(taskId: string, job: Job) {
-        await this.canvasFetchWorkerDeps.ingestionTasks.updateTaskStatusWithError("success", taskId, "Course info unavailable or restricted");
-        await job.updateProgress(100);
-        await this.canvasFetchWorkerDeps.checkRunCompletion.add("check", { ingestionRunId: job.data.ingestionRunId });
     }
 
     private async markJobComplete(taskId: string, job: Job) {

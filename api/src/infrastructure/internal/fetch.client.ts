@@ -1,4 +1,5 @@
 import env from "@/env.js";
+import { InternalClientError } from "@/modules/ingestion/ingestionTasks/domain/errors/errorsTypes.js";
 
 import type { ClientApiPort, ClientApiPortFactory } from "./fetch.port.js";
 
@@ -28,8 +29,8 @@ export class FetchClient implements ClientApiPort {
             return await response.json() as T;
         }
         catch (error: any) {
-            console.error("CanvasSession GET error:", error);
-            throw new Error(`Canvas GET failed for path: ${path}`);
+            console.error("Unable to fetch Users API Token", error);
+            throw new InternalClientError(`Failed to fetch users canvas token from auth server: ${error.message}`);
         }
     }
 }

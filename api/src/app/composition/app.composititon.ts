@@ -112,8 +112,14 @@ export class AppContainer {
     // This is the bridge between app and request scope
     createEnrollmentWorkerProcessor(): Processor<EnrollmentJob, WorkerDeps, string> {
         return async (job: Job<EnrollmentJob, WorkerDeps, string>) => {
-            const scope = this.createEnrollmentWorkerScope(job);
-            return await scope.execute();
+            try {
+                const scope = this.createEnrollmentWorkerScope(job);
+                return await scope.execute();
+            }
+            catch (error: any) {
+            // TODO: make enrollment specific error;
+                throw new Error(`Enrollment worker error ${error.message}`);
+            }
         };
     };
 
@@ -162,10 +168,15 @@ export class AppContainer {
 
     createCanvasFetchWorkerProcessor() {
         return async (job: Job<WorkerDeps>) => {
-            const scope = this.createCanvasFetchScope(job);
-            return await scope.execute();
+            try {
+                const scope = this.createCanvasFetchScope(job);
+                return await scope.execute();
+            }
+            catch (error) {
+                handleWorkerError(error, job, this.repos.ingestionTasks, job.data.taskId);
+            };
         };
-    };
+    }
 
     createFullIngestionScope(job: Job<WorkerDeps>) {
         return new FullIngestionScope({

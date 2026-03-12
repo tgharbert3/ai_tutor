@@ -23,7 +23,6 @@ export class SyncUserEnrollmentsUseCase {
         this.setEnrollmentsToFalseUC = new SetEnrollmentsToFalseUseCase(this.syncUserEnrollmentDeps.enrollmentsRepo);
     };
 
-    // TODO: Possibly wrap in try catch or result pattern to be able to update to failed if the job fails
     async execute() {
         const { ingestionRunId, userId, canvasBaseUrl, schoolId } = this.syncUserEnrollmentDeps.job.data;
         // Update the ingestion run status
@@ -56,7 +55,6 @@ export class SyncUserEnrollmentsUseCase {
             taskIds.map(taskId => this.syncUserEnrollmentDeps.coursesQueue.add("course_plan", { ingestionRunId, taskId })),
         );
 
-        // TODO: Update this to use the task table
         await this.syncUserEnrollmentDeps.job.updateProgress(100);
         return { ingestionRunId, taskId: taskIds[0] };
     }

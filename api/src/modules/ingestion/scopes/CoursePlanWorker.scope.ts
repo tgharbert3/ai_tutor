@@ -88,6 +88,7 @@ export class CoursePlanWorkerScope {
         if (!canvasCourseActivityStream) {
             // This means there is no stream so course is brand new, has finished, or nothing has changed in 2 weeks?
             // TODO: this should not be error. need to throw one for now to keep implementing the worker
+            // Upsert the course activity stream to be empty
             throw new Error("no course actvity stream");
         };
         return canvasCourseActivityStream;
@@ -104,7 +105,6 @@ export class CoursePlanWorkerScope {
         const courseChangeTaskId = await ingestionTasks.insertCourseChangeTasks(ingestionRunId, canvasCourseId, schoolId, newItems);
         // Note: All course change tasks are queued under one task ID
         await courseChange.add("course_change", { ingestionRunId, courseChangeTaskId });
-        console.log("added course change");
     }
 
     private async completeJob(taskId: string, job: Job) {
