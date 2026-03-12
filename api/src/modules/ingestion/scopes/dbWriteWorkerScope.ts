@@ -47,6 +47,7 @@ export class DbWriteScope {
                     canvasCourseId: task.canvasCourseId,
                     userId,
                     courseId: Number(task.entityId),
+                    isActive: true,
                 } satisfies insertUserEnrollment);
                 await this.markJobComplete(taskId, this.dbWriteScopeDeps.job);
                 await this.dbWriteScopeDeps.checkRun.add("check", { ingestionRunId });

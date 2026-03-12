@@ -24,6 +24,17 @@ export class DrizzleIngestionRunRepository implements IIngestionRunRepository {
         await this.db.update(ingestionRuns).set({ status: newStatus }).where(eq(ingestionRuns.id, ingestionId));
     }
 
+    async getRunStatus(ingestionRunId: string): Promise<string> {
+        const [row] = await this.db.select({
+            status: ingestionRuns.status,
+        })
+            .from(ingestionRuns)
+            .where(
+                eq(ingestionRuns.id, ingestionRunId),
+            );
+        return row.status;
+    }
+
     async fetchUserId(ingestionRunId: string) {
         const [run] = await this.db.select().from(ingestionRuns).where(eq(ingestionRuns.id, ingestionRunId));
         return run.userId;

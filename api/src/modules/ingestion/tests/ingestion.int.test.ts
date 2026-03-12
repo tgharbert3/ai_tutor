@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { AppContainer } from "@/app/composition/app.composititon.js";
 import env from "@/env.js";
@@ -26,43 +26,39 @@ describe("integration tests for ingestion", () => {
         appContainer.startWorkers();
     });
 
-    it("test", async () => {
+    it("should return complete for the run status", async () => {
         const jweData = {
             userId: crypto.randomUUID(),
-            email: "tgh1432@unce.edu",
+            email: "tgh1432@uncw.edu",
             canvasBaseUrl: "https://uncw.instructure.com",
             canvasToken: env.API_TOKEN,
         };
         const pre = appContainer.createPreIngestionScope(jweData);
         const { ingestionId } = await pre.execute();
-        await waitForRunToFinish(testDb, ingestionId, 15000);
+        await waitForRunToFinish(10000);
+
+        const ingestionRunStatus = await appContainer.repos.ingestionRuns.getRunStatus(ingestionId);
+        const userEnrollments = await appContainer.repos.enrollments.findAllActiveEnrollmentIds(jweData.userId);
+        const courseIds = await appContainer.repos.courses.findAllCourseIdsForSchool(1);
+        const courseInfo = await appContainer.repos.courseInfo.getAllCourseInfo(courseIds[1]);
+
+        expect(ingestionRunStatus).toBe("complete");
+        expect(userEnrollments).toBeInstanceOf(Array);
+        expect(userEnrollments.length).toBeGreaterThan(0);
+        expect(courseIds).toBeInstanceOf(Array);
+        expect(courseIds.length).toBeGreaterThan(0);
+        expect(courseInfo.course_info).not.toBeNull();
+        expect(courseInfo.course_syllabus).not.toBeNull();
+        expect(courseInfo.course_tabs).not.toBeNull();
     });
 });
 
 async function waitForRunToFinish(
-    db: any,
-    runId: string,
     timeoutMs = 5000,
 ) {
     const start = Date.now();
 
     while (Date.now() - start < timeoutMs) {
-        // const run = await db.query.ingestionRuns.findFirst({
-        //     where: (ingestionRunsRepo, { eq }) => eq(ingestionRunsRepo.id, runId),
-        // });
-
-        // if (!run) {
-        //     throw new Error(`Run ${runId} not found`);
-        // }
-
-        // if (run.status === "completed")
-        //     return run;
-        // if (run.status === "failed") {
-        //     throw new Error(`Run ${runId} failed: ${run.error ?? "unknown error"}`);
-        // }
-
         await new Promise(resolve => setTimeout(resolve, 25));
-    }
-
-// throw new Error(`Timed out waiting for run ${runId} to complete`);
+    };
 }

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import type { CanvasTab } from "@/infrastructure/canvas/types.js";
 import type { insertCourseInfo, insertTabs } from "@/infrastructure/db/schema.js";
-import type { InsertCourseInfo } from "@/infrastructure/domain/types.js";
+import type { FullCourseInfo, InsertCourseInfo } from "@/infrastructure/domain/types.js";
 import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
 import type { db } from "@/lib/types.js";
 
@@ -46,4 +46,15 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
     async insertSyllabus(syllabusId: string, sanitizedSyllabus: string, plainText: string, syllabusHash: string): Promise<void> {
         await this.db.update(courseSyllabus).set({ sanitizedSyllabus, plainText, hash: syllabusHash, status: "complete" }).where(eq(courseSyllabus.id, syllabusId)).returning();
     }
+
+    async getAllCourseInfo(courseId: number): Promise<FullCourseInfo> {
+        const [info] = await this.db.select()
+            .from(courseInfo)
+            .where(
+                eq(courseInfo.courseId, courseId),
+            )
+            .rightJoin(courseSyllabus, eq(courseInfo.id, courseSyllabus.courseInfoId))
+            .rightJoin(courseTabs, eq(courseInfo.id, courseTabs.courseInfoId));
+        return info;
+    };
 }

@@ -9,14 +9,23 @@ import { courses } from "@/infrastructure/db/schema.js";
 export class DrizzleCourseRepository implements ICoursesRepository {
     constructor(private db: db) {}
 
-    async findAllCourseIdsForSchool(schoolId: number): Promise<number[]> {
-        const rows = await this.db.select({ courseId: courses.canvasCourseId }).from(courses).where(eq(courses.schoolId, schoolId));
+    async findAllCanvasCourseIdsForSchool(schoolId: number): Promise<number[]> {
+        const rows = await this.db.select({ canvasCourseIds: courses.canvasCourseId }).from(courses).where(eq(courses.schoolId, schoolId));
 
-        return rows.map(row => row.courseId);
+        return rows.map(row => row.canvasCourseIds);
     }
 
     async insertCourse(course: insertCourseType): Promise<number> {
         const [newCourse] = await this.db.insert(courses).values(course).returning();
         return newCourse.id;
+    }
+
+    async findAllCourseIdsForSchool(schoolId: number): Promise<number[]> {
+        const rows = await this.db.select({ courseIds: courses.id })
+            .from(courses)
+            .where(
+                eq(courses.schoolId, schoolId),
+            );
+        return rows.map(row => row.courseIds);
     }
 };
