@@ -1,9 +1,8 @@
 import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
 import type { insertUser } from "@/infrastructure/db/schema.js";
-
-import type { IngestionRunPort } from "../ingestion/ingestionRuns/ports/ingestionRun.port.js";
-import type { SchoolRepositoryPort } from "../ingestion/schools/ports/school.repo.port.js";
-import type { UserRepositoryPort } from "./ports/user.repo.port.js";
+import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
+import type { ISchoolRepository } from "@/infrastructure/interfaces/repos/school.repo.interface.js";
+import type { IUserRepository } from "@/infrastructure/interfaces/repos/user.repo.interface.js";
 
 export interface UserWithSchoolDto {
     id: string;
@@ -22,13 +21,13 @@ export interface UserDto {
 }
 
 export interface SyncUserDeps {
-    userRepo: UserRepositoryPort;
+    userRepo: IUserRepository;
     userId: string;
     email: string;
-    schoolRepo: SchoolRepositoryPort;
+    schoolRepo: ISchoolRepository;
     canvasClient: CanvasApiPort;
     canvasBaseUrl: string;
-    ingestionRunRepo: IngestionRunPort;
+    ingestionRunRepo: IIngestionRunRepository;
 }
 
 // Drizzle types

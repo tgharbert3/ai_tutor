@@ -1,17 +1,17 @@
 import { relations } from "drizzle-orm";
-import { bigint, boolean, pgEnum, pgSchema, primaryKey, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { bigint, boolean, pgSchema, primaryKey, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-export const ingestionStatusEnum = pgEnum("ingestion_status", ["queued", "running", "noop", "complete", "failed"]);
+export const apiSchema = pgSchema("ai");
+export const ingestionStatusEnum = apiSchema.enum("ingestion_status", ["queued", "running", "noop", "complete", "failed"]);
 // Identifier for the worker
-export const ingestionTaskKind = pgEnum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetch:AllAssignments", "fetch:CourseInfo", "process:Syllabus", "write:CourseInfo", "process:Tabs", "write:Syllabus"]);
+export const ingestionTaskKind = apiSchema.enum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetch:AllAssignments", "fetch:CourseInfo", "process:Syllabus", "write:NewCourse", "process:Tabs", "write:Syllabus", "write:UserEnrollment", "write:Course"]);
 // Specifies what the entityId user for. If 'assignment' then entityId is assignmentId
-export const ingestionTaskEntityType = pgEnum("ingestion_task_entity_type", ["syllabus", "assignment", "course", "tabs", "rawDoc"]);
-export const ingestionTaskStatus = pgEnum("ingestion_task_status", ["queued", "running", "success", "failed", "processing", "processed"]);
+export const ingestionTaskEntityType = apiSchema.enum("ingestion_task_entity_type", ["syllabus", "assignment", "course", "tabs", "rawDoc", "courseInfo"]);
+
+export const ingestionTaskStatus = apiSchema.enum("ingestion_task_status", ["queued", "running", "success", "failed", "processing", "processed"]);
 
 export const coursePlanStatus = typeof ingestionTaskStatus;
-
-export const apiSchema = pgSchema("ai");
 
 const timestamps = {
     updated_at: timestamp({ withTimezone: true }),
@@ -46,13 +46,16 @@ export const courses = apiSchema.table("courses", {
 
 export const userEnrollments = apiSchema.table("user_enrollments", {
     userId: uuid("user_id").references(() => users.id).notNull(),
-    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id).notNull(),
+    courseId: bigint("course_id", { mode: "number" }).notNull().references(() => courses.id),
     enrollmentState: text("enrollment_state"),
     canvasUserId: bigint("canvas_user_id", { mode: "number" }),
+    canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull(),
+    schoolId: bigint("school_id", { mode: "number" }).notNull(),
     isActive: boolean("is_active"),
     ...timestamps,
 }, table => [
     primaryKey({ columns: [table.userId, table.courseId] }),
+    unique().on(table.userId, table.courseId),
 ]);
 
 export const assignments = apiSchema.table("assignments", {
@@ -86,39 +89,40 @@ export const ingestionRuns = apiSchema.table("ingestion_runs", {
     checkpointEnd: bigint ("checkpoint_end", { mode: "number" }),
     error: text("error"),
     userId: uuid("user_id").references(() => users.id).notNull(),
-    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
+    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull().unique(),
 });
 
 export const ingestionTasks = apiSchema.table("ingestion_tasks", {
     taskId: uuid("task_id").primaryKey().defaultRandom(),
-    kind: ingestionTaskKind().notNull(),
-    entityType: ingestionTaskEntityType().notNull(),
+    kind: ingestionTaskKind("kind").notNull(),
+    entityType: ingestionTaskEntityType("entity_type").notNull(),
     entityId: text("entity_id").notNull(),
-    status: ingestionTaskStatus().notNull(),
-    courseId: bigint("course_id", { mode: "number" }).notNull(),
+    status: ingestionTaskStatus("status").notNull(),
+    canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull(),
     schoolId: bigint("school_id", { mode: "number" }).notNull().references(() => ingestionRuns.schoolId),
-    ingestionRunId: uuid("ingestion_run_id").references(() => ingestionRuns.id).notNull().unique(),
+    ingestionRunId: uuid("ingestion_run_id").references(() => ingestionRuns.id).notNull(),
     error: text("error"),
     ...timestamps,
 });
 
 export const canvasRawDocuments = apiSchema.table("canvas_raw_documents", {
     id: uuid("id").primaryKey().defaultRandom(),
-    entityType: ingestionTaskEntityType().notNull(),
-    entityId: text().notNull(),
-    payload: text().notNull(),
+    entityType: ingestionTaskEntityType("entity_type").notNull(),
+    entityId: text("entity_id").notNull(),
+    payload: text("payload").notNull(),
     schoolId: bigint("school_id", { mode: "number" }).notNull().references(() => schools.id),
-    courseId: bigint("course_id", { mode: "number" }).notNull().references(() => courses.id),
+    canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull(),
     fetchedAt: timestamp("fetched_at", { withTimezone: true }).defaultNow().notNull(),
 }, t => [
-    unique().on(t.schoolId, t.schoolId, t.entityType, t.entityId),
+    unique().on(t.canvasCourseId, t.schoolId, t.entityType, t.entityId),
 ]);
 
 export const courseInfo = apiSchema.table("course_info", {
     id: uuid("id").primaryKey().defaultRandom(),
     courseCode: text("course_code").notNull(),
     name: text("name").notNull(),
-    courseId: bigint("canvas_course_id", { mode: "number" }).notNull().references(() => courses.id),
+    canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull(),
+    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id),
 });
 
 export const courseSyllabus = apiSchema.table("course_syllabus", {
@@ -128,13 +132,13 @@ export const courseSyllabus = apiSchema.table("course_syllabus", {
     plainText: text("plain_text"),
     hash: text().unique(),
     status: ingestionStatusEnum().notNull(),
-    courseInfoId: text("course_info_id").notNull().references(() => courseInfo.id),
+    courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id),
 });
 
 export const courseTabs = apiSchema.table("course_tabs", {
     id: uuid("id").primaryKey().defaultRandom(),
     tabId: text("tab_id").notNull(),
-    courseInfoId: text("course_info_id").notNull().references(() => courseInfo.id),
+    courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id),
 });
 
 // Relations:
@@ -173,7 +177,7 @@ export const userEnrollmentsRelations = relations(userEnrollments, ({ one }) => 
         references: [users.id],
     }),
     course: one(courses, {
-        fields: [userEnrollments.courseId],
+        fields: [userEnrollments.canvasCourseId],
         references: [courses.id],
     }),
 }));

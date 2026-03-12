@@ -1,6 +1,6 @@
 {
-  "id": "75488582-7a29-42ff-b980-f93d3514d174",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "412d58f4-2ee6-4abd-b4a3-27f06c568375",
+  "prevId": "75488582-7a29-42ff-b980-f93d3514d174",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -707,8 +707,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "course_id": {
-          "name": "course_id",
+        "canvas_course_id": {
+          "name": "canvas_course_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": true

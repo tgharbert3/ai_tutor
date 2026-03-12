@@ -1,5 +1,6 @@
 import type { Queue } from "bullmq";
 
+import type { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import type { CanvasApiPort } from "@/infrastructure/canvas/ports/canvas.api.port.js";
 import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/repos/canvasRawDocuments.interface.js";
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
@@ -10,6 +11,8 @@ import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/
 import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 import type { ISchoolRepository } from "@/infrastructure/interfaces/repos/school.repo.interface.js";
 import type { IUserRepository } from "@/infrastructure/interfaces/repos/user.repo.interface.js";
+import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
+import type { SanitizeHtml } from "@/infrastructure/sanitizeHtml/sanitizeHtml.js";
 
 export type Context = Readonly<{
     userId: string;
@@ -44,3 +47,9 @@ export type AppQueues = Readonly<{
 export type AppClients = Readonly<{
     canvasClient: CanvasApiPort;
 }>;
+
+export interface AppContainerDeps {
+    canvasFactory: CanvasClientFactory;
+    clientFactory: ClientApiPortFactory;
+    sanitizeHtml: SanitizeHtml;
+}

@@ -1,6 +1,6 @@
 {
-  "id": "75488582-7a29-42ff-b980-f93d3514d174",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b6ea2a2c-65ce-4657-af10-9bc9b90b9714",
+  "prevId": "ccab945a-140b-4d82-a57b-08807a42211b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -163,26 +163,12 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "canvas_raw_documents_canvas_course_id_courses_id_fk": {
-          "name": "canvas_raw_documents_canvas_course_id_courses_id_fk",
-          "tableFrom": "canvas_raw_documents",
-          "tableTo": "courses",
-          "schemaTo": "ai",
-          "columnsFrom": [
-            "canvas_course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "canvas_raw_documents_canvas_course_id_school_id_entityType_entityId_unique": {
-          "name": "canvas_raw_documents_canvas_course_id_school_id_entityType_entityId_unique",
+        "canvas_raw_documents_canvas_course_id_school_id_entity_type_entity_id_unique": {
+          "name": "canvas_raw_documents_canvas_course_id_school_id_entity_type_entity_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "canvas_course_id",
@@ -319,17 +305,23 @@
           "type": "bigint",
           "primaryKey": false,
           "notNull": true
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "course_info_canvas_course_id_courses_id_fk": {
-          "name": "course_info_canvas_course_id_courses_id_fk",
+        "course_info_course_id_courses_id_fk": {
+          "name": "course_info_course_id_courses_id_fk",
           "tableFrom": "course_info",
           "tableTo": "courses",
           "schemaTo": "ai",
           "columnsFrom": [
-            "canvas_course_id"
+            "course_id"
           ],
           "columnsTo": [
             "id"
@@ -707,8 +699,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "course_id": {
-          "name": "course_id",
+        "canvas_course_id": {
+          "name": "canvas_course_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": true
@@ -777,15 +769,7 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "ingestion_tasks_ingestion_run_id_unique": {
-          "name": "ingestion_tasks_ingestion_run_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "ingestion_run_id"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

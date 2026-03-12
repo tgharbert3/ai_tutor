@@ -11,12 +11,13 @@ import { courseInfo, courseSyllabus, courseTabs } from "@/infrastructure/db/sche
 export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
     constructor(private db: db) {}
 
-    async insertCourseInfo(courseCode: string, name: string, canvasCourseId: number, rawSyllabus: string, tabs: CanvasTab[]): Promise<InsertCourseInfo> {
+    async insertCourseInfo(courseCode: string, name: string, canvasCourseId: number, rawSyllabus: string, tabs: CanvasTab[], courseId: number): Promise<InsertCourseInfo> {
         const response = await this.db.transaction(async (tx) => {
             const info = {
                 courseCode,
                 name,
-                courseId: canvasCourseId,
+                canvasCourseId,
+                courseId,
             } satisfies insertCourseInfo;
             const [courseInfoRow] = await tx.insert(courseInfo).values(info).returning();
             const courseInfoId = courseInfoRow.id;

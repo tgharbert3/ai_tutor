@@ -20,17 +20,17 @@ describe("unit test for full ingestion", () => {
         const mockDeps = makeMockWorkerDeps(mockJob, scopeDeps);
         fullIngestionScope = new FullIngestionScope(mockDeps);
         const task = makeMockTask(1234, 1, "1234", "course:FullIngest", "course", "1234", "queued");
-        const syllabusTask = makeMockTask(1234, 1, "12345", "fetchSyllabus", "syllabus", "1234", "queued");
-        const assignmentsTask = makeMockTask(1234, 1, "123456", "fetchAllAssignments", "assignment", "1", "queued");
+        const syllabusTask = makeMockTask(1234, 1, "12345", "fetch:CourseInfo", "syllabus", "1234", "queued");
+        const assignmentsTask = makeMockTask(1234, 1, "123456", "fetch:AllAssignments", "assignment", "1", "queued");
 
         mockDeps.ingestionTaskRepo.claimIngestionTask.mockResolvedValue(task);
         mockDeps.ingestionTaskRepo.insertCanvasFetchTaskForFullIngestion.mockResolvedValue([syllabusTask.taskId, assignmentsTask.taskId]);
 
-        await expect(fullIngestionScope.execute()).resolves.toBeUndefined();
+        await fullIngestionScope.execute();
 
         expect(mockDeps.ingestionTaskRepo.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
-        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: syllabusTask.taskId }, { jobId: `fetch:${syllabusTask.taskId}` });
-        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: assignmentsTask.taskId }, { jobId: `fetch:${assignmentsTask.taskId}` });
+        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: syllabusTask.taskId });
+        expect(mockDeps.fetchQueue.add).toHaveBeenCalledWith("fetch", { ingestionRunId: "run_1", taskId: assignmentsTask.taskId });
         expect(mockDeps.ingestionTaskRepo.updateTaskStatus).toHaveBeenCalledExactlyOnceWith("success", mockJob.data.taskId);
         expect(mockDeps.job.updateProgress).toHaveBeenCalledWith(100);
     });

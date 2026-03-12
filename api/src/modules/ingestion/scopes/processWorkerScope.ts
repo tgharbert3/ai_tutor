@@ -22,10 +22,11 @@ export class ProcessWorkerScope {
                     plainText,
                     syllabusHash,
                 } satisfies SanitizedSyllabus;
-                const docId = await this.prcoessWorkerDeps.canvasRawDoc.insertCanvasRawDocument("syllabus", String(task.courseId), JSON.stringify(syllabusObj), new Date(), task.courseId, task.schoolId);
-                const newWriteTask = await this.prcoessWorkerDeps.ingestionTasks.insertWriteSyllabusTask(ingestionRunId, "write:Syllabus", task.courseId, task.schoolId, "rawDoc", docId);
+                const docId = await this.prcoessWorkerDeps.canvasRawDoc.insertCanvasRawDocument("syllabus", String(task.canvasCourseId), JSON.stringify(syllabusObj), new Date(), task.canvasCourseId, task.schoolId);
+                const newWriteTask = await this.prcoessWorkerDeps.ingestionTasks.insertWriteSyllabusTask(ingestionRunId, "write:Syllabus", task.canvasCourseId, task.schoolId, "rawDoc", docId);
                 await this.prcoessWorkerDeps.dbWrite.add("write", { ingestionRunId, taskId: newWriteTask });
                 await this.prcoessWorkerDeps.ingestionTasks.updateTaskStatus("success", taskId);
+                await this.prcoessWorkerDeps.checkRunCompletion.add("check", { ingestionRunId });
                 break;
             };
         }

@@ -1,6 +1,6 @@
 {
-  "id": "75488582-7a29-42ff-b980-f93d3514d174",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "ab86dc29-80de-468d-8ab7-6191cee12a40",
+  "prevId": "de902cdd-a8ac-4a5d-9e6d-05a1e3ac3654",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -181,8 +181,8 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "canvas_raw_documents_canvas_course_id_school_id_entityType_entityId_unique": {
-          "name": "canvas_raw_documents_canvas_course_id_school_id_entityType_entityId_unique",
+        "canvas_raw_documents_canvas_course_id_school_id_entity_type_entity_id_unique": {
+          "name": "canvas_raw_documents_canvas_course_id_school_id_entity_type_entity_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "canvas_course_id",
@@ -707,8 +707,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "course_id": {
-          "name": "course_id",
+        "canvas_course_id": {
+          "name": "canvas_course_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": true
@@ -777,15 +777,7 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "ingestion_tasks_ingestion_run_id_unique": {
-          "name": "ingestion_tasks_ingestion_run_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "ingestion_run_id"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

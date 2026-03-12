@@ -12,7 +12,7 @@ export interface IngestionTask {
     kind: IngestionTaskKind;
     entityId: string;
     schoolId: number;
-    courseId: number;
+    canvasCourseId: number;
 }
 
 export interface SanitizedSyllabus {

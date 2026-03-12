@@ -30,17 +30,17 @@ export class CoursePlanWorkerScope {
 
     async execute() {
         const { ingestionRunId, taskId } = this.courseWorkerDeps.job.data;
+
         const { courseFullIngest, courseChange, ingestionTasks, courseActivityStream } = this.courseWorkerDeps;
 
         const task = await this.claimCourseIngestionTask.execute(taskId);
 
         const canvasCourseId = this.toCourseId(task.entityId);
-
         const courseExists = await this.courseExistsLocally(task.schoolId, canvasCourseId);
         if (!courseExists) {
-            await this.enqueueFullIngestionForNewCourse(ingestionTasks, courseFullIngest, ingestionRunId, canvasCourseId, task.schoolId);
+            const newTaskId = await this.enqueueFullIngestionForNewCourse(ingestionTasks, courseFullIngest, ingestionRunId, canvasCourseId, task.schoolId);
             await this.completeJob(task.taskId, this.courseWorkerDeps.job);
-            return;
+            return { ingestionRunId, taskId: newTaskId };
         }
 
         const canvasCourseActivityStream = await this.getCourseActivityStream(ingestionRunId, task.schoolId, canvasCourseId);
@@ -79,6 +79,7 @@ export class CoursePlanWorkerScope {
     ) {
         const newTaskId = await ingestionTasks.insertNewCourseFullIngest(ingestionRunId, canvasCourseId, schoolId);
         await courseFullIngest.add("full_ingest", { ingestionRunId, taskId: newTaskId });
+        return newTaskId;
     };
 
     private async getCourseActivityStream(ingestionRunId: string, schoolId: number, canvasCourseId: number) {
@@ -103,11 +104,13 @@ export class CoursePlanWorkerScope {
         const courseChangeTaskId = await ingestionTasks.insertCourseChangeTasks(ingestionRunId, canvasCourseId, schoolId, newItems);
         // Note: All course change tasks are queued under one task ID
         await courseChange.add("course_change", { ingestionRunId, courseChangeTaskId });
+        console.log("added course change");
     }
 
     private async completeJob(taskId: string, job: Job) {
         // Finsh the job and updated the status
         await this.markTaskAsSuccess.execute(taskId);
         await job.updateProgress(100);
+        await this.courseWorkerDeps.checkRunCompletion.add("check", { ingestionRunId: job.data.ingestionRunId });
     }
 }

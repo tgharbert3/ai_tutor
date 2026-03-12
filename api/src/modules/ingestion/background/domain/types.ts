@@ -1,5 +1,5 @@
 export interface EnrollmentJob {
-    ingestionId: string;
+    ingestionRunId: string;
     userId: string;
     canvasBaseUrl: string;
     schoolId: number;

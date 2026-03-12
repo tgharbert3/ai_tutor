@@ -1,8 +1,8 @@
-import type { EnrollmentRepoPort } from "../../../infrastructure/drizzle/interfaces/enrollment.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/repos/enrollment.interface.js";
 
 export class FetchUsersLocalEnrollmentsUseCase {
     constructor(
-        private readonly enrollmentRepo: EnrollmentRepoPort,
+        private readonly enrollmentRepo: IEnrollmentRepo,
     ) {}
 
     async execute(userId: string) {

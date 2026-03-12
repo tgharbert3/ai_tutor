@@ -1,0 +1,2 @@
+ALTER TABLE "ai"."canvas_raw_documents" DROP CONSTRAINT "canvas_raw_documents_canvas_course_id_school_id_entityType_entityId_unique";--> statement-breakpoint
+ALTER TABLE "ai"."canvas_raw_documents" ADD CONSTRAINT "canvas_raw_documents_canvas_course_id_school_id_entity_type_entity_id_unique" UNIQUE("canvas_course_id","school_id","entity_type","entity_id");

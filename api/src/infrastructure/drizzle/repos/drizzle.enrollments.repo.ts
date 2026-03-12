@@ -9,14 +9,13 @@ import { userEnrollments } from "@/infrastructure/db/schema.js";
 export class DrizzleEnrollmentRepository implements IEnrollmentRepo {
     constructor(private db: db) {}
 
-    async upsertManyEnrollments(enrollments: insertUserEnrollment[]) {
-        const inserted = await this.db.insert(userEnrollments).values(enrollments).returning().onConflictDoUpdate({
-            target: userEnrollments.userId,
+    async upsertEnrollment(enrollments: insertUserEnrollment) {
+        await this.db.insert(userEnrollments).values(enrollments).returning().onConflictDoUpdate({
+            target: [userEnrollments.userId, userEnrollments.courseId],
             set: {
                 updated_at: new Date(),
             },
         });
-        return inserted;
     }
 
     async findAllEnrollments(userId: string) {
@@ -29,11 +28,9 @@ export class DrizzleEnrollmentRepository implements IEnrollmentRepo {
             ));
     };
 
-    async findAllActiveEnrollmentIds(userId: string) {
+    async findAllActiveEnrollmentIds(userId: string): Promise<number[]> {
         const rows = await this.db
-            .select({
-                courseId: userEnrollments.courseId,
-            })
+            .select()
             .from(userEnrollments)
             .where(
                 and(
@@ -41,7 +38,7 @@ export class DrizzleEnrollmentRepository implements IEnrollmentRepo {
                     eq(userEnrollments.isActive, true),
                 ),
             );
-        return rows.map(r => r.courseId);
+        return rows.map(r => r.canvasCourseId);
     };
 
     async setActiveToFalse(userId: string, courseIds: number[]): Promise<void> {

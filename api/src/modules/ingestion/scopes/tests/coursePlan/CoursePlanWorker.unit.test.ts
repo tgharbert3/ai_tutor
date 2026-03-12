@@ -21,7 +21,7 @@ describe("unit tests for CoursePlanWorker", () => {
     it("should enqueue a course full ingest after determining there is no course in the local db", async () => {
         const mockJob = makeMockJob("job_1", { ingestionRunId: "run_1", taskId: "task_1" });
         const mockDeps = makeMockWorkerDeps (mockJob, mockScopeDeps);
-        const task = makeMockTask(1, 1, String(999), "course:Plan", "course", "1", "running");
+        const task = makeMockTask(1, 1, String(999), "course:Plan", "course", "1", "queued");
         coursePlanWorkerScope = new CoursePlanWorkerScope(mockDeps);
 
         mockDeps.ingestionTasks.claimIngestionTask.mockResolvedValue(task);
@@ -29,7 +29,7 @@ describe("unit tests for CoursePlanWorker", () => {
         mockDeps.ingestionTasks.insertNewCourseFullIngest.mockResolvedValue("1");
         mockDeps.courseFullIngest.add.mockResolvedValueOnce(mockDeps.job);
 
-        await expect(coursePlanWorkerScope.execute()).resolves.toBeUndefined();
+        await coursePlanWorkerScope.execute();
 
         expect(mockDeps.ingestionTasks.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
         expect(mockDeps.courses.findAllCourseIdsForSchool).toHaveBeenCalledExactlyOnceWith(task.schoolId);
@@ -53,7 +53,7 @@ describe("unit tests for CoursePlanWorker", () => {
         mockDeps.canvasFactory.create.mockReturnValue(mockDeps.canvasClient);
         mockDeps.canvasClient.getCanvasCourseActivityStream.mockResolvedValue([]);
 
-        await expect(coursePlanWorkerScope.execute()).resolves.toBeUndefined();
+        await coursePlanWorkerScope.execute();
 
         expect(mockDeps.ingestionTasks.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
         expect(mockDeps.courses.findAllCourseIdsForSchool).toHaveBeenCalledExactlyOnceWith(task.schoolId);
@@ -80,7 +80,7 @@ describe("unit tests for CoursePlanWorker", () => {
         mockDeps.canvasClient.getCanvasCourseActivityStream.mockResolvedValue([newStreamItem]);
         mockDeps.ingestionTasks.insertCourseChangeTasks.mockResolvedValue("3");
 
-        await expect(coursePlanWorkerScope.execute()).resolves.toBeUndefined();
+        await coursePlanWorkerScope.execute();
 
         expect(mockDeps.ingestionTasks.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
         expect(mockDeps.courses.findAllCourseIdsForSchool).toHaveBeenCalledExactlyOnceWith(task.schoolId);

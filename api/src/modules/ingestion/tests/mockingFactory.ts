@@ -141,7 +141,7 @@ export function makeMockJob(jobId: string, data: { ingestionRunId: string; taskI
 }
 
 export function makeMockTask(
-    courseId: number,
+    canvasCourseId: number,
     schoolId: number,
     taskId: string,
     kind: IngestionTaskKind,
@@ -150,7 +150,7 @@ export function makeMockTask(
     status: IngestionTaskStatus,
 ) {
     return {
-        courseId,
+        canvasCourseId,
         schoolId,
         taskId,
         kind,

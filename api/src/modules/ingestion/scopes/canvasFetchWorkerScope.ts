@@ -23,12 +23,12 @@ export class CanvasFetchWorkerScope {
         switch (task.kind) {
             // case "fetchAllAssignments":
             case "fetch:CourseInfo": {
-                const courseInfo = await canvasClient.getCourseInfo(task.courseId);
+                const courseInfo = await canvasClient.getCourseInfo(task.canvasCourseId);
                 if (!courseInfo) {
-                // TODO: Update this error
-                    throw new Error("Not a valid canvas course");
+                    await this.markJobCompleteWithError(taskId, this.canvasFetchWorkerDeps.job);
+                    return;
                 }
-                await this.enqueueDbWriteForCourse(courseInfo, task.schoolId, task.courseId, ingestionRunId);
+                await this.enqueueDbWriteForCourse(courseInfo, task.schoolId, task.canvasCourseId, ingestionRunId);
                 await this.markJobComplete(taskId, this.canvasFetchWorkerDeps.job);
                 break;
             }
@@ -38,21 +38,29 @@ export class CanvasFetchWorkerScope {
         }
     }
 
-    private async enqueueDbWriteForCourse(courseInfo: CanvasCourse, schoolId: number, courseId: number, ingestionRunId: string) {
+    private async enqueueDbWriteForCourse(courseInfo: CanvasCourse, schoolId: number, canvasCourseId: number, ingestionRunId: string) {
         const insertCourseDocId = await this.canvasFetchWorkerDeps.canvasRawDocuments.insertCanvasRawDocument(
-            "course",
-            String(courseId),
+            "rawDoc",
+            String(canvasCourseId),
             JSON.stringify(courseInfo),
             new Date(),
-            courseId,
+            canvasCourseId,
             schoolId,
         );
-        const insertCourseTaskId = await this.canvasFetchWorkerDeps.ingestionTasks.insertDbWriteTask(ingestionRunId, "write:CourseInfo", courseId, schoolId, insertCourseDocId, "rawDoc");
+        const insertCourseTaskId = await this.canvasFetchWorkerDeps.ingestionTasks.insertDbWriteTask(ingestionRunId, "write:NewCourse", canvasCourseId, schoolId, insertCourseDocId, "rawDoc");
         await this.canvasFetchWorkerDeps.dbWrite.add("write", { ingestionRunId, taskId: insertCourseTaskId });
+        return { ingestionRunId, insertCourseTaskId };
+    }
+
+    private async markJobCompleteWithError(taskId: string, job: Job) {
+        await this.canvasFetchWorkerDeps.ingestionTasks.updateTaskStatusWithError("success", taskId, "Course info unavailable or restricted");
+        await job.updateProgress(100);
+        await this.canvasFetchWorkerDeps.checkRunCompletion.add("check", { ingestionRunId: job.data.ingestionRunId });
     }
 
     private async markJobComplete(taskId: string, job: Job) {
         await this.canvasFetchWorkerDeps.ingestionTasks.updateTaskStatus("success", taskId);
         await job.updateProgress(100);
+        await this.canvasFetchWorkerDeps.checkRunCompletion.add("check", { ingestionRunId: job.data.ingestionRunId });
     }
 }

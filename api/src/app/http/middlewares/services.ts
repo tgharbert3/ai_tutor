@@ -2,7 +2,7 @@ import { createMiddleware } from "hono/factory";
 
 import type { JWTData } from "@/lib/types.js";
 
-import { getRedisConfig } from "@/infrastructure/config/redis.js";
+import { getRedisConfig } from "@/infrastructure/config/queueOptions.js";
 import { getDb } from "@/infrastructure/db/index.js";
 import { SchoolService } from "@/modules/schools/school.service.js";
 import { ServiceContainer } from "@/modules/services.container.js";

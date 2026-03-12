@@ -36,6 +36,7 @@ export interface CourseWorkerDeps {
     courseActivityStream: ICourseActivityStreamRepository;
     courseFullIngest: Queue;
     courseChange: Queue;
+    checkRunCompletion: Queue;
     clientFactory: ClientApiPortFactory;
     canvasFactory: CanvasApiPortFactory;
 }
@@ -62,15 +63,20 @@ export interface CanvasFetchWorkerDeps {
     processQueue: Queue;
     courseInfo: ICourseInfoRepository;
     dbWrite: Queue;
+    checkRunCompletion: Queue;
 }
 
 export interface DbWriteScopeDeps {
     job: Job<WorkerDeps>;
     ingestionTasks: IIngestionTaskRepository;
+    ingestonRuns: IIngestionRunRepository;
     canvasRawDocuments: ICanvasRawDocumentsRepository;
     courseInfo: ICourseInfoRepository;
+    enrollments: IEnrollmentRepo;
+    courses: ICoursesRepository;
     processQueue: Queue;
     checkRun: Queue;
+    dbWrite: Queue;
 }
 
 export interface ProcessWorkerDeps {
@@ -80,6 +86,7 @@ export interface ProcessWorkerDeps {
     canvasRawDoc: ICanvasRawDocumentsRepository;
     sanitizeHtml: ISanitizeHtml;
     dbWrite: Queue;
+    checkRunCompletion: Queue;
 }
 
 export interface checkRunCompletionDeps {

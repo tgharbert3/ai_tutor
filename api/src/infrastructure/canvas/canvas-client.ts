@@ -41,6 +41,10 @@ export class CanvasClient implements CanvasApiPort {
 
     async getCourseInfo(courseId: number): Promise<CanvasCourse | undefined> {
         const response = await this.get<any>(`courses/${courseId}?include[]=syllabus_body&include[]=tabs`);
+
+        if (response.access_restricted_by_date === true) {
+            return undefined;
+        }
         if (!this.isCanvasCourse(response)) {
             return undefined;
         }
@@ -73,9 +77,9 @@ export class CanvasClient implements CanvasApiPort {
         return (
             typeof obj === "object"
             && obj !== null
-            && obj.id === "number"
-            && obj.courseId === "number"
-            && obj.message === "string"
+            && typeof obj.id === "number"
+            && typeof obj.courseId === "number"
+            && typeof obj.message === "string"
         );
     }
 
@@ -90,9 +94,9 @@ export class CanvasClient implements CanvasApiPort {
         return (
             typeof obj === "object"
             && obj !== null
-            && obj.id === "number"
-            && obj.courseId === "number"
-            && obj.enrollmentState === "string"
+            && typeof obj.id === "number"
+            && typeof obj.course_id === "number"
+            && typeof obj.enrollment_state === "string"
         );
     };
 
@@ -107,11 +111,11 @@ export class CanvasClient implements CanvasApiPort {
         return (
             typeof obj === "object"
             && obj !== null
-            && obj.id === "number"
-            && obj.name === "string"
-            && obj.course_code === "string"
-            && obj.syllabus_body === "string"
-            && obj.workflow_state === "string"
+            && typeof obj.id === "number"
+            && typeof obj.name === "string"
+            && typeof obj.course_code === "string"
+            && typeof obj.syllabus_body === "string"
+            && typeof obj.workflow_state === "string"
             && this.isTabArray(obj.tabs)
         );
     }
@@ -126,8 +130,7 @@ export class CanvasClient implements CanvasApiPort {
     private isTab(obj: any): obj is CanvasTab {
         return (
             typeof obj === "object"
-            && obj.id === "string"
-            && obj.html_url === "string"
+            && typeof obj.id === "string"
         );
     }
 }

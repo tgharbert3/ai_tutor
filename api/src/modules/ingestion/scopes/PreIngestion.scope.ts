@@ -31,7 +31,7 @@ export class PreIngestionScope {
         const handoff = await this.syncUserUC.execute();
         // TODO: Catch any enrollment queue errors
         await this.queues.enrollments.add("enrollment", {
-            ingestionId: handoff.ingestionId,
+            ingestionRunId: handoff.ingestionId,
             userId: handoff.userId,
             schoolId: handoff.schoolId,
             // Using the user input here. Could lead to bugs down the road

@@ -25,9 +25,9 @@ export class SyncUserEnrollmentsUseCase {
 
     // TODO: Possibly wrap in try catch or result pattern to be able to update to failed if the job fails
     async execute() {
-        const { ingestionId, userId, canvasBaseUrl, schoolId } = this.syncUserEnrollmentDeps.job.data;
+        const { ingestionRunId, userId, canvasBaseUrl, schoolId } = this.syncUserEnrollmentDeps.job.data;
         // Update the ingestion run status
-        await this.updateStatusUC.execute(ingestionId, "running");
+        await this.updateStatusUC.execute(ingestionRunId, "running");
 
         // Fetch the canvas token for the user from our auth server
         const canvasToken = await this.fetchCanvasTokenUC.execute(userId);
@@ -40,7 +40,7 @@ export class SyncUserEnrollmentsUseCase {
         // Make a set of canvas course ids and a set of local enrollment course Ids
         // Sets offer faster lookups than array
         const canvasEnrollmentSet = new Set<number>(
-            usersCanvasEnrollments.map(e => e.courseId),
+            usersCanvasEnrollments.map(e => e.course_id),
         );
         const localEnrollmentSet = new Set<number>(localEnrollments);
 
@@ -48,13 +48,16 @@ export class SyncUserEnrollmentsUseCase {
         const dropped = getDroppedEnrollments(canvasEnrollmentSet, localEnrollmentSet);
         await this.setEnrollmentsToFalseUC.execute(userId, Array.from(dropped));
 
-        const canvasCourseIds = usersCanvasEnrollments.map(element => element.courseId);
+        const canvasCourseIds = usersCanvasEnrollments.map(element => element.course_id);
+
         // Insert new course plan tasks so the course workers can pick them up
-        const taskIds = await this.syncUserEnrollmentDeps.ingestionTasksRepo.insertCoursePlansFromArray(ingestionId, canvasCourseIds, schoolId);
+        const taskIds = await this.syncUserEnrollmentDeps.ingestionTasksRepo.insertCoursePlansFromArray(ingestionRunId, canvasCourseIds, schoolId);
         await Promise.all(
-            taskIds.map(taskId => this.syncUserEnrollmentDeps.coursesQueue.add("course_plan", { ingestionId, taskId })),
+            taskIds.map(taskId => this.syncUserEnrollmentDeps.coursesQueue.add("course_plan", { ingestionRunId, taskId })),
         );
 
-        this.syncUserEnrollmentDeps.job.updateProgress(100);
+        // TODO: Update this to use the task table
+        await this.syncUserEnrollmentDeps.job.updateProgress(100);
+        return { ingestionRunId, taskId: taskIds[0] };
     }
 }

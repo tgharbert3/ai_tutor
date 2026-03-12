@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi, vitest } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
 
 import type { CanvasCourse, CanvasTab } from "@/infrastructure/canvas/types.js";
 
@@ -15,13 +15,10 @@ describe("unit tests for canvasfetch Worker", () => {
 
     beforeEach(() => {
         canvasFetchDeps = getMockCanvasFetchScopeDeps();
-        vi.useFakeTimers();
-        vi.setSystemTime(new Date("2026-03-06T12:00:00.000Z"));
     });
 
     afterEach(() => {
         vitest.clearAllMocks();
-        vi.useRealTimers();
     });
 
     it("should add job to dbWrite queue after fetching from canvas", async () => {
@@ -49,15 +46,15 @@ describe("unit tests for canvasfetch Worker", () => {
         mockDeps.canvasRawDocuments.insertCanvasRawDocument.mockResolvedValue("doc_id");
         mockDeps.ingestionTasks.insertDbWriteTask.mockResolvedValue("writeTaskId");
 
-        await expect(canvasFetch.execute()).resolves.toBeUndefined();
+        await canvasFetch.execute();
 
         expect(mockDeps.ingestionTasks.claimIngestionTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.taskId);
         expect(mockDeps.ingestionRun.fetchUserIdAndUrl).toHaveBeenCalledExactlyOnceWith(mockJob.data.ingestionRunId, task.schoolId);
         expect(mockDeps.internalClient.getUsersCanvasToken).toHaveBeenCalledOnce();
-        expect(mockDeps.canvasClient.getCourseInfo).toHaveBeenCalledExactlyOnceWith(task.courseId);
+        expect(mockDeps.canvasClient.getCourseInfo).toHaveBeenCalledExactlyOnceWith(task.canvasCourseId);
         expect(mockDeps.canvasRawDocuments.insertCanvasRawDocument).toHaveBeenCalledExactlyOnceWith(
-            "course",
-            String(task.courseId),
+            "rawDoc",
+            String(task.canvasCourseId),
             JSON.stringify({
                 id: 0,
                 name: "courseTest",
@@ -72,10 +69,10 @@ describe("unit tests for canvasfetch Worker", () => {
                 }],
             }),
             expect.any(Date),
-            task.courseId,
+            task.canvasCourseId,
             task.schoolId,
         );
-        expect(mockDeps.ingestionTasks.insertDbWriteTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.ingestionRunId, "write:CourseInfo", task.courseId, task.schoolId, "doc_id", "rawDoc");
+        expect(mockDeps.ingestionTasks.insertDbWriteTask).toHaveBeenCalledExactlyOnceWith(mockJob.data.ingestionRunId, "write:CourseInfo", task.canvasCourseId, task.schoolId, "doc_id", "rawDoc");
         expect(mockDeps.dbWrite.add).toHaveBeenCalledExactlyOnceWith("write", { ingestionRunId: mockJob.data.ingestionRunId, taskId: "writeTaskId" });
         expect(mockDeps.job.updateProgress).toHaveBeenCalledOnce();
         expect(mockDeps.ingestionTasks.updateTaskStatus).toHaveBeenCalledOnce();

@@ -8,11 +8,11 @@ export class FetchUsersCanvasEnrollmentsUseCase {
 
     async execute(apiToken: string, canvasBaseUrl: string): Promise<CanvasEnrollment[]> {
         const client = this.canvasFactory.create({ apiToken, canvasBaseUrl });
-        const enrollmets = await client.getCanvasEnrollments();
-        if (!enrollmets) {
+        const enrollments = await client.getCanvasEnrollments();
+        if (!enrollments) {
             throw new Error("Unable to fetch users enrollments");
         }
 
-        return enrollmets;
+        return enrollments;
     }
 }

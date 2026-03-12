@@ -15,15 +15,15 @@ export class DrizzleCanvasRawDocuments implements ICanvasRawDocumentsRepository 
         entityId: string,
         payload: string,
         fetchAt: Date,
-        courseId: number,
+        canvasCourseId: number,
         schoolId: number,
     ) {
         const doc = {
             entityType,
             entityId,
             payload,
-            fetchAt,
-            courseId,
+            fetchedAt: fetchAt,
+            canvasCourseId,
             schoolId,
         };
         const [newDoc] = await this.db.insert(canvasRawDocuments).values(doc).returning();
@@ -40,7 +40,7 @@ export class DrizzleCanvasRawDocuments implements ICanvasRawDocumentsRepository 
         }
         return {
             id: doc.id,
-            courseId: doc.courseId,
+            canvasCourseId: doc.canvasCourseId,
             schoolId: doc.schoolId,
             payload: doc.payload,
             entityType: doc.entityType,

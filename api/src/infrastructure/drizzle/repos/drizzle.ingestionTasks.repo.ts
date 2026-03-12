@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 import type { StreamActivityItem } from "@/infrastructure/canvas/types.js";
 import type { insertCourseActivityStream, insertIngestonTask } from "@/infrastructure/db/schema.js";
@@ -14,46 +14,45 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         private db: db,
     ) {};
 
-    async insertCoursePlansFromArray(ingestionRunId: string, courseIds: number[], schoolId: number): Promise<string[]> {
-        const rows = courseIds.map(courseId => ({
+    async insertCoursePlansFromArray(ingestionRunId: string, canvasCourseIds: number[], schoolId: number): Promise<string[]> {
+        const rows = canvasCourseIds.map(canvasCourseId => ({
             ingestionRunId,
             kind: "course:Plan",
             entityType: "course",
-            entityId: String(courseId),
+            entityId: String(canvasCourseId),
             status: "queued",
             schoolId,
-            courseId,
+            canvasCourseId,
         } satisfies insertIngestonTask));
-
-        const tasks = await this.db.insert(ingestionTasks).values(rows).onConflictDoNothing().returning();
+        const tasks = await this.db.insert(ingestionTasks).values(rows).returning();
         return tasks.map(task => task.taskId);
     };
 
-    async insertNewCourseFullIngest(ingestionRunId: string, courseId: number, schoolId: number): Promise<string> {
+    async insertNewCourseFullIngest(ingestionRunId: string, canvasCourseId: number, schoolId: number): Promise<string> {
         const [newTask] = await this.db.insert(ingestionTasks).values({
             ingestionRunId,
             kind: "course:FullIngest",
             entityType: "course",
-            entityId: String(courseId),
+            entityId: String(canvasCourseId),
             status: "queued",
             schoolId,
-            courseId,
+            canvasCourseId,
         }).returning();
 
         return newTask.taskId;
     }
 
-    async insertCourseChangeTasks(ingestionRunId: string, courseId: number, schoolId: number, streamItems: StreamActivityItem[]): Promise<string> {
+    async insertCourseChangeTasks(ingestionRunId: string, canvasCourseId: number, schoolId: number, streamItems: StreamActivityItem[]): Promise<string> {
         // We use a tx because we want to make sure the new task and the stream items get inserted so one doesnt get left hanging
         return await this.db.transaction(async (tx) => {
             const row = {
                 ingestionRunId,
                 kind: "course:Change",
                 entityType: "course",
-                entityId: String(courseId),
+                entityId: String(canvasCourseId),
                 status: "queued",
                 schoolId,
-                courseId,
+                canvasCourseId,
             } satisfies insertIngestonTask;
 
             // We hash the url and eventTime to make sure the same course stream item doesnt get ingested twice
@@ -64,7 +63,7 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
                     htmlUrl: item.htmlUrl,
                     eventTime: item.updated_at,
                     status: "queued",
-                    courseId,
+                    courseId: canvasCourseId,
                 } satisfies insertCourseActivityStream));
 
             const [task] = await tx.insert(ingestionTasks).values(row).onConflictDoNothing().returning();
@@ -90,7 +89,7 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
                     entityId: true,
                     status: true,
                     schoolId: true,
-                    courseId: true,
+                    canvasCourseId: true,
                 },
                 where: eq(ingestionTasks.taskId, taskId),
             },
@@ -107,7 +106,7 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
                     entityId: true,
                     status: true,
                     schoolId: true,
-                    courseId: true,
+                    canvasCourseId: true,
                 },
                 where: and(
                     eq(ingestionTasks.taskId, taskId),
@@ -124,15 +123,15 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         });
     }
 
-    async insertCanvasFetchTaskForFullIngestion(ingestionRunId: string, fetchType: IngestionTaskKind[], courseId: number, schoolId: number): Promise<string[]> {
+    async insertCanvasFetchTaskForFullIngestion(ingestionRunId: string, fetchType: IngestionTaskKind[], canvasCourseId: number, schoolId: number): Promise<string[]> {
         const items = fetchType.map(type => ({
             ingestionRunId,
             kind: type,
             entityType: "course",
-            entityId: String(courseId),
+            entityId: String(canvasCourseId),
             status: "queued",
             schoolId,
-            courseId,
+            canvasCourseId,
         } satisfies insertIngestonTask));
 
         const rows = await this.db.insert(ingestionTasks).values(items).returning();
@@ -140,12 +139,12 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         return rows.map(r => r.taskId);
     }
 
-    async insertDbWriteTask(ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, docId: string, entityType: IngestionTaskET): Promise<string> {
+    async insertDbWriteTask(ingestionRunId: string, taskKind: IngestionTaskKind, canvasCourseId: number, schoolId: number, docId: string, entityType: IngestionTaskET): Promise<string> {
         const task = {
             entityType,
             status: "queued",
             schoolId,
-            courseId,
+            canvasCourseId,
             kind: taskKind,
             entityId: docId,
             ingestionRunId,
@@ -155,12 +154,12 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         return newTask.taskId;
     };
 
-    async insertProcessSyllabusTask(ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
+    async insertProcessSyllabusTask(ingestionRunId: string, taskKind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
         const task = {
             entityType,
             status: "queued",
             schoolId,
-            courseId,
+            canvasCourseId,
             kind: taskKind,
             entityId: syllabusId,
             ingestionRunId,
@@ -170,12 +169,12 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         return newTask.taskId;
     };
 
-    async insertWriteSyllabusTask(ingestionRunId: string, kind: IngestionTaskKind, courseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
+    async insertWriteSyllabusTask(ingestionRunId: string, kind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
         const task = {
             entityType,
             kind,
             schoolId,
-            courseId,
+            canvasCourseId,
             entityId: syllabusId,
             ingestionRunId,
             status: "queued",
@@ -185,18 +184,69 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         return newTask.taskId;
     }
 
+    async insertWriteUserEnrollmentTask(ingestionRunId: string, kind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, courseId: number): Promise<string> {
+        const [newTask] = await this.db.insert(ingestionTasks).values({
+            ingestionRunId,
+            kind,
+            canvasCourseId,
+            schoolId,
+            entityType,
+            entityId: String(courseId),
+            status: "queued",
+        } satisfies insertIngestonTask).returning();
+        return newTask.taskId;
+    }
+
+    async insertWriteCourseTask(ingestionRunId: string, kind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, entityId: string): Promise<string> {
+        const [newTask] = await this.db.insert(ingestionTasks).values({
+            ingestionRunId,
+            kind,
+            canvasCourseId,
+            schoolId,
+            entityType,
+            entityId,
+            status: "queued",
+        } satisfies insertIngestonTask).returning();
+        return newTask.taskId;
+    };
+
+    async updateTaskStatusWithError(newStatus: IngestionTaskStatus, taskId: string, error: string) {
+        await this.db.update(ingestionTasks).set({
+            status: newStatus,
+            error,
+        }).where(
+            eq(ingestionTasks.taskId, taskId),
+        );
+    }
+
     async getRunCounts(ingestionRunId: string): Promise<Counts> {
         const [counts] = await this.db.select(
             {
-                queuedCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "queued")),
-                successCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "success")),
-                runningCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "running")),
-                failedCount: this.db.$count(ingestionTasks.status, eq(ingestionTasks.status, "failed")),
+                queuedCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'queued')`,
+                successCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'success')`,
+                runningCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'running')`,
+                failedCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'failed')`,
             },
         )
             .from(ingestionTasks)
             .where(eq(ingestionTasks.ingestionRunId, ingestionRunId));
 
         return counts;
+    }
+
+    async getRunningCountAndKind(ingestionRunId: string) {
+        const task = await this.db.select({
+            runningCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'running')`,
+            kind: ingestionTasks.kind,
+        })
+            .from(ingestionTasks)
+            .where(
+                and (
+                    eq(ingestionTasks.ingestionRunId, ingestionRunId),
+                    eq(ingestionTasks.status, "running"),
+                ),
+            )
+            .groupBy(ingestionTasks.kind);
+        return task;
     }
 }

@@ -8,7 +8,7 @@ export interface ICanvasRawDocumentsRepository {
         entityId: string,
         payload: string,
         fetchAt: Date,
-        courseId: number,
+        canvasCourseId: number,
         schoolId: number)
     => Promise<string>;
 
