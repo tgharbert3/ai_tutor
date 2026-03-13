@@ -31,6 +31,7 @@ describe("unit tests for router and controllers", () => {
             username: "testUsername",
             password: "hashedPassword",
             canvasToken: "testToken",
+            canvasBaseUrl: "https://uncw.infrastructure.edu"
         };
         const response = await client.api.v1.register.$post({
             json: userTorRegister,
@@ -60,11 +61,12 @@ describe("unit tests for router and controllers", () => {
         const password = "hashedPassword";
         const hashedPassword = await PasswordService.hashPassword(password);
         const insertedUser: insertUserType = {
-            id: 2,
+            id: 'u-u-i-d',
             email: "login@example.com",
             username: "testUser",
             passwordHash: hashedPassword,
             canvasToken: "testToken",
+            canvasBaseUrl: "https://uncw.infrastructure.edu"
         };
 
         await UserRepo.insertOneUser(insertedUser);
@@ -109,11 +111,12 @@ describe("unit tests for router and controllers", () => {
         const password = "hashedPassword";
         const hashedPassword = await PasswordService.hashPassword(password);
         const insertedUser: insertUserType = {
-            id: 3,
+            id: "u-u-i-d",
             email: "login3@example.com",
             username: "testUser",
             passwordHash: hashedPassword,
             canvasToken: "testToken",
+            canvasBaseUrl: "https://uncw.infrastructure.edu"
         };
 
         await UserRepo.insertOneUser(insertedUser);

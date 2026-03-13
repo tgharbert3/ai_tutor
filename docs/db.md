@@ -1,8 +1,6 @@
 # DB schmea(version 1.3)
 
-
 <img width="4383" height="2055" alt="dbSchema" src="https://github.com/user-attachments/assets/d4c17e1b-b1b2-41c0-bdd5-4f8cd771f309" />
-
 
 ## Legend
 

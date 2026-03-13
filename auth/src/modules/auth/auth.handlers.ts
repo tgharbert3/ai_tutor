@@ -7,7 +7,7 @@ import type { AppBindings } from "@/lib/types.js";
 import { loginDTO, registerDTO } from "@/lib/dto.js";
 import { handleZodeValidationLoginError, handleZodValidationRegisterError } from "@/lib/errors.js";
 import { ServiceContainerMiddleware } from "@/middlewares/services.js";
-import { clearAuthCookies, getrefreshCookie, setAuthCookies } from "@/lib/cookies.js";
+import { clearAuthCookies, getRefreshCookie, setAuthCookies } from "@/lib/cookies.js";
 import { BusyError, TokenReuseError, TokenValidationError, UserNotFoundError } from "@/lib/error.class.js";
 
 const factory = createFactory<AppBindings>();
@@ -44,7 +44,7 @@ export const registerHandlers = factory.createHandlers(
 export const refreshHandler = factory.createHandlers (
     ServiceContainerMiddleware,
     async (c) => {
-        const refreshToken = getrefreshCookie(c);
+        const refreshToken = getRefreshCookie(c);
         if (!refreshToken) {
             return c.json({message: "No user token"},  HttpStatusCodes.UNAUTHORIZED)
         }
@@ -77,7 +77,7 @@ export const refreshHandler = factory.createHandlers (
 export const logoutHandler = factory.createHandlers (
     ServiceContainerMiddleware,
     async (c) => {
-         const refreshToken = getrefreshCookie(c);
+         const refreshToken = getRefreshCookie(c);
         if (!refreshToken) {
             return c.json({message: "No user token"},  HttpStatusCodes.UNAUTHORIZED)
         }

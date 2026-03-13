@@ -1,0 +1,11 @@
+@layer base {
+    [data-theme="slate-scholar"] {
+        color-scheme: light;
+
+        --surface: var(--color-white);
+
+        --background: var(--color-slate-100);
+
+        --field-background: var(--color-white);
+    }
+}

@@ -23,13 +23,13 @@
 ### Phase one:
 
 1. Fetch the user enrollments from the canvas api
-2. Fetch the user enrollments from the local db 
+2. Fetch the user enrollments from the local db
 3. Compare the enrollments for added/existing courses see Phase 2
 4. For dropped courses mark the course in the user_enrollments table as false
 
 ### Phase 2:
 
-5. Perform a global check against the courses table from the added user enrollments
+5. Perform a global check against the courses table from the user enrollments
    - Conditon 1: If the course is missing from the courses table
    - Action: Run a heavy ingestion flow of all course materials and mark the user as active in the user_enrollments table
 

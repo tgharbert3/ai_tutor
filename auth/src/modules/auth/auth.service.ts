@@ -30,7 +30,7 @@ export class AuthService {
             canvasToken: data.canvasToken,
             canvasBaseUrl: data.canvasBaseUrl,
         };
-    
+        console.log(userToInsert);
         const insertedUser = await UserRepo.insertOneUser(userToInsert);
         if (!insertedUser) {
             throw new HTTPException(HttpStatusCodes.INTERNAL_SERVER_ERROR, { message: "Failed to create user" });
@@ -102,7 +102,6 @@ export class AuthService {
     }
 
     async getCanvasToken(userId: string) {
-        console.log(userId)
         return await UserRepo.getCanvasTokenByUserId(userId);
     }
 }
