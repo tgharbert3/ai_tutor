@@ -10,6 +10,7 @@ import {
     Label,
     TextField
 } from "@heroui/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -55,7 +56,7 @@ export default function Register() {
         })
 
         if (res.ok) {
-            router.push("/login");
+            router.push("/dashboard");
         }
 
     }
@@ -134,7 +135,7 @@ export default function Register() {
                         <Button type="reset">Reset</Button>
                     </Fieldset.Actions>
                 </Fieldset>
-                <div className="mt-2"><p>Already have an account?</p></div>
+                <div className="mt-2"><p>Already have an account? <Link href={"/login"} className="underline">Login</Link></p></div>
             </Form>
         </>
     )
