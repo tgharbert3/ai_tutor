@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/auth/:path*",
-        destination: "http://localhost:3001/auth/v1/:path*"
+        destination: "http://localhost:80/auth/v1/:path*"
       }
     ]
   }

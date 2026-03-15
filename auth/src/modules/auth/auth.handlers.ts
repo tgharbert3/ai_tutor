@@ -16,6 +16,7 @@ export const loginHandlers = factory.createHandlers(
     zValidator("json", loginDTO, (result, c) => handleZodeValidationLoginError(result, c, HttpStatusCodes.BAD_REQUEST)),
     ServiceContainerMiddleware,
     async (c) => {
+        console.log("here");
         const data = c.req.valid("json");
         const services = c.get("authService");
         const response = await services.loginUser(data);

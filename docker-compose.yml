@@ -13,3 +13,6 @@ services:
 
     ports: 
       - "${DB_PORT}:5432"
+
+  nginx:
+    image: 
