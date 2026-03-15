@@ -122,7 +122,8 @@ export const courseInfo = apiSchema.table("course_info", {
     courseCode: text("course_code").notNull(),
     name: text("name").notNull(),
     canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull(),
-    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id),
+    courseId: bigint("course_id", { mode: "number" }).references(() => courses.id).unique(),
+    ...timestamps,
 });
 
 export const courseSyllabus = apiSchema.table("course_syllabus", {
@@ -132,10 +133,8 @@ export const courseSyllabus = apiSchema.table("course_syllabus", {
     plainText: text("plain_text"),
     hash: text(),
     status: ingestionStatusEnum().notNull(),
-    courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id),
-}, t => [
-    unique().on(t.courseInfoId, t.hash),
-]);
+    courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id).unique(),
+});
 
 export const courseTabs = apiSchema.table("course_tabs", {
     id: uuid("id").primaryKey().defaultRandom(),

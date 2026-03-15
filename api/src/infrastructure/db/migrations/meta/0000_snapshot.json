@@ -1,5 +1,5 @@
 {
-  "id": "f3607a08-c52f-4e96-9ffd-9565b2f684fa",
+  "id": "6a3a0b6c-c793-42a4-8368-d18ef19cd5ec",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -311,6 +311,19 @@
           "type": "bigint",
           "primaryKey": false,
           "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -331,7 +344,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "course_info_course_id_unique": {
+          "name": "course_info_course_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "course_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -404,11 +425,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "course_syllabus_hash_unique": {
-          "name": "course_syllabus_hash_unique",
+        "course_syllabus_course_info_id_unique": {
+          "name": "course_syllabus_course_info_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "hash"
+            "course_info_id"
           ]
         }
       },

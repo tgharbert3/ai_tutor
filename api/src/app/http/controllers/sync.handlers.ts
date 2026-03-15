@@ -14,7 +14,6 @@ export const ingestionHandler = factory.createHandlers(
             const httpContainer = c.get("httpContainer");
             const scope = httpContainer.createPreIngestionScope(jweData);
             const result = await scope.execute();
-            // TODO: update to websocket
             return c.json(result, 202);
         }
         catch (error: any) {

@@ -11,7 +11,7 @@ import { courseInfo, courseSyllabus, courseTabs } from "@/infrastructure/db/sche
 export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
     constructor(private db: db) {}
 
-    async insertCourseInfo(courseCode: string, name: string, canvasCourseId: number, rawSyllabus: string, tabs: CanvasTab[], courseId: number): Promise<InsertCourseInfo> {
+    async upsertCourseInfo(courseCode: string, name: string, canvasCourseId: number, rawSyllabus: string, tabs: CanvasTab[], courseId: number): Promise<InsertCourseInfo> {
         const response = await this.db.transaction(async (tx) => {
             const info = {
                 courseCode,
@@ -19,10 +19,20 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
                 canvasCourseId,
                 courseId,
             } satisfies insertCourseInfo;
-            const [courseInfoRow] = await tx.insert(courseInfo).values(info).returning();
+            const [courseInfoRow] = await tx.insert(courseInfo).values(info).onConflictDoUpdate({
+                target: courseInfo.courseId,
+                set: {
+                    updated_at: new Date(),
+                },
+            }).returning();
             const courseInfoId = courseInfoRow.id;
 
-            const [syllabusRow] = await tx.insert(courseSyllabus).values({ rawSyllabus, courseInfoId, status: "queued" }).returning();
+            const [syllabusRow] = await tx.insert(courseSyllabus).values({ rawSyllabus, courseInfoId, status: "queued" }).onConflictDoUpdate({
+                target: courseSyllabus.courseInfoId,
+                set: {
+                    rawSyllabus,
+                },
+            }).returning();
             const tabsToInsert = tabs.map(tab => ({
                 tabId: tab.id,
                 courseInfoId,

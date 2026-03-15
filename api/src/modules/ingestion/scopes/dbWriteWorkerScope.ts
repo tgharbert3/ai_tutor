@@ -20,7 +20,7 @@ export class DbWriteScope {
                     schoolId: task.schoolId,
                     canvasCourseId: task.canvasCourseId,
                 } satisfies insertCourseType);
-                const { syllabusId } = await this.dbWriteScopeDeps.courseInfo.insertCourseInfo(payload.course_code, payload.name, rawDoc.canvasCourseId, payload.syllabus_body, payload.tabs, courseId);
+                const { syllabusId } = await this.dbWriteScopeDeps.courseInfo.upsertCourseInfo(payload.course_code, payload.name, rawDoc.canvasCourseId, payload.syllabus_body, payload.tabs, courseId);
                 const syllabusTaskId = await this.dbWriteScopeDeps.ingestionTasks.insertProcessSyllabusTask(ingestionRunId, "process:Syllabus", rawDoc.canvasCourseId, rawDoc.schoolId, "syllabus", syllabusId);
                 await this.dbWriteScopeDeps.processQueue.add("process", { ingestionRunId, taskId: syllabusTaskId });
 

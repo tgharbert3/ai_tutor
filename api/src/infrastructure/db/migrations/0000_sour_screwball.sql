@@ -44,7 +44,10 @@ CREATE TABLE "ai"."course_info" (
 	"course_code" text NOT NULL,
 	"name" text NOT NULL,
 	"canvas_course_id" bigint NOT NULL,
-	"course_id" bigint
+	"course_id" bigint,
+	"updated_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "course_info_course_id_unique" UNIQUE("course_id")
 );
 --> statement-breakpoint
 CREATE TABLE "ai"."course_syllabus" (
@@ -55,7 +58,7 @@ CREATE TABLE "ai"."course_syllabus" (
 	"hash" text,
 	"status" "ai"."ingestion_status" NOT NULL,
 	"course_info_id" uuid NOT NULL,
-	CONSTRAINT "course_syllabus_hash_unique" UNIQUE("hash")
+	CONSTRAINT "course_syllabus_course_info_id_unique" UNIQUE("course_info_id")
 );
 --> statement-breakpoint
 CREATE TABLE "ai"."course_tabs" (
