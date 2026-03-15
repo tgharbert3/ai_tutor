@@ -8,7 +8,7 @@ export const internalHandlers = factory.createHandlers(
     ServiceContainerMiddleware,
     async (c) => {
         const services = c.get("authService");
-        const id = c.req.param('userId')
+        const id = c.req.param('userId');
         const token = await services.getCanvasToken(id!)
         return c.json({canvasToken: token.canvasToken}, 200);
     },

@@ -89,7 +89,7 @@ export const ingestionRuns = apiSchema.table("ingestion_runs", {
     checkpointEnd: bigint ("checkpoint_end", { mode: "number" }),
     error: text("error"),
     userId: uuid("user_id").references(() => users.id).notNull(),
-    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull().unique(),
+    schoolId: bigint("school_id", { mode: "number" }).references(() => schools.id).notNull(),
 });
 
 export const ingestionTasks = apiSchema.table("ingestion_tasks", {
@@ -99,7 +99,7 @@ export const ingestionTasks = apiSchema.table("ingestion_tasks", {
     entityId: text("entity_id").notNull(),
     status: ingestionTaskStatus("status").notNull(),
     canvasCourseId: bigint("canvas_course_id", { mode: "number" }).notNull(),
-    schoolId: bigint("school_id", { mode: "number" }).notNull().references(() => ingestionRuns.schoolId),
+    schoolId: bigint("school_id", { mode: "number" }).notNull().references(() => schools.id),
     ingestionRunId: uuid("ingestion_run_id").references(() => ingestionRuns.id).notNull(),
     error: text("error"),
     ...timestamps,
@@ -130,10 +130,12 @@ export const courseSyllabus = apiSchema.table("course_syllabus", {
     sanitizedSyllabus: text("sanitized_syllabus"),
     rawSyllabus: text("raw_syllabus").notNull(),
     plainText: text("plain_text"),
-    hash: text().unique(),
+    hash: text(),
     status: ingestionStatusEnum().notNull(),
     courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id),
-});
+}, t => [
+    unique().on(t.courseInfoId, t.hash),
+]);
 
 export const courseTabs = apiSchema.table("course_tabs", {
     id: uuid("id").primaryKey().defaultRandom(),

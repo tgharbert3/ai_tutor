@@ -1,0 +1,2 @@
+ALTER TABLE "ai"."course_syllabus" DROP CONSTRAINT "course_syllabus_hash_unique";--> statement-breakpoint
+ALTER TABLE "ai"."course_syllabus" ADD CONSTRAINT "course_syllabus_course_info_id_hash_unique" UNIQUE("course_info_id","hash");

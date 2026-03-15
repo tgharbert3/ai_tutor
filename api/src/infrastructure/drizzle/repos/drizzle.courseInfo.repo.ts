@@ -44,7 +44,10 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
     };
 
     async insertSyllabus(syllabusId: string, sanitizedSyllabus: string, plainText: string, syllabusHash: string): Promise<void> {
-        await this.db.update(courseSyllabus).set({ sanitizedSyllabus, plainText, hash: syllabusHash, status: "complete" }).where(eq(courseSyllabus.id, syllabusId)).returning();
+        await this.db.update(courseSyllabus)
+            .set({ sanitizedSyllabus, plainText, hash: syllabusHash, status: "complete" })
+            .where(eq(courseSyllabus.id, syllabusId))
+            .returning();
     }
 
     async getAllCourseInfo(courseId: number): Promise<FullCourseInfo> {

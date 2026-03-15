@@ -1,1 +1,0 @@
-ALTER TABLE "ai"."ingestion_tasks" RENAME COLUMN "course_id" TO "canvas_course_id";

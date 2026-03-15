@@ -1,1 +1,0 @@
-ALTER TABLE "ai"."ingestion_tasks" DROP CONSTRAINT "ingestion_tasks_ingestion_run_id_unique";

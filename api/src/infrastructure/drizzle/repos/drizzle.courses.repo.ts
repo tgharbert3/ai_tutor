@@ -16,7 +16,12 @@ export class DrizzleCourseRepository implements ICoursesRepository {
     }
 
     async insertCourse(course: insertCourseType): Promise<number> {
-        const [newCourse] = await this.db.insert(courses).values(course).returning();
+        const [newCourse] = await this.db.insert(courses).values(course).onConflictDoUpdate({
+            target: [courses.canvasCourseId, courses.schoolId],
+            set: {
+                lastSyncedAt: new Date(),
+            },
+        }).returning();
         return newCourse.id;
     }
 

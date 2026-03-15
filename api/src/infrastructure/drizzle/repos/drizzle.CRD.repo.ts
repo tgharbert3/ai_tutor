@@ -26,7 +26,18 @@ export class DrizzleCanvasRawDocuments implements ICanvasRawDocumentsRepository 
             canvasCourseId,
             schoolId,
         };
-        const [newDoc] = await this.db.insert(canvasRawDocuments).values(doc).returning();
+        const [newDoc] = await this.db.insert(canvasRawDocuments).values(doc).onConflictDoUpdate({
+            target: [
+                canvasRawDocuments.canvasCourseId,
+                canvasRawDocuments.schoolId,
+                canvasRawDocuments.entityType,
+                canvasRawDocuments.entityId,
+            ],
+            set: {
+                payload,
+                fetchedAt: new Date(),
+            },
+        }).returning();
         return newDoc.id;
     }
 

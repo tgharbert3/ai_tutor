@@ -18,7 +18,7 @@ export class FetchClient implements ClientApiPort {
         const authHeaders = new Headers();
         authHeaders.append("x-internal-auth", env.INTERNAL_AUTH);
         try {
-            const response = await fetch(`https://127.0.0.1:3000/internal/${path}`, {
+            const response = await fetch(`http://127.0.0.1:3001/internal/${path}`, {
                 headers: authHeaders,
             });
 

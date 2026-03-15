@@ -7,7 +7,7 @@ import type { JWTData } from "@/lib/types.js";
 
 import { tokenService } from "@/modules/auth/token.service.js";
 
-const ACCESS_TOKEN_NAME = "__Host-at";
+const ACCESS_TOKEN_NAME = "at";
 
 export function getAccessCookie(c: Context) {
     return getCookie(c, ACCESS_TOKEN_NAME);
