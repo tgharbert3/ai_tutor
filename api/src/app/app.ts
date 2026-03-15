@@ -1,30 +1,41 @@
 import sync from "@/app/http/routes/routes.index.js";
+import env from "@/env.js";
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { getDb } from "@/infrastructure/db/index.js";
 import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
+import { RedisPubSubService } from "@/infrastructure/redis.pubSub/redis.pubSub.js";
 import { SanitizeHtml } from "@/infrastructure/sanitizeHtml/sanitizeHtml.js";
 import createApp from "@/lib/create-app.js";
 
+import type { StartIngestionWorkers } from "./composition/containers/startIngestonWorkers.js";
+
 import { getQueueOptions } from "../infrastructure/config/queueOptions.js";
-import { AppContainer } from "./composition/app.composititon.js";
+import { buildHttpContainer } from "./composition/containers/buildHttpContainer.js";
+import { buildWorkerContainer } from "./composition/containers/buildWorkerContainer.js";
+import { startIngestionWorkers, stopWorkers } from "./composition/containers/startIngestonWorkers.js";
 
-let appContainer: AppContainer;
+let ingestionWorkers: StartIngestionWorkers;
 
-function instantiateAppContiner() {
-    return new AppContainer(getDb(), getQueueOptions(), {
+function bootstrap() {
+    const workerContainer = buildWorkerContainer(getDb(), getQueueOptions(), {
         clientFactory: new ClientFactory(),
         canvasFactory: new CanvasClientFactory(),
         sanitizeHtml: new SanitizeHtml(),
+        pubSubService: new RedisPubSubService(`redis://${env.REDIS_PUBSUB_HOST}:${env.REDIS_PUBSUB_PORT}`),
     });
-}
 
-function bootstrap() {
-    appContainer = instantiateAppContiner();
-    appContainer.startWorkers();
-    const app = createApp(appContainer);
+    ingestionWorkers = startIngestionWorkers(workerContainer);
+    const httpContiner = buildHttpContainer(getDb(), getQueueOptions(), {
+        clientFactory: new ClientFactory(),
+        canvasFactory: new CanvasClientFactory(),
+        sanitizeHtml: new SanitizeHtml(),
+        pubSubService: new RedisPubSubService(`redis://${env.REDIS_PUBSUB_HOST}:${env.REDIS_PUBSUB_PORT}`),
+    });
+
+    const app = createApp(httpContiner);
 
     app.use("*", async (c, next) => {
-        c.set("appContainer", appContainer);
+        c.set("httpContainer", httpContiner);
         await next();
     });
 
@@ -40,8 +51,8 @@ function bootstrap() {
 
 async function shutdown(signal: string) {
     console.warn(`received ${signal}, shutting down`);
-    if (appContainer) {
-        await appContainer.shutdownWorkers();
+    if (ingestionWorkers) {
+        await stopWorkers(ingestionWorkers);
     }
     process.exit(0);
 }

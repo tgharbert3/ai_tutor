@@ -12,6 +12,7 @@ import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos
 import type { ISchoolRepository } from "@/infrastructure/interfaces/repos/school.repo.interface.js";
 import type { IUserRepository } from "@/infrastructure/interfaces/repos/user.repo.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
+import type { RedisPubSubService } from "@/infrastructure/redis.pubSub/redis.pubSub.js";
 import type { SanitizeHtml } from "@/infrastructure/sanitizeHtml/sanitizeHtml.js";
 
 export type Context = Readonly<{
@@ -52,4 +53,6 @@ export interface AppContainerDeps {
     canvasFactory: CanvasClientFactory;
     clientFactory: ClientApiPortFactory;
     sanitizeHtml: SanitizeHtml;
+    // TODO: Make this into an interface
+    pubSubService: RedisPubSubService;
 }

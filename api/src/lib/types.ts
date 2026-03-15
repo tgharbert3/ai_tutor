@@ -5,14 +5,14 @@ import type { JWTPayload } from "jose";
 
 import * as z from "zod";
 
-import type { AppContainer } from "@/app/composition/app.composititon.js";
+import type { HttpContainer } from "@/app/composition/containers/buildHttpContainer.js";
 
 import type * as schema from "../infrastructure/db/schema.js";
 
 export interface AppBindings {
     Variables: {
         logger: PinoLogger;
-        appContainer: AppContainer;
+        httpContainer: HttpContainer;
         user: JWTData;
     };
 }
