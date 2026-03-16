@@ -31,6 +31,11 @@ export async function handleWorkerError(error: unknown, job: Job, ingestionTasks
             }
             break;
         }
+        case "noop": {
+            await job.log(`noop for job${job.id}`);
+            await ingestionTasks.updateTaskStatus("noop", taskId);
+            break;
+        }
         case "bug":
         default:
             throw error;

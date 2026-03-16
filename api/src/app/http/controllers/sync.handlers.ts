@@ -2,6 +2,7 @@ import { createFactory } from "hono/factory";
 import { streamSSE } from "hono/streaming";
 
 import type { AppBindings } from "@/lib/types.js";
+import type { Counts } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
 import { AuthMiddleware } from "@/app/http/middlewares/auth.middleware.js";
 
@@ -32,12 +33,21 @@ export const ingestionStatus = factory.createHandlers(
             const ingestionRunId = c.req.param("ingestionRunId");
 
             const subService = httpContainer.getPubSubService();
-            await subService.subscirbe("ingestion-run-status", (message) => {
-                stream.writeSSE({
+            await subService.subscribe("ingestion-run-status", async (message) => {
+                await stream.writeSSE({
                     data: message,
                     event: "ingestion-update",
                     id: ingestionRunId,
                 });
+
+                const counts: Counts = JSON.parse(message);
+                if (counts.runningCount === 0 && counts.queuedCount === 0) {
+                    subService.closeSub();
+                }
+            });
+
+            await new Promise<void>((resolve) => {
+                c.req.raw.signal.addEventListener("abort", () => resolve(), { once: true });
             });
         });
     },

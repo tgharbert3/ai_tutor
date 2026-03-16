@@ -34,6 +34,10 @@ export class CoursePlanWorkerScope {
         const { courseFullIngest, courseChange, ingestionTasks, courseActivityStream } = this.courseWorkerDeps;
 
         const task = await this.claimCourseIngestionTask.execute(taskId);
+        if (!task) {
+            // Task has already been claimed
+            return;
+        }
 
         const canvasCourseId = this.toCourseId(task.entityId);
         const courseExists = await this.courseExistsLocally(task.schoolId, canvasCourseId);
@@ -104,7 +108,7 @@ export class CoursePlanWorkerScope {
     ) {
         const courseChangeTaskId = await ingestionTasks.insertCourseChangeTasks(ingestionRunId, canvasCourseId, schoolId, newItems);
         // Note: All course change tasks are queued under one task ID
-        await courseChange.add("course_change", { ingestionRunId, courseChangeTaskId });
+        await courseChange.add("course_change", { ingestionRunId, taskId: courseChangeTaskId });
     }
 
     private async completeJob(taskId: string, job: Job) {

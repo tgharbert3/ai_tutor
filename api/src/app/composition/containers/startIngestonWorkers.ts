@@ -1,6 +1,7 @@
 import type { Worker } from "bullmq";
 
 import { createWorker } from "@/modules/ingestion/background/factories/worker.factory.js";
+import { handleWorkerError } from "@/modules/ingestion/ingestionTasks/domain/errors/handleWorkerError.js";
 
 import type { buildWorkerContainer } from "./buildWorkerContainer.js";
 
@@ -23,7 +24,13 @@ export function startIngestionWorkers(
             "courses",
             async (job) => {
                 const scope = container.createCoursePlanWorkerScope(job);
-                return await scope.execute();
+                try {
+                    return await scope.execute();
+                }
+                catch (e) {
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    throw e;
+                }
             },
             container.queueOptions,
             5,
@@ -33,7 +40,13 @@ export function startIngestionWorkers(
             "canvasFetch",
             async (job) => {
                 const scope = container.createCanvasFetchScope(job);
-                return await scope.execute();
+                try {
+                    return await scope.execute();
+                }
+                catch (e) {
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    throw e;
+                }
             },
             container.queueOptions,
             5,
@@ -43,7 +56,13 @@ export function startIngestionWorkers(
             "process",
             async (job) => {
                 const scope = container.createProcessScope(job);
-                return await scope.execute();
+                try {
+                    return await scope.execute();
+                }
+                catch (e) {
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    throw e;
+                }
             },
             container.queueOptions,
             5,
@@ -53,7 +72,13 @@ export function startIngestionWorkers(
             "dbWrite",
             async (job) => {
                 const scope = container.createDbWriteScope(job);
-                return await scope.execute();
+                try {
+                    return await scope.execute();
+                }
+                catch (e) {
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    throw e;
+                }
             },
             container.queueOptions,
             5,
@@ -63,7 +88,13 @@ export function startIngestionWorkers(
             "checkRunCompletion",
             async (job) => {
                 const scope = container.createCompletionScope(job);
-                return await scope.execute();
+                try {
+                    return await scope.execute();
+                }
+                catch (e) {
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    throw e;
+                }
             },
             container.queueOptions,
             5,
@@ -72,8 +103,14 @@ export function startIngestionWorkers(
         createWorker(
             "courseFullIngest",
             async (job) => {
-                const scope = container.createFullIngestionScope(job);
-                return await scope.execute();
+                try {
+                    const scope = container.createFullIngestionScope(job);
+                    return await scope.execute();
+                }
+                catch (e) {
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    throw e;
+                }
             },
             container.queueOptions,
             5,

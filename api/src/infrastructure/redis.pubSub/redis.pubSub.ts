@@ -15,9 +15,13 @@ export class RedisPubSubService {
         return await this.redisPub.publish(channel, message);
     };
 
-    async subscirbe(channel: string, handler: (message: string, channel: string) => void) {
+    async subscribe(channel: string, handler: (message: string, channel: string) => Promise<void>) {
         return await this.redisSub.subscribe(channel, handler);
     };
+
+    async closeSub() {
+        return this.redisSub.close();
+    }
 }
 
 export const redisPubSubService = new RedisPubSubService(

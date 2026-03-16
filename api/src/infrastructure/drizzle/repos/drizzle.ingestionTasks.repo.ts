@@ -96,31 +96,33 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
         );
     }
 
-    async claimIngestionTask(taskId: string): Promise<IngestionTask> {
-        return await this.db.transaction(async (tx) => {
-            const task = await tx.query.ingestionTasks.findFirst({
-                columns: {
-                    taskId: true,
-                    kind: true,
-                    entityType: true,
-                    entityId: true,
-                    status: true,
-                    schoolId: true,
-                    canvasCourseId: true,
-                },
-                where: and(
+    async claimIngestionTask(taskId: string): Promise<IngestionTask | null> {
+        const [task] = await this.db.update(ingestionTasks)
+            .set({
+                status: "running",
+            })
+            .where(
+                and (
                     eq(ingestionTasks.taskId, taskId),
                     eq(ingestionTasks.status, "queued"),
                 ),
-            });
-            if (!task) {
-                tx.rollback();
-                throw new Error(`No task for taskId: ${taskId}`);
-            };
-            await tx.update(ingestionTasks).set({ status: "running" }).where(eq(ingestionTasks.taskId, taskId));
+            )
+            .returning();
+        if (!task) {
+            return null;
+        }
 
-            return task;
-        });
+        const taskInfo = {
+            status: task.status,
+            entityType: task.entityType,
+            taskId: task.taskId,
+            kind: task.kind,
+            entityId: task.entityId,
+            schoolId: task.schoolId,
+            canvasCourseId: task.canvasCourseId,
+        } satisfies IngestionTask;
+
+        return taskInfo;
     }
 
     async insertCanvasFetchTaskForFullIngestion(ingestionRunId: string, fetchType: IngestionTaskKind[], canvasCourseId: number, schoolId: number): Promise<string[]> {
@@ -226,6 +228,7 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
                 successCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'success')`,
                 runningCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'running')`,
                 failedCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'failed')`,
+                noopCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'noop')`,
             },
         )
             .from(ingestionTasks)

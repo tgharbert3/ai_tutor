@@ -9,7 +9,7 @@ export const ingestionTaskKind = apiSchema.enum("ingestion_task_kind", ["course:
 // Specifies what the entityId user for. If 'assignment' then entityId is assignmentId
 export const ingestionTaskEntityType = apiSchema.enum("ingestion_task_entity_type", ["syllabus", "assignment", "course", "tabs", "rawDoc", "courseInfo"]);
 
-export const ingestionTaskStatus = apiSchema.enum("ingestion_task_status", ["queued", "running", "success", "failed", "processing", "processed"]);
+export const ingestionTaskStatus = apiSchema.enum("ingestion_task_status", ["queued", "running", "success", "failed", "processing", "processed", "noop"]);
 
 export const coursePlanStatus = typeof ingestionTaskStatus;
 

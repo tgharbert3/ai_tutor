@@ -1,7 +1,7 @@
+import { InvalidCanvasData } from "@/modules/ingestion/ingestionTasks/domain/errors/errorsTypes.js";
+
 import type { CanvasApiPort, CanvasApiPortFactory } from "./ports/canvas.api.port.js";
 import type { CanvasCourse, CanvasEnrollment, CanvasTab, StreamActivityItem } from "./types.js";
-
-import { CanvasHttpError } from "./errors.js";
 
 export class CanvasClient implements CanvasApiPort {
     constructor(
@@ -13,7 +13,7 @@ export class CanvasClient implements CanvasApiPort {
         const response = await this.get<unknown>("brand_variables");
         // Treat the response as unkown and verify its an object
         if (!response || typeof response !== "object") {
-            throw new CanvasHttpError("Unable to get brand variables");
+            throw new InvalidCanvasData("Unable to get brand variables");
         }
         // Verify that it has the attribute
         const color = (response as any)["ic-brand-primary"];
@@ -25,7 +25,7 @@ export class CanvasClient implements CanvasApiPort {
         const response = await this.get<unknown>("users/self/enrollments");
 
         if (!this.isCanvasEnrollmentArray(response)) {
-            throw new CanvasHttpError(`invalid enrollments for user`);
+            throw new InvalidCanvasData(`invalid enrollments for user`);
         }
         return response;
     };
@@ -34,7 +34,7 @@ export class CanvasClient implements CanvasApiPort {
         const response = await this.get<unknown>(`courses/${courseId}/activity_stream`);
 
         if (!this.isCanvasStreamArray(response)) {
-            throw new CanvasHttpError(`Invalid course activity stream for course id ${courseId}`);
+            throw new InvalidCanvasData(`Invalid course activity stream for course id ${courseId}`);
         }
         return response;
     }
@@ -43,10 +43,10 @@ export class CanvasClient implements CanvasApiPort {
         const response = await this.get<any>(`courses/${courseId}?include[]=syllabus_body&include[]=tabs`);
 
         if (response.access_restricted_by_date === true) {
-            throw new CanvasHttpError(`Course id: ${courseId} restricted by date`);
+            throw new InvalidCanvasData(`Course id: ${courseId} restricted by date`);
         }
         if (!this.isCanvasCourse(response)) {
-            throw new CanvasHttpError(`Invalid course info for course ${courseId}`);
+            throw new InvalidCanvasData(`Invalid course info for course ${courseId}`);
         }
         return response;
     }
@@ -63,7 +63,7 @@ export class CanvasClient implements CanvasApiPort {
             });
 
             if (!response.ok) {
-                throw new CanvasHttpError(`Unable to fetch for path: ${path}`);
+                throw new InvalidCanvasData(`Unable to fetch for path: ${path}`);
             }
             return await response.json() as T;
         }

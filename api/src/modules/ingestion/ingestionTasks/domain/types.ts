@@ -29,4 +29,5 @@ export interface Counts {
     successCount: number;
     runningCount: number;
     failedCount: number;
+    noopCount: number;
 }

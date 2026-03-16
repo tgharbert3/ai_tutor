@@ -4,14 +4,23 @@ import type { insertCourseType, insertUserEnrollment } from "@/infrastructure/db
 
 import type { DbWriteScopeDeps } from "../domain/types.js";
 
+import { ClaimIngestionTask } from "../ingestionTasks/applications/useCases/claimIngestion.js";
+
 export class DbWriteScope {
+    private readonly claimIngestionTask: ClaimIngestionTask;
     constructor(
         private readonly dbWriteScopeDeps: DbWriteScopeDeps,
-    ) {}
+    ) {
+        this.claimIngestionTask = new ClaimIngestionTask(this.dbWriteScopeDeps.ingestionTasks);
+    }
 
     async execute() {
         const { ingestionRunId, taskId } = this.dbWriteScopeDeps.job.data;
-        const task = await this.dbWriteScopeDeps.ingestionTasks.claimIngestionTask(taskId);
+        const task = await this.claimIngestionTask.execute(taskId);
+        if (!task) {
+            // Task has already been claimed
+            return;
+        }
 
         switch (task.kind) {
             case "write:NewCourse": {

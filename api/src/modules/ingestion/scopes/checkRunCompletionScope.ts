@@ -9,7 +9,6 @@ export class CheckRunCompletion {
         const { ingestionRunId } = this.checkRunCompletionDeps.job.data;
         const counts = await this.checkRunCompletionDeps.ingestionTasks.getRunCounts(ingestionRunId);
 
-        await new Promise(resolve => setTimeout(resolve, 10000));
         await this.checkRunCompletionDeps.pubSubService.publish("ingestion-run-status", JSON.stringify(counts));
         if (counts.queuedCount === 0 && counts.runningCount === 0) {
             // TODO: add a way to send status back to the front end

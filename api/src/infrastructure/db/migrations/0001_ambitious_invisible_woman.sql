@@ -1,0 +1,1 @@
+ALTER TYPE "ai"."ingestion_task_status" ADD VALUE 'noop';

@@ -6,19 +6,27 @@ import { FetchUsersCanvasToken } from "@/infrastructure/internal/application/fet
 
 import type { CanvasFetchWorkerDeps } from "../domain/types.js";
 
+import { ClaimIngestionTask } from "../ingestionTasks/applications/useCases/claimIngestion.js";
 import { UnhandledTaskError } from "../ingestionTasks/domain/errors/errorsTypes.js";
 
 export class CanvasFetchWorkerScope {
     private fetchUsersCanvasToken: FetchUsersCanvasToken;
+    private claimIngestionTask: ClaimIngestionTask;
     constructor(
         private readonly canvasFetchWorkerDeps: CanvasFetchWorkerDeps,
     ) {
         this.fetchUsersCanvasToken = new FetchUsersCanvasToken(this.canvasFetchWorkerDeps.clientFactory);
+        this.claimIngestionTask = new ClaimIngestionTask(this.canvasFetchWorkerDeps.ingestionTasks);
     };
 
     async execute() {
         const { ingestionRunId, taskId } = this.canvasFetchWorkerDeps.job.data;
-        const task = await this.canvasFetchWorkerDeps.ingestionTasks.claimIngestionTask(taskId);
+        const task = await this.claimIngestionTask.execute(taskId);
+        if (!task) {
+            // Task has already been claimed
+            return;
+        }
+
         const clientDeps = await this.canvasFetchWorkerDeps.ingestionRun.fetchUserIdAndUrl(ingestionRunId, task.schoolId);
         const usersCanvasToken = await this.fetchUsersCanvasToken.execute(clientDeps.userId);
         const canvasClient = this.canvasFetchWorkerDeps.canvasFactory.create({ apiToken: usersCanvasToken, canvasBaseUrl: clientDeps.canvasBaseUrl });

@@ -1,8 +1,6 @@
-import { CanvasHttpError } from "@/infrastructure/canvas/errors.js";
+import { CanvasHttpError, InternalClientError, InvalidCanvasData, TaskNotClaimable, UnhandledTaskError } from "./errorsTypes.js";
 
-import { InternalClientError, TaskNotClaimable, UnhandledTaskError } from "./errorsTypes.js";
-
-type WorkerErrorAction = "retry" | "failed" | "bug";
+type WorkerErrorAction = "retry" | "failed" | "bug" | "noop";
 
 export function classifyWorkerError(error: unknown): WorkerErrorAction {
     if (error instanceof TaskNotClaimable) {
@@ -14,6 +12,9 @@ export function classifyWorkerError(error: unknown): WorkerErrorAction {
     if (error instanceof CanvasHttpError) {
         return "failed";
     }
+    if (error instanceof InvalidCanvasData) {
+        return "noop";
+    };
     if (error instanceof UnhandledTaskError) {
         return "retry";
     }

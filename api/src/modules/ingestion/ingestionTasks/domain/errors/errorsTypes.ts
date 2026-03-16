@@ -18,3 +18,17 @@ export class UnhandledTaskError extends Error {
         this.name = "UnhandledTaskError";
     }
 }
+
+export class InvalidCanvasData extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "InvalidCanvasData";
+    }
+}
+
+export class CanvasHttpError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "CanvasHttpError";
+    }
+}

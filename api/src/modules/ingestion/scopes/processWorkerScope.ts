@@ -1,14 +1,24 @@
 import type { ProcessWorkerDeps } from "../domain/types.js";
 import type { SanitizedSyllabus } from "../ingestionTasks/domain/types.js";
 
+import { ClaimIngestionTask } from "../ingestionTasks/applications/useCases/claimIngestion.js";
+
 export class ProcessWorkerScope {
+    private readonly claimIngestionTask: ClaimIngestionTask;
     constructor(
         private readonly prcoessWorkerDeps: ProcessWorkerDeps,
-    ) {}
+    ) {
+        this.claimIngestionTask = new ClaimIngestionTask(this.prcoessWorkerDeps.ingestionTasks);
+    }
 
     async execute() {
         const { ingestionRunId, taskId } = this.prcoessWorkerDeps.job.data;
-        const task = await this.prcoessWorkerDeps.ingestionTasks.claimIngestionTask(taskId);
+        const task = await this.claimIngestionTask.execute(taskId);
+
+        if (!task) {
+            // Task has already been claimed
+            return;
+        }
 
         switch (task.kind) {
             case "process:Syllabus": {

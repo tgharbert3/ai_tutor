@@ -1,3 +1,5 @@
+import { cors } from "hono/cors";
+
 import sync from "@/app/http/routes/routes.index.js";
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { getDb } from "@/infrastructure/db/index.js";
@@ -34,6 +36,10 @@ function bootstrap() {
 
     const app = createApp(httpContiner);
 
+    app.use("*", cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+    }));
     app.use("*", async (c, next) => {
         c.set("httpContainer", httpContiner);
         await next();

@@ -23,7 +23,7 @@ export interface IIngestionTaskRepository {
      * @param taskId
      * @returns The full task or undefined if DNE
      */
-    claimIngestionTask: (taskId: string) => Promise<IngestionTask>;
+    claimIngestionTask: (taskId: string) => Promise<IngestionTask | null>;
 
     insertCanvasFetchTaskForFullIngestion: (ingestionRunId: string, fetchType: IngestionTaskKind[], courseId: number, schoolId: number) => Promise<string[]>;
     insertDbWriteTask: (ingestionRunId: string, taskKind: IngestionTaskKind, courseId: number, schoolId: number, docId: string, entityType: IngestionTaskET) => Promise<string>;
