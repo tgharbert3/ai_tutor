@@ -30,6 +30,10 @@ export function buildHttpContainer(
             );
         },
 
+        getPubSubService() {
+            return deps.pubSubService;
+        },
+
     // later:
     // createCreateCourseUseCase()
     // createUpdateCourseUseCase()

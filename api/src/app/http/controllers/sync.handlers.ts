@@ -1,4 +1,5 @@
 import { createFactory } from "hono/factory";
+import { streamSSE } from "hono/streaming";
 
 import type { AppBindings } from "@/lib/types.js";
 
@@ -20,5 +21,24 @@ export const ingestionHandler = factory.createHandlers(
             console.error(error.message);
             return c.json({ error: "Unable to start ingestion" }, 401);
         }
+    },
+);
+
+export const ingestionStatus = factory.createHandlers(
+    AuthMiddleware,
+    async (c) => {
+        return streamSSE(c, async (stream) => {
+            const httpContainer = c.get("httpContainer");
+            const ingestionRunId = c.req.param("ingestionRunId");
+
+            const subService = httpContainer.getPubSubService();
+            await subService.subscirbe("ingestion-run-status", (message) => {
+                stream.writeSSE({
+                    data: message,
+                    event: "ingestion-update",
+                    id: ingestionRunId,
+                });
+            });
+        });
     },
 );

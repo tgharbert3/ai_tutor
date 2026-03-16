@@ -11,6 +11,7 @@ import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/
 import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 import type { ISanitizeHtml } from "@/infrastructure/interfaces/sanitizeHtml/sanitizeHtml.interface.js";
 import type { ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
+import type { RedisPubSubService } from "@/infrastructure/redis.pubSub/redis.pubSub.js";
 import type { EnrollmentJob } from "@/modules/ingestion/background/domain/types.js";
 
 export interface WorkerDeps {
@@ -93,4 +94,5 @@ export interface checkRunCompletionDeps {
     job: Job<{ ingestionRunId: string }>;
     ingestionTasks: IIngestionTaskRepository;
     ingestionRuns: IIngestionRunRepository;
+    pubSubService: RedisPubSubService;
 }

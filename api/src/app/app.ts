@@ -1,9 +1,8 @@
 import sync from "@/app/http/routes/routes.index.js";
-import env from "@/env.js";
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { getDb } from "@/infrastructure/db/index.js";
 import { ClientFactory } from "@/infrastructure/internal/fetch.client.js";
-import { RedisPubSubService } from "@/infrastructure/redis.pubSub/redis.pubSub.js";
+import { redisPubSubService } from "@/infrastructure/redis.pubSub/redis.pubSub.js";
 import { SanitizeHtml } from "@/infrastructure/sanitizeHtml/sanitizeHtml.js";
 import createApp from "@/lib/create-app.js";
 
@@ -21,7 +20,8 @@ function bootstrap() {
         clientFactory: new ClientFactory(),
         canvasFactory: new CanvasClientFactory(),
         sanitizeHtml: new SanitizeHtml(),
-        pubSubService: new RedisPubSubService(`redis://${env.REDIS_PUBSUB_HOST}:${env.REDIS_PUBSUB_PORT}`),
+        // Singleton service
+        pubSubService: redisPubSubService,
     });
 
     ingestionWorkers = startIngestionWorkers(workerContainer);
@@ -29,7 +29,7 @@ function bootstrap() {
         clientFactory: new ClientFactory(),
         canvasFactory: new CanvasClientFactory(),
         sanitizeHtml: new SanitizeHtml(),
-        pubSubService: new RedisPubSubService(`redis://${env.REDIS_PUBSUB_HOST}:${env.REDIS_PUBSUB_PORT}`),
+        pubSubService: redisPubSubService,
     });
 
     const app = createApp(httpContiner);

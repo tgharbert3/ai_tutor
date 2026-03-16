@@ -104,6 +104,7 @@ export function buildWorkerContainer(
                 job,
                 ingestionTasks: repos.ingestionTasks,
                 ingestionRuns: repos.ingestionRuns,
+                pubSubService: deps.pubSubService,
             });
         },
 

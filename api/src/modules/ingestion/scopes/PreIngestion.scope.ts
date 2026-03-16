@@ -38,6 +38,6 @@ export class PreIngestionScope {
             canvasBaseUrl: this.ctx.canvasBaseUrl,
         } satisfies EnrollmentJob);
 
-        return { ingestionId: handoff.ingestionId, status: handoff.status };
+        return { ingestionRunId: handoff.ingestionId, status: handoff.status };
     }
 }
