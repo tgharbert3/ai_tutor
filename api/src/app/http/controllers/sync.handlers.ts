@@ -33,7 +33,7 @@ export const ingestionStatus = factory.createHandlers(
             const ingestionRunId = c.req.param("ingestionRunId");
 
             const subService = httpContainer.getPubSubService();
-            await subService.subscribe("ingestion-run-status", async (message) => {
+            await subService.subscribe(`ingestion-run-status:${ingestionRunId}`, async (message) => {
                 await stream.writeSSE({
                     data: message,
                     event: "ingestion-update",
@@ -41,14 +41,19 @@ export const ingestionStatus = factory.createHandlers(
                 });
 
                 const counts: Counts = JSON.parse(message);
-                if (counts.runningCount === 0 && counts.queuedCount === 0) {
-                    subService.closeSub();
+                if (counts.runningCount === "0" && counts.queuedCount === "0") {
+                    subService.unsubscribe(`ingestion-run-status:${ingestionRunId}`);
+                    await stream.close();
                 }
             });
-
-            await new Promise<void>((resolve) => {
-                c.req.raw.signal.addEventListener("abort", () => resolve(), { once: true });
-            });
+            try {
+                await new Promise<void>((resolve) => {
+                    c.req.raw.signal.addEventListener("abort", () => resolve(), { once: true });
+                });
+            }
+            finally {
+                subService.unsubscribe(`ingestion-run-status:${ingestionRunId}`);
+            }
         });
     },
 );

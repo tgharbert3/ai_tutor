@@ -22,6 +22,10 @@ export class RedisPubSubService {
     async closeSub() {
         return this.redisSub.close();
     }
+
+    async unsubscribe(channel: string) {
+        return await this.redisSub.unsubscribe(channel);
+    }
 }
 
 export const redisPubSubService = new RedisPubSubService(

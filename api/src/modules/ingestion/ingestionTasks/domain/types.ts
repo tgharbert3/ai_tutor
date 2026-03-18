@@ -25,9 +25,9 @@ export interface SanitizedSyllabus {
 export type Payload = SanitizedSyllabus | CanvasCourse;
 
 export interface Counts {
-    queuedCount: number;
-    successCount: number;
-    runningCount: number;
-    failedCount: number;
-    noopCount: number;
+    queuedCount: string;
+    successCount: string;
+    runningCount: string;
+    failedCount: string;
+    noopCount: string;
 }

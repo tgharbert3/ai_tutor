@@ -7,12 +7,15 @@ export class CheckRunCompletion {
 
     async execute() {
         const { ingestionRunId } = this.checkRunCompletionDeps.job.data;
+        const channel = `ingestion-run-status:${ingestionRunId}`;
         const counts = await this.checkRunCompletionDeps.ingestionTasks.getRunCounts(ingestionRunId);
 
-        await this.checkRunCompletionDeps.pubSubService.publish("ingestion-run-status", JSON.stringify(counts));
-        if (counts.queuedCount === 0 && counts.runningCount === 0) {
-            // TODO: add a way to send status back to the front end
+        if (counts.queuedCount === "0" && counts.runningCount === "0") {
             await this.checkRunCompletionDeps.ingestionRuns.updateRunStatus("complete", ingestionRunId);
-        }
+            const finalCounts = await this.checkRunCompletionDeps.ingestionTasks.getRunCounts(ingestionRunId);
+            await this.checkRunCompletionDeps.pubSubService.publish(channel, JSON.stringify({ ...finalCounts, isFinal: true }));
+        };
+
+        await this.checkRunCompletionDeps.pubSubService.publish(channel, JSON.stringify({ ...counts, isFinal: false }));
     };
 }

@@ -26,7 +26,7 @@ export default function StatusStream({ ingestionRunId }: Props) {
     eventSource.addEventListener("ingestion-update", (event) => {
       const data = JSON.parse(event.data);
       console.log(data);
-      if (data.runningCount === "0" && data.queuedCount === "0") {
+      if (data.runningCount === "0" && data.queuedCount === "0" && data.isFinal == true) {
         eventSource.close();
       }
       
@@ -34,7 +34,10 @@ export default function StatusStream({ ingestionRunId }: Props) {
 
     eventSource.onerror = (err) => {
       console.error("SSE error:", err);
+      // console.log(eventSource.CLOSED);
+      eventSource.close();
     };
+
   }, [ingestionRunId]);
 
   return <div>Listening for updates...</div>;
