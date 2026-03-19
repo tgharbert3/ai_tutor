@@ -10,23 +10,24 @@ export class DrizzleEnrollmentRepository implements IEnrollmentRepo {
     constructor(private db: db) {}
 
     async upsertEnrollment(enrollments: insertUserEnrollment) {
-        await this.db.insert(userEnrollments).values(enrollments).returning().onConflictDoUpdate({
+        const [enrollment] = await this.db.insert(userEnrollments).values(enrollments).returning().onConflictDoUpdate({
             target: [userEnrollments.userId, userEnrollments.courseId],
             set: {
                 updated_at: new Date(),
             },
         });
+        return enrollment;
     }
 
-    async findAllEnrollments(userId: string) {
-        return await this.db
-            .select()
-            .from(userEnrollments)
-            .where(and(
-                eq(userEnrollments.userId, userId),
-                eq(userEnrollments.isActive, true),
-            ));
-    };
+    // async findAllEnrollments(userId: string) {
+    //     return await this.db
+    //         .select()
+    //         .from(userEnrollments)
+    //         .where(and(
+    //             eq(userEnrollments.userId, userId),
+    //             eq(userEnrollments.isActive, true),
+    //         ));
+    // };
 
     async findAllActiveEnrollmentIds(userId: string): Promise<number[]> {
         const rows = await this.db
@@ -53,7 +54,14 @@ export class DrizzleEnrollmentRepository implements IEnrollmentRepo {
             .returning();
     }
 
-    async fetchEnrollments() {
-
+    async getCourseIdsByUserId(userId: string): Promise<number[]> {
+        const canvasCourseIds = await this.db.select({
+            canvasCourseIds: userEnrollments.canvasCourseId,
+        }).from(userEnrollments).where(and(
+            eq(userEnrollments.userId, userId),
+            eq(userEnrollments.isActive, true),
+        ));
+        const courseIds = canvasCourseIds.map(id => id.canvasCourseIds);
+        return courseIds;
     }
 }
