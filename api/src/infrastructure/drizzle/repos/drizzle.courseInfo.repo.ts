@@ -2,11 +2,11 @@ import { eq } from "drizzle-orm";
 
 import type { CanvasTab } from "@/infrastructure/canvas/types.js";
 import type { insertCourseInfo, insertTabs } from "@/infrastructure/db/schema.js";
-import type { FullCourseInfo, InsertCourseInfo } from "@/infrastructure/domain/types.js";
+import type { CourseInfo, FullCourseInfo, InsertCourseInfo } from "@/infrastructure/domain/types.js";
 import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
 import type { db } from "@/lib/types.js";
 
-import { courseInfo, courseSyllabus, courseTabs } from "@/infrastructure/db/schema.js";
+import { courseInfo, courses, courseSyllabus, courseTabs } from "@/infrastructure/db/schema.js";
 
 export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
     constructor(private db: db) {}
@@ -71,15 +71,12 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
         return info;
     };
 
-    async getCourseInfoByCourseId(courseId: number) {
-        const [info] = await this.db.select({
-            canvasCourseId: courseInfo.canvasCourseId,
-            courseCode: courseInfo.courseCode,
-            name: courseInfo.name,
-        }).from(courseInfo).where(
-            eq(courseInfo.courseId, courseId),
-        );
-
-        return info;
+    async getCourseInfoByCourseId(courseId: number): Promise<CourseInfo> {
+        const [info] = await this.db.select().from(courses).where(eq(courses.id, courseId)).rightJoin(courseInfo, eq(courses.id, courseInfo.courseId));
+        return {
+            name: info.course_info.name,
+            canvasCourseId: info.course_info.canvasCourseId,
+            courseCode: info.course_info.courseCode,
+        };
     }
 }

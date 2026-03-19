@@ -5,8 +5,7 @@ import * as ingestionRunHandlers from "../controllers/ingestion.handlers.js";
 
 // modules/routes/routes.index.ts
 export default function syncRoutes() {
-    const router = new Hono();
-
+    const router = new Hono().basePath("/api/v1"); ;
     router.post("/sync", ...ingestionRunHandlers.ingestionHandler);
     router.get("/ingestionRunStatus/:ingestionRunId/events", ...ingestionRunHandlers.ingestionStatus);
     router.get("/dashboard", ...dashboardHandlers.dashboardHandler);

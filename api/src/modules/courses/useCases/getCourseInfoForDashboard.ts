@@ -10,11 +10,11 @@ export class GetCourseInfoForDashboard {
     async execute(userId: string): Promise<CourseInfo[]> {
         const courseIds = await this.getCourseInfoForDashoardDeps.enrollmentsRepo.getCourseIdsByUserId(userId);
 
-        const coursesInfo = await Promise.all(
-            courseIds.map(async (courseId) => {
-                return await this.getCourseInfoForDashoardDeps.courseInfoRepo.getCourseInfoByCourseId(courseId);
-            }),
-        );
+        const coursesInfo = [];
+        for (const courseId of courseIds) {
+            const info = await this.getCourseInfoForDashoardDeps.courseInfoRepo.getCourseInfoByCourseId(courseId);
+            coursesInfo.push(info);
+        }
         return coursesInfo;
     }
 }

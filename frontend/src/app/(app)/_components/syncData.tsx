@@ -11,7 +11,7 @@ export default function SyncData() {
         // const cookiesStore = await cookies();
         //     const cookies = cookiesStore.toString();
         const run = async () => {
-            const res = await fetch("http://localhost:3600/sync" , {
+            const res = await fetch("/api/sync" , {
                 method: "POST",
                 headers: {
                     Accept: "application/json",

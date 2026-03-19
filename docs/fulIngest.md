@@ -70,3 +70,8 @@ get the run id
 query the db
 if success/failed = queued or !queued
 mark run as complete and emit a run job completed to send to the front end
+
+
+query the user enrollments table by userID and isActive
+query the coursesTable with a join on the courseInfo table for all of the coureses in the user enrollment table.
+create an object where each field is a course and its info.

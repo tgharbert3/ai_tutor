@@ -56,12 +56,12 @@ export class DrizzleEnrollmentRepository implements IEnrollmentRepo {
 
     async getCourseIdsByUserId(userId: string): Promise<number[]> {
         const canvasCourseIds = await this.db.select({
-            canvasCourseIds: userEnrollments.canvasCourseId,
+            courseIds: userEnrollments.courseId,
         }).from(userEnrollments).where(and(
             eq(userEnrollments.userId, userId),
             eq(userEnrollments.isActive, true),
         ));
-        const courseIds = canvasCourseIds.map(id => id.canvasCourseIds);
+        const courseIds = canvasCourseIds.map(id => id.courseIds);
         return courseIds;
     }
 }
