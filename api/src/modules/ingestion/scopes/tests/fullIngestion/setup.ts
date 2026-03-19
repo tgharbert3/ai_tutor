@@ -2,7 +2,7 @@ import type { Job } from "bullmq";
 
 import type { FullIngestionScopeDeps, WorkerDeps } from "@/modules/ingestion/domain/types.js";
 
-import { makeMockCanvasFetchQueue, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockCanvasFetchQueue, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo } from "@/modules/tests/mockingFactory.js";
 
 export type scopeDeps = ReturnType<typeof getScopeDeps>;
 

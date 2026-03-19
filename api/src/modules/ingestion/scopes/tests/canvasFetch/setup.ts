@@ -2,7 +2,7 @@ import type { Job } from "bullmq";
 
 import type { CanvasFetchWorkerDeps, WorkerDeps } from "@/modules/ingestion/domain/types.js";
 
-import { makeMockCanvasClient, makeMockCanvasFactory, makeMockCanvasRawDocumentsRepo, makeMockClient, makeMockClientFactory, makeMockCourseInfo, makeMockDbWriteQueue, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo, makeMockProcessQueue } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockCanvasClient, makeMockCanvasFactory, makeMockCanvasRawDocumentsRepo, makeMockClient, makeMockClientFactory, makeMockCourseInfo, makeMockDbWriteQueue, makeMockIngestionRunsRepo, makeMockIngestionTaskRepo, makeMockProcessQueue } from "@/modules/tests/mockingFactory.js";
 
 export type MockCanvasFetchdeps = ReturnType<typeof getMockCanvasFetchScopeDeps>;
 export function getMockCanvasFetchScopeDeps() {

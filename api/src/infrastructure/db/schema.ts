@@ -287,5 +287,6 @@ export type insertIngestonTask = typeof ingestionTasks.$inferInsert;
 export type insertTabs = typeof courseTabs.$inferInsert;
 
 export type insertCourseInfo = typeof courseInfo.$inferInsert;
+export type getCourseInfo = typeof courseInfo.$inferSelect;
 
 export type getCanvasRawDocument = typeof canvasRawDocuments.$inferSelect;

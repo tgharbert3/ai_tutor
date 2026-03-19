@@ -26,3 +26,9 @@ export interface FullCourseInfo {
         courseInfoId: string;
     };
 }
+
+export interface CourseInfo {
+    canvasCourseId: number;
+    name: string;
+    courseCode: string;
+}

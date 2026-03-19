@@ -2,7 +2,7 @@ import type { Job } from "bullmq";
 
 import type { ProcessWorkerDeps, WorkerDeps } from "@/modules/ingestion/domain/types.js";
 
-import { makeMockCanvasRawDocumentsRepo, makeMockCourseInfo, makeMockDbWriteQueue, makeMockIngestionTaskRepo, makeMockSanitizeHtml } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockCanvasRawDocumentsRepo, makeMockCourseInfo, makeMockDbWriteQueue, makeMockIngestionTaskRepo, makeMockSanitizeHtml } from "@/modules/tests/mockingFactory.js";
 
 export type MockProcessWorkerScopeDeps = ReturnType<typeof getMockProcessWorkerScopeDeps>;
 export function getMockProcessWorkerScopeDeps() {

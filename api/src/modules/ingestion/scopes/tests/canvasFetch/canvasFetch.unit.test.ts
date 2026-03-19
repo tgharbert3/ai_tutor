@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
 
 import type { CanvasCourse, CanvasTab } from "@/infrastructure/canvas/types.js";
 
-import { makeMockJob, makeMockTask } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockJob, makeMockTask } from "@/modules/tests/mockingFactory.js";
 
 import type { MockCanvasFetchdeps } from "./setup.js";
 

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { TaskNotClaimable } from "@/modules/ingestion/ingestionTasks/domain/errors/errorsTypes.js";
-import { makeMockTask } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockTask } from "@/modules/tests/mockingFactory.js";
 
 import type { mockClaimIngestionDeps } from "./setup.js";
 

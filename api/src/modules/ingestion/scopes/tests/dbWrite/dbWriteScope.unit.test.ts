@@ -4,7 +4,7 @@ import type { CanvasCourse, CanvasTab } from "@/infrastructure/canvas/types.js";
 import type { InsertCourseInfo } from "@/infrastructure/domain/types.js";
 import type { SanitizedSyllabus } from "@/modules/ingestion/ingestionTasks/domain/types.js";
 
-import { makeMockJob, makeMockTask } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockJob, makeMockTask } from "@/modules/tests/mockingFactory.js";
 
 import type { mockDbWriteDeps } from "./setup.js";
 

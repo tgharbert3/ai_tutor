@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { makeMockJob, makeMockTask } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockJob, makeMockTask } from "@/modules/tests/mockingFactory.js";
 
 import type { scopeDeps } from "./setup.js";
 

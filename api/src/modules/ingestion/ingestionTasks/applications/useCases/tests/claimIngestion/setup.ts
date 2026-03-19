@@ -1,4 +1,4 @@
-import { makeMockIngestionTaskRepo } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockIngestionTaskRepo } from "@/modules/tests/mockingFactory.js";
 
 export type mockClaimIngestionDeps = ReturnType<typeof makeMockClaimIngestionDeps>;
 

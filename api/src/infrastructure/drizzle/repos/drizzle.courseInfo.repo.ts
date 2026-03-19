@@ -70,4 +70,16 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
             .rightJoin(courseTabs, eq(courseInfo.id, courseTabs.courseInfoId));
         return info;
     };
+
+    async getCourseInfoByCourseId(courseId: number) {
+        const [info] = await this.db.select({
+            canvasCourseId: courseInfo.canvasCourseId,
+            courseCode: courseInfo.courseCode,
+            name: courseInfo.name,
+        }).from(courseInfo).where(
+            eq(courseInfo.courseId, courseId),
+        );
+
+        return info;
+    }
 }

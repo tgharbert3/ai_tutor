@@ -2,7 +2,7 @@ import type { Job } from "bullmq";
 
 import type { DbWriteScopeDeps } from "@/modules/ingestion/domain/types.js";
 
-import { makeMockCanvasRawDocumentsRepo, makeMockCourseInfo, makeMockIngestionTaskRepo, makeMockProcessQueue } from "@/modules/ingestion/tests/mockingFactory.js";
+import { makeMockCanvasRawDocumentsRepo, makeMockCourseInfo, makeMockIngestionTaskRepo, makeMockProcessQueue } from "@/modules/tests/mockingFactory.js";
 
 export type mockDbWriteDeps = ReturnType<typeof getMockDbWriteScopeDeps>;
 export function getMockDbWriteScopeDeps() {

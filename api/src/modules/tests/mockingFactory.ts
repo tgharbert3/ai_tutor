@@ -8,12 +8,13 @@ import type { ICanvasRawDocumentsRepository } from "@/infrastructure/interfaces/
 import type { ICourseActivityStreamRepository } from "@/infrastructure/interfaces/repos/courseActivityStream.interface.js";
 import type { ICourseInfoRepository } from "@/infrastructure/interfaces/repos/courseInfo.interface.js";
 import type { ICoursesRepository } from "@/infrastructure/interfaces/repos/courses.repo.interface.js";
+import type { IEnrollmentRepo } from "@/infrastructure/interfaces/repos/enrollment.interface.js";
 import type { IIngestionRunRepository } from "@/infrastructure/interfaces/repos/ingestionRun.interface.js";
 import type { IIngestionTaskRepository } from "@/infrastructure/interfaces/repos/ingestionTask.interface.js";
 import type { ISanitizeHtml } from "@/infrastructure/interfaces/sanitizeHtml/sanitizeHtml.interface.js";
 import type { ClientApiPort, ClientApiPortFactory } from "@/infrastructure/internal/fetch.port.js";
 
-import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../ingestionTasks/domain/types.js";
+import type { IngestionTask, IngestionTaskET, IngestionTaskKind, IngestionTaskStatus } from "../ingestion/ingestionTasks/domain/types.js";
 
 export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
     return {
@@ -28,7 +29,11 @@ export function makeMockIngestionTaskRepo(): Mocked<IIngestionTaskRepository> {
         insertProcessSyllabusTask: vi.fn(),
         insertWriteSyllabusTask: vi.fn(),
         getRunCounts: vi.fn(),
-    };
+        insertWriteUserEnrollmentTask: vi.fn(),
+        updateTaskStatusWithError: vi.fn(),
+        insertWriteCourseTask: vi.fn(),
+        getRunningCountAndKind: vi.fn(),
+    } satisfies IIngestionTaskRepository;
 };
 
 export function makeMockIngestionRunsRepo(): Mocked<IIngestionRunRepository> {
@@ -38,13 +43,16 @@ export function makeMockIngestionRunsRepo(): Mocked<IIngestionRunRepository> {
         fetchUserId: vi.fn(),
         fetchCanvasBaseUrl: vi.fn(),
         fetchUserIdAndUrl: vi.fn(),
-    };
+        getRunStatus: vi.fn(),
+    } satisfies IIngestionRunRepository;
 };
 
 export function makeMockCoursesRepo(): Mocked<ICoursesRepository> {
     return {
         findAllCourseIdsForSchool: vi.fn(),
-    };
+        insertCourse: vi.fn(),
+        findAllCanvasCourseIdsForSchool: vi.fn(),
+    } satisfies ICoursesRepository;
 };
 
 export function makeMockCourseActivityStreamRepo(): Mocked<ICourseActivityStreamRepository> {
@@ -62,11 +70,23 @@ export function makeMockCanvasRawDocumentsRepo(): Mocked<ICanvasRawDocumentsRepo
 
 export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
     return {
-        insertCourseInfo: vi.fn(),
+        upsertCourseInfo: vi.fn(),
         fetchRawSyllabus: vi.fn(),
         insertSyllabus: vi.fn(),
+        getAllCourseInfo: vi.fn(),
+        getCourseInfoByCourseId: vi.fn(),
     };
 }
+
+export function makeMockUserEnrollmentRepo(): Mocked<IEnrollmentRepo> {
+    return {
+        fetchEnrollments: vi.fn(),
+        findAllActiveEnrollmentIds: vi.fn(),
+        setActiveToFalse: vi.fn(),
+        upsertEnrollment: vi.fn(),
+        getCourseIdsByUserId: vi.fn(),
+    } satisfies IEnrollmentRepo;
+} ;
 
 export function makeMockSanitizeHtml(): Mocked<ISanitizeHtml> {
     return {

@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { AppContainer } from "@/app/composition/app.composititon.js";
 import env from "@/env.js";
 import { CanvasClientFactory } from "@/infrastructure/canvas/canvas-client.js";
 import { getQueueOptions } from "@/infrastructure/config/queueOptions.js";
 import { getTestDb } from "@/infrastructure/db/testDb.js";
 import { SanitizeHtml } from "@/infrastructure/sanitizeHtml/sanitizeHtml.js";
 
-import { makeMockClient, makeMockClientFactory } from "./mockingFactory.js";
+import { makeMockClient, makeMockClientFactory } from "../../tests/mockingFactory.js";
 
 describe("integration tests for ingestion", () => {
     let appContainer: AppContainer;
