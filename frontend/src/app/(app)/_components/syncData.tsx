@@ -8,8 +8,6 @@ export default function SyncData() {
     const [ingestionRunId, setIngestionRunId] = useState<string | null>(null);
 
     useEffect(() => {
-        // const cookiesStore = await cookies();
-        //     const cookies = cookiesStore.toString();
         const run = async () => {
             const res = await fetch("/api/sync" , {
                 method: "POST",

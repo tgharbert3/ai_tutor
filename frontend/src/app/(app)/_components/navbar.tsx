@@ -1,12 +1,16 @@
-import { LayoutDashboard, Book } from "lucide-react"
+import { Book, LayoutDashboard } from "lucide-react"
 import mentoraLogo from "../../../../public/mentora_logo_transparent.png"
 import Link from "next/link"
 
 
 import Image from "next/image"
+import { CoursesDrawer } from "./coursesDrawer"
+import { Course } from "../dashboard/page"
 
-
-export default function NavBar() {
+type Props = {
+    courses: Course[]
+}
+export default function NavBar({courses}: Props) {
     return (
         <nav className="flex flex-col min-h-screen bg-slate-700 items-center">
             <Link href={"/dashboard"}>
@@ -16,7 +20,6 @@ export default function NavBar() {
                 className=" h-auto w-28 bg-slate-700"
                 />
             </Link>
-            
             <ul className="w-full text-center">
                 <li className="text-white my-15 ">
                     <Link href={"/dashboard"} className="flex items-center flex-col">
@@ -25,11 +28,11 @@ export default function NavBar() {
                     </Link>
                     
                 </li>
-                <li className="text-white my-15">
-                    <Link href={"/courses"} className="flex flex-col items-center">
-                        <span><Book  /></span>
-                        <span>Courses</span>
-                    </Link>
+                <li className="text-white my-15 ">
+                    <div className="flex flex-col items-center">
+                        <Book  />
+                        <span><CoursesDrawer courses={courses}/></span>
+                    </div>
                 </li>
             </ul>
         </nav>
