@@ -14,6 +14,7 @@ export class CheckRunCompletion {
             await this.checkRunCompletionDeps.ingestionRuns.updateRunStatus("complete", ingestionRunId);
             const finalCounts = await this.checkRunCompletionDeps.ingestionTasks.getRunCounts(ingestionRunId);
             await this.checkRunCompletionDeps.pubSubService.publish(channel, JSON.stringify({ ...finalCounts, isFinal: true }));
+            return;
         };
 
         await this.checkRunCompletionDeps.pubSubService.publish(channel, JSON.stringify({ ...counts, isFinal: false }));

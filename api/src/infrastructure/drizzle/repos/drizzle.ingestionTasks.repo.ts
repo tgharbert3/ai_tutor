@@ -224,11 +224,11 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
     async getRunCounts(ingestionRunId: string): Promise<Counts> {
         const [counts] = await this.db.select(
             {
-                queuedCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'queued')`,
-                successCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'success')`,
-                runningCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'running')`,
-                failedCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'failed')`,
-                noopCount: sql<number>`count(*) filter (where ${ingestionTasks.status} = 'noop')`,
+                queuedCount: sql<string>`count(*) filter (where ${ingestionTasks.status} = 'queued')`,
+                successCount: sql<string>`count(*) filter (where ${ingestionTasks.status} = 'success')`,
+                runningCount: sql<string>`count(*) filter (where ${ingestionTasks.status} = 'running')`,
+                failedCount: sql<string>`count(*) filter (where ${ingestionTasks.status} = 'failed')`,
+                noopCount: sql<string>`count(*) filter (where ${ingestionTasks.status} = 'noop')`,
             },
         )
             .from(ingestionTasks)

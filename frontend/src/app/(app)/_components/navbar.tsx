@@ -18,6 +18,7 @@ export default function NavBar({courses}: Props) {
                 src={mentoraLogo}
                 alt="Mentora Logo"
                 className=" h-auto w-28 bg-slate-700"
+                loading="eager"
                 />
             </Link>
             <ul className="w-full text-center">

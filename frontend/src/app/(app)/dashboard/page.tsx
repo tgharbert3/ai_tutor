@@ -33,7 +33,6 @@ export default async function Page() {
                 <div className="p-6">
                     <div className="w-full p-4">
                         <DashboardHeader />
-                        <SyncData />
                     </div>
                 <div className="pt-4">
                     <div className="grid grid-cols-[repeat(auto-fill,minmax(262px,1fr))] gap-6">
@@ -43,7 +42,7 @@ export default async function Page() {
                  </div> 
             </section>
            <section className="w-56 flex flex-col items-center m-8 shrink-0">
-                <aside>Aside</aside>
+                <SyncData />
             </section>
         </div>
     )

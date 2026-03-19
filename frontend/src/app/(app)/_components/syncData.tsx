@@ -24,7 +24,6 @@ export default function SyncData() {
             };
             const {ingestionRunId} = await res.json();
             setIngestionRunId(ingestionRunId);
-            console.log(ingestionRunId);
         }
         run().catch(console.error); 
     }, [])

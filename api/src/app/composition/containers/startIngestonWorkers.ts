@@ -28,7 +28,7 @@ export function startIngestionWorkers(
                     return await scope.execute();
                 }
                 catch (e) {
-                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, container.queues.checkRunCompletion, job.data.taskId);
                     throw e;
                 }
             },
@@ -44,7 +44,7 @@ export function startIngestionWorkers(
                     return await scope.execute();
                 }
                 catch (e) {
-                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, container.queues.checkRunCompletion, job.data.taskId);
                     throw e;
                 }
             },
@@ -60,7 +60,7 @@ export function startIngestionWorkers(
                     return await scope.execute();
                 }
                 catch (e) {
-                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, container.queues.checkRunCompletion, job.data.taskId);
                     throw e;
                 }
             },
@@ -76,7 +76,7 @@ export function startIngestionWorkers(
                     return await scope.execute();
                 }
                 catch (e) {
-                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, container.queues.checkRunCompletion, job.data.taskId);
                     throw e;
                 }
             },
@@ -92,7 +92,7 @@ export function startIngestionWorkers(
                     return await scope.execute();
                 }
                 catch (e) {
-                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, container.queues.checkRunCompletion, job.data.taskId);
                     throw e;
                 }
             },
@@ -108,7 +108,7 @@ export function startIngestionWorkers(
                     return await scope.execute();
                 }
                 catch (e) {
-                    await handleWorkerError(e, job, container.repos.ingestionTasks, job.data.taskId);
+                    await handleWorkerError(e, job, container.repos.ingestionTasks, container.queues.checkRunCompletion, job.data.taskId);
                     throw e;
                 }
             },
