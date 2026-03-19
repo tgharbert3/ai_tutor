@@ -3,16 +3,19 @@
 import { Button, Drawer, useOverlayState } from "@heroui/react";
 import { Course } from "../dashboard/page";
 import { X } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 type Props = {
   courses: Course[];
 }
 export function CoursesDrawer({courses}: Props) {
-  const state = useOverlayState();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
     <Drawer>
-      <Button className="bg-slate-700" onPress={state.open}>Courses</Button>
-      <Drawer.Backdrop variant="transparent">
+      <Button className="bg-slate-700" onPress={() => setIsOpen(true)}>Courses</Button>
+      <Drawer.Backdrop variant="transparent" isOpen={isOpen} onOpenChange={setIsOpen}>
         <Drawer.Content placement="left" className="pl-24">
           <Drawer.Dialog>
             <Drawer.Header>
@@ -26,9 +29,9 @@ export function CoursesDrawer({courses}: Props) {
             <Drawer.Body>
               <ul>
                 {courses.map(course => {
-                  return <li key={course.canvasCourseId} className="m-4 text-lg text-slate-800">
-                    {course.courseCode}
-                  </li>
+                  return <Link key={course.canvasCourseId} href={`/courses/${course.canvasCourseId}`}>
+                    <li className="m-4 text-lg text-slate-800" onClick={() => setIsOpen(false)}>{course.courseCode} </li>
+                  </Link>
                 })}
               </ul>
             </Drawer.Body>

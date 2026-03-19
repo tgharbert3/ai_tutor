@@ -19,7 +19,7 @@ export default async function Page() {
             </div>
              <div className="pt-4">
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(262px,1fr))] gap-6">
-                    {coursesArray.map((course: Course) => <ClassCard courseCode={course.courseCode} name={course.name} key={course.canvasCourseId}/>)}
+                    {coursesArray.map((course: Course) => <ClassCard courseCode={course.courseCode} name={course.name}  canvasCourseId={course.canvasCourseId} key={course.canvasCourseId}/>)}
                 </div>
             </div>
         </div> 
