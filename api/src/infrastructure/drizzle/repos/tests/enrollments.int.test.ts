@@ -37,7 +37,7 @@ describe("int tests for enrollments repo", () => {
         expect(courseIds).toEqual([1]);
     });
 
-    it("returns empty array for a user with no enrollments", async () => {
+    it("returns empty array for a user with no enrollments or no active enrollments", async () => {
         await repoTestHelper.getTestSchool();
         const testUser = await repoTestHelper.getTestUser();
         await repoTestHelper.getTestCourse();

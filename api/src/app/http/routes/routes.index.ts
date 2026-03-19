@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 
-import * as ingestionRunHandlers from "../controllers/sync.handlers.js";
+import * as dashboardHandlers from "../controllers/dashboard.handlers.js";
+import * as ingestionRunHandlers from "../controllers/ingestion.handlers.js";
 
 // modules/routes/routes.index.ts
 export default function syncRoutes() {
@@ -8,6 +9,7 @@ export default function syncRoutes() {
 
     router.post("/sync", ...ingestionRunHandlers.ingestionHandler);
     router.get("/ingestionRunStatus/:ingestionRunId/events", ...ingestionRunHandlers.ingestionStatus);
+    router.get("/dashboard", ...dashboardHandlers.dashboardHandler);
 
     return router;
 }

@@ -2,6 +2,7 @@ import type { QueueOptions } from "bullmq";
 
 import type { db, JWTData } from "@/lib/types.js";
 
+import { GetCourseInfoForDashboard } from "@/modules/courses/useCases/getCourseInfoForDashboard.js";
 import { PreIngestionScope } from "@/modules/ingestion/scopes/PreIngestion.scope.js";
 
 import type { AppContainerDeps } from "../types.js";
@@ -32,6 +33,13 @@ export function buildHttpContainer(
 
         getPubSubService() {
             return deps.pubSubService;
+        },
+
+        getCourseInfoForDashboardUC() {
+            return new GetCourseInfoForDashboard({
+                enrollmentsRepo: repos.enrollments,
+                courseInfoRepo: repos.courseInfo,
+            });
         },
 
     // later:
