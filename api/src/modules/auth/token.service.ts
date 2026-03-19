@@ -21,6 +21,9 @@ export class TokenService {
             return payload;
         }
         catch (error) {
+            if (error instanceof jose.errors.JWTExpired) {
+                throw error;
+            }
             console.warn(`JWT decryption error ${error instanceof Error ? error.message : "unknown error"}`);
             throw Error;
         }

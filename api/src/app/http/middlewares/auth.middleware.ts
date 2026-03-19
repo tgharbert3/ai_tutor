@@ -2,6 +2,7 @@ import type { Context } from "hono";
 
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
+import * as jose from "jose";
 
 import type { AppBindings, JWTData } from "@/lib/types.js";
 
@@ -18,16 +19,23 @@ export const AuthMiddleware = createMiddleware<AppBindings>(async (c, next) => {
     if (!at) {
         return c.json(
             { error: "Unauthorized" },
-            403,
+            401,
         );
     }
-    const tokenData = await tokenService.decryptAcesssToken(at);
-    const data = {
-        userId: tokenData.sub!,
-        canvasBaseUrl: tokenData.canvasBaseUrl,
-        email: tokenData.email,
-        canvasToken: tokenData.canvasToken,
-    } satisfies JWTData;
-    c.set("user", data);
-    await next();
+    try {
+        const tokenData = await tokenService.decryptAcesssToken(at);
+        const data = {
+            userId: tokenData.sub!,
+            canvasBaseUrl: tokenData.canvasBaseUrl,
+            email: tokenData.email,
+            canvasToken: tokenData.canvasToken,
+        } satisfies JWTData;
+        c.set("user", data);
+        await next();
+    }
+    catch (error: unknown) {
+        if (error instanceof jose.errors.JWTExpired) {
+            return c.json({ error: "Token Expired" }, 401);
+        }
+    }
 });

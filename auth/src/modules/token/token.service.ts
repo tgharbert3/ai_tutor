@@ -103,6 +103,8 @@ export class TokenService {
     };
 
     async #generateAccessToken(email: string, userId: string, canvasToken: string, jti: string, fullUrl: string) {
+        const accessTokenExpiration = env.NODE_ENV === "production" ? env.ACCESS_EXPIRATION : 100;
+
          return new jose.EncryptJWT({
             email,
             canvasToken, 
@@ -111,7 +113,7 @@ export class TokenService {
             .setSubject(userId)
             .setJti(jti)
             .setProtectedHeader({alg: env.TOKEN_ALG, enc: env.TOKEN_ENC})
-            .setExpirationTime(`${env.ACCESS_EXPIRATION}m`)
+            .setExpirationTime(`${accessTokenExpiration}m`)
             .setIssuedAt(new Date())
             .encrypt(this.key);     
     };

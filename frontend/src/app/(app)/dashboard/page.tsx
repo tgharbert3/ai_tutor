@@ -3,6 +3,8 @@ import ClassCard from "../_components/classCard";
 import DashboardHeader from "../_components/dashboardHeader";
 import SyncData from "../_components/syncData";
 import NavBar from "../_components/navbar";
+import { redirect } from "next/navigation";
+
 
 export type Course = {
     courseCode: string;
@@ -46,4 +48,20 @@ export default async function Page() {
             </section>
         </div>
     )
+}
+
+export async function getRefreshToken() {
+    const cookiesStore = await cookies();
+    const cookieHeader = cookiesStore.toString();
+    const res = await fetch("http://localhost:3001/auth/v1/refresh", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+                Cookie: cookieHeader
+            },
+        })
+
+        if (!res.ok) {
+            redirect("/login");
+        }
 }

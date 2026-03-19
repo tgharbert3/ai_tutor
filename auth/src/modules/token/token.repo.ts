@@ -8,7 +8,7 @@ export const insertRefreshToken = async (data: insertTokenType) => {
     return inserted;
 };
 
-export const selectRefreshTokenByTokenId = async (tokenId: number) => {
+export const selectRefreshTokenByTokenId = async (tokenId: string) => {
     return await db.query.refresh_tokens.findFirst({ where: eq(refresh_tokens.id, tokenId) })
 
 };
@@ -66,16 +66,13 @@ export const updateDbForRefresh = async (data: insertTokenType) => {
 
             return {isGracePeriod: false, data};
         }, 
-        // this causes the "for update". The immediate starts a write-lock meaning the second request
-        // waits or fails. Prevents a race condition.
-        { behavior: "immediate" }
     );
 }
 
 export const revokeAllTokens = async (familyJti: string) => {
-    return (await db.update(refresh_tokens).set({isRevoked: new Date()}).where(eq(refresh_tokens.familyJti, familyJti))).rowsAffected;
+    return (await db.update(refresh_tokens).set({isRevoked: new Date()}).where(eq(refresh_tokens.familyJti, familyJti))).rowCount;
 }
 
 export const revokeTokenByJti = async (jtiToRevoke: string) => {
-    return (await db.update(refresh_tokens).set({isRevoked: new Date()}).where(eq(refresh_tokens.jti, jtiToRevoke))).rowsAffected
+    return (await db.update(refresh_tokens).set({isRevoked: new Date()}).where(eq(refresh_tokens.jti, jtiToRevoke))).rowCount
 };
