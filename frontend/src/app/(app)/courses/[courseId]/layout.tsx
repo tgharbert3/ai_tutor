@@ -7,7 +7,7 @@ export default async function Layout({
     children: React.ReactNode, 
     params: Params,
 }) {
-    const { courseId} = await params;
+    const { courseId } = await params;
     console.log(courseId);
      return (
         <div className="flex flex-col min-h-screen">

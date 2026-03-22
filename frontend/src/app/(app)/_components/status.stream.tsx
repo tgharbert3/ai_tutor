@@ -50,10 +50,18 @@ export default function StatusStream({ ingestionRunId }: Props) {
         <ProgressBar.Fill />
       </ProgressBar.Track>
     </ProgressBar>
-  );} else {
+  );}
+  else if (isChatting) {
+     return ( 
+      <div className="flex justify-center w-full min-h-screen bg-slate-800">
+        <Button className="w-36 mt-10 bg-white text-slate-800" onClick={() => setIsChatting(false)}>Stop Chatting</Button>
+      </div>
+    )
+  }
+  else {
     return ( 
-      <div className="flex justify-center w-full">
-        <Button className="w-36" onClick={() => setIsChatting(true)}>Chat with AI</Button>
+      <div className="flex justify-center w-full min-h-screen">
+        <Button className="w-36 mt-10" onClick={() => setIsChatting(true)}>Chat with AI</Button>
       </div>
     )
   }
