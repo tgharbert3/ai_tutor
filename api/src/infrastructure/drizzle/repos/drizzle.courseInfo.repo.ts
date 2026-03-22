@@ -37,7 +37,9 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
                 tabId: tab.id,
                 courseInfoId,
             } satisfies insertTabs));
-            const newTabs = await tx.insert(courseTabs).values(tabsToInsert).returning();
+            const newTabs = await tx.insert(courseTabs).values(tabsToInsert).onConflictDoNothing({
+                target: [courseTabs.courseInfoId, courseTabs.tabId],
+            }).returning();
             const newTabIds = newTabs.map(tab => tab.id);
 
             return { courseInfoId, syllabusId: syllabusRow.id, tabIds: newTabIds };
@@ -78,5 +80,16 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
             canvasCourseId: info.course_info.canvasCourseId,
             courseCode: info.course_info.courseCode,
         };
+    }
+
+    async getCourseTabs(courseId: number): Promise<string[]> {
+        const result = await this.db.select()
+            .from(courseInfo)
+            .where(eq(courseInfo.courseId, courseId))
+            .innerJoin(courseTabs, eq(courseInfo.id, courseTabs.courseInfoId));
+
+        const tabs = result.map(course => course.course_tabs.tabId);
+
+        return tabs;
     }
 }

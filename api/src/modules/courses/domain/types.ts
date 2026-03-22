@@ -5,3 +5,8 @@ export interface GetCourseInfoForDashboardDeps {
     enrollmentsRepo: IEnrollmentRepo;
     courseInfoRepo: ICourseInfoRepository;
 }
+
+export interface GetCourseTabsDeps {
+    enrollmentsRepo: IEnrollmentRepo;
+    courseInfoRepo: ICourseInfoRepository;
+}

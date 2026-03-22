@@ -75,16 +75,17 @@ export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
         insertSyllabus: vi.fn(),
         getAllCourseInfo: vi.fn(),
         getCourseInfoByCourseId: vi.fn(),
-    };
+        getCourseTabs: vi.fn(),
+    } satisfies ICourseInfoRepository;
 }
 
 export function makeMockUserEnrollmentRepo(): Mocked<IEnrollmentRepo> {
     return {
-        fetchEnrollments: vi.fn(),
         findAllActiveEnrollmentIds: vi.fn(),
         setActiveToFalse: vi.fn(),
         upsertEnrollment: vi.fn(),
         getCourseIdsByUserId: vi.fn(),
+        getCourseIdByUserIdAndCanvasCourseId: vi.fn(),
     } satisfies IEnrollmentRepo;
 } ;
 

@@ -5,4 +5,5 @@ export interface IEnrollmentRepo {
     setActiveToFalse: (userId: string, canvasId: number[]) => Promise<void>;
     upsertEnrollment: (enrollments: insertUserEnrollment) => Promise<getUserEnrollments>;
     getCourseIdsByUserId: (userId: string) => Promise<number[]>;
+    getCourseIdByUserIdAndCanvasCourseId: (userId: string, canvasCourseId: number) => Promise<number>;
 }

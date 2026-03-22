@@ -3,7 +3,7 @@ CREATE SCHEMA "ai";
 CREATE TYPE "ai"."ingestion_status" AS ENUM('queued', 'running', 'noop', 'complete', 'failed');--> statement-breakpoint
 CREATE TYPE "ai"."ingestion_task_entity_type" AS ENUM('syllabus', 'assignment', 'course', 'tabs', 'rawDoc', 'courseInfo');--> statement-breakpoint
 CREATE TYPE "ai"."ingestion_task_kind" AS ENUM('course:Plan', 'course:Change', 'course:FullIngest', 'fetch:AllAssignments', 'fetch:CourseInfo', 'process:Syllabus', 'write:NewCourse', 'process:Tabs', 'write:Syllabus', 'write:UserEnrollment', 'write:Course');--> statement-breakpoint
-CREATE TYPE "ai"."ingestion_task_status" AS ENUM('queued', 'running', 'success', 'failed', 'processing', 'processed');--> statement-breakpoint
+CREATE TYPE "ai"."ingestion_task_status" AS ENUM('queued', 'running', 'success', 'failed', 'processing', 'processed', 'noop');--> statement-breakpoint
 CREATE TABLE "ai"."assignments" (
 	"id" bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "ai"."assignments_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
 	"assignment_id" bigint,
@@ -64,7 +64,8 @@ CREATE TABLE "ai"."course_syllabus" (
 CREATE TABLE "ai"."course_tabs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"tab_id" text NOT NULL,
-	"course_info_id" uuid NOT NULL
+	"course_info_id" uuid NOT NULL,
+	CONSTRAINT "course_tabs_course_info_id_tab_id_unique" UNIQUE("course_info_id","tab_id")
 );
 --> statement-breakpoint
 CREATE TABLE "ai"."courses" (

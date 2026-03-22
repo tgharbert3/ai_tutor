@@ -7,4 +7,5 @@ export interface ICourseInfoRepository {
     insertSyllabus: (syllabusId: string, sanitizedSyllabus: string, plainText: string, syllabusHash: string) => Promise<void>;
     getAllCourseInfo: (courseId: number) => Promise<FullCourseInfo>;
     getCourseInfoByCourseId: (courseId: number) => Promise<CourseInfo>;
+    getCourseTabs: (courseId: number) => Promise<string[]>;
 }

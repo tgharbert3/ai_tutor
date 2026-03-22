@@ -140,7 +140,9 @@ export const courseTabs = apiSchema.table("course_tabs", {
     id: uuid("id").primaryKey().defaultRandom(),
     tabId: text("tab_id").notNull(),
     courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id),
-});
+}, table => [
+    unique().on(table.courseInfoId, table.tabId),
+]);
 
 // Relations:
 // 1. Schools Relations
