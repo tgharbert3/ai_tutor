@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Drawer, useOverlayState } from "@heroui/react";
+import { Button, Drawer } from "@heroui/react";
 import { Course } from "../dashboard/page";
 import { X } from "lucide-react";
 import Link from "next/link";

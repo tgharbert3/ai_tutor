@@ -10,6 +10,7 @@ type Props = {
 
 export default function StatusStream({ ingestionRunId }: Props) {
   const [progress, setProgress] = useState<number>(0);
+  const [isChatting, setIsChatting] = useState<boolean>(false);
 
   useEffect(() => {
     const eventSource = new EventSource(
@@ -50,9 +51,10 @@ export default function StatusStream({ ingestionRunId }: Props) {
       </ProgressBar.Track>
     </ProgressBar>
   );} else {
-    return (
-      <Button>Chat with AI</Button>
+    return ( 
+      <div className="flex justify-center w-full">
+        <Button className="w-36" onClick={() => setIsChatting(true)}>Chat with AI</Button>
+      </div>
     )
   }
-  
 }

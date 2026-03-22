@@ -17,7 +17,7 @@ export default function ClassCard(props: Props) {
                         <CardDescription>{props.name}</CardDescription>
                     </Link>
                 </Card.Header>
-                <CardFooter className="">
+                <CardFooter>
                     <NotebookPen strokeWidth={1.5} size={20} className=" text-slate-500 hover:text-slate-900"/>
                 </CardFooter>
             </Card>
