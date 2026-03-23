@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 
+import * as syllabusHandlers from "../controllers/courseSyllabus.handlers.js";
 import * as courseTabHandlers from "../controllers/cousrseTabs.handler.js";
 import * as dashboardHandlers from "../controllers/dashboard.handlers.js";
 import * as ingestionRunHandlers from "../controllers/ingestion.handlers.js";
@@ -11,6 +12,7 @@ export default function syncRoutes() {
     router.get("/ingestionRunStatus/:ingestionRunId/events", ...ingestionRunHandlers.ingestionStatus);
     router.get("/dashboard", ...dashboardHandlers.dashboardHandler);
     router.get("/courseTabs/:id", ...courseTabHandlers.cousrseTabHandler);
+    router.get("/courseSyllabus/:id", ...syllabusHandlers.courseSyllabusHandler);
 
     return router;
 }

@@ -51,12 +51,16 @@ export class RepoTestHelper {
             "code1",
             "name1",
             1,
-            "syllabus",
+            "<p>this is the syllabus</p>",
             [{
                 id: "syllabus",
                 canvasInfoId: "courseInfo1",
             }],
             cousreId,
         );
+    }
+
+    async insertCourseSyllabus(syllabusId: string) {
+        return await this.courseInfo.insertSyllabus(syllabusId, "<p>this is the syllabus</p>", "this is the syllabus", "hash");
     }
 }

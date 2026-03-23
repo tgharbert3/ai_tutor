@@ -1,3 +1,4 @@
+import Link from "next/link";
 import CourseHeader from "../../_components/courseHeader";
 import { getCourseTabs } from "./data";
 
@@ -17,10 +18,10 @@ export default async function Layout({
         <div className="flex flex-col min-h-screen">
             <CourseHeader canvasCourseId={Number(courseId)} />
             <div className="flex mt-5 flex-1">
-                <section className="shrink-0 w-48 flex justify-center border-r-2">
+                <section className="shrink-0 w-36 flex justify-center border-r-2">
                     <ul>
                         {courseTabs.map((tab, index) => {
-                            return <li key={index}>{tab}</li>
+                            return <li key={index}><Link href={`/courses/${courseId}/${tab}`}>{tab}</Link></li>
                         })}
                     </ul>
                 </section>

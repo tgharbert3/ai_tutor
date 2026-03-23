@@ -76,6 +76,7 @@ export function makeMockCourseInfo(): Mocked<ICourseInfoRepository> {
         getAllCourseInfo: vi.fn(),
         getCourseInfoByCourseId: vi.fn(),
         getCourseTabs: vi.fn(),
+        getCourseSyllabus: vi.fn(),
     } satisfies ICourseInfoRepository;
 }
 

@@ -8,7 +8,7 @@ import { getTestDb } from "@/infrastructure/db/testDb.js";
 import { DrizzleCourseInfoRepository } from "../drizzle.courseInfo.repo.js";
 import { RepoTestHelper } from "./helpers.js";
 
-describe("int tests for courses repo", () => {
+describe("int tests for courseInfo repo", () => {
     let db: db;
     let courseInfo: ICourseInfoRepository;
     let repoTestHelper: RepoTestHelper;
@@ -31,5 +31,17 @@ describe("int tests for courses repo", () => {
         const courseTabs = await courseInfo.getCourseTabs(courseId);
 
         expect(courseTabs).toMatchObject(["syllabus"]);
+    });
+
+    it("should return the sanitized syllabus", async () => {
+        await repoTestHelper.getTestSchool();
+        await repoTestHelper.getTestUser();
+        const courseId = await repoTestHelper.getTestCourse();
+        const testCourse = await repoTestHelper.insertCourseInfo(courseId);
+        await repoTestHelper.insertCourseSyllabus(testCourse.syllabusId);
+
+        const syllabus = await courseInfo.getCourseSyllabus(courseId);
+
+        expect(syllabus).toEqual("<p>this is the syllabus</p>");
     });
 });

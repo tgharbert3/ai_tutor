@@ -8,4 +8,5 @@ export interface ICourseInfoRepository {
     getAllCourseInfo: (courseId: number) => Promise<FullCourseInfo>;
     getCourseInfoByCourseId: (courseId: number) => Promise<CourseInfo>;
     getCourseTabs: (courseId: number) => Promise<string[]>;
+    getCourseSyllabus: (courseId: number) => Promise<string | null>;
 }

@@ -92,4 +92,13 @@ export class DrizzleCourseInfoRepository implements ICourseInfoRepository {
 
         return tabs;
     }
+
+    async getCourseSyllabus(courseId: number): Promise<string | null> {
+        const [result] = await this.db.select()
+            .from(courseInfo)
+            .where(eq(courseInfo.courseId, courseId))
+            .innerJoin(courseSyllabus, eq(courseInfo.id, courseSyllabus.courseInfoId));
+
+        return result.course_syllabus.sanitizedSyllabus;
+    }
 }

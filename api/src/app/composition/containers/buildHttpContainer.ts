@@ -3,6 +3,7 @@ import type { QueueOptions } from "bullmq";
 import type { db, JWTData } from "@/lib/types.js";
 
 import { GetCourseInfoForDashboard } from "@/modules/courses/useCases/getCourseInfoForDashboard.js";
+import { GetCourseSyllabus } from "@/modules/courses/useCases/getCourseSyllabus.js";
 import { GetCourseTabs } from "@/modules/courses/useCases/getCourseTabs.js";
 import { PreIngestionScope } from "@/modules/ingestion/scopes/PreIngestion.scope.js";
 
@@ -45,6 +46,13 @@ export function buildHttpContainer(
 
         getCourseTabsUC() {
             return new GetCourseTabs({
+                enrollmentsRepo: repos.enrollments,
+                courseInfoRepo: repos.courseInfo,
+            });
+        },
+
+        getCourseSyllabusUC() {
+            return new GetCourseSyllabus({
                 enrollmentsRepo: repos.enrollments,
                 courseInfoRepo: repos.courseInfo,
             });

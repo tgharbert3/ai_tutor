@@ -10,3 +10,8 @@ export interface GetCourseTabsDeps {
     enrollmentsRepo: IEnrollmentRepo;
     courseInfoRepo: ICourseInfoRepository;
 }
+
+export interface GetCourseSyllabusDeps {
+    enrollmentsRepo: IEnrollmentRepo;
+    courseInfoRepo: ICourseInfoRepository;
+}
