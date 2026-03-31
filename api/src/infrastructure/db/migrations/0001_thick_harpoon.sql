@@ -1,0 +1,1 @@
+ALTER TYPE "ai"."ingestion_task_kind" ADD VALUE 'vectorize:Syllabus';

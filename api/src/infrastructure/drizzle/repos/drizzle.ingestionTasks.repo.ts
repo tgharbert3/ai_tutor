@@ -252,4 +252,17 @@ export class DrizzleIngestionTasksRepo implements IIngestionTaskRepository {
             .groupBy(ingestionTasks.kind);
         return task;
     }
+
+    async insertVectorizeSyllabus(ingestionRunId: string, kind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string): Promise<string> {
+        const [task] = await this.db.insert(ingestionTasks).values({
+            ingestionRunId,
+            kind,
+            canvasCourseId,
+            schoolId,
+            entityType,
+            entityId: syllabusId,
+            status: "queued",
+        } satisfies insertIngestonTask).returning();
+        return task.taskId;
+    }
 }

@@ -32,4 +32,5 @@ export interface IIngestionTaskRepository {
     insertWriteCourseTask: (ingestionRunId: string, kind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, entityId: string) => Promise<string>;
     getRunCounts: (ingestionRunId: string) => Promise<Counts>;
     getRunningCountAndKind: (ingestionRunId: string) => Promise<{ runningCount: number; kind: IngestionTaskKind }[]>;
+    insertVectorizeSyllabus: (ingestionRunId: string, kind: IngestionTaskKind, canvasCourseId: number, schoolId: number, entityType: IngestionTaskET, syllabusId: string) => Promise<string>;
 }

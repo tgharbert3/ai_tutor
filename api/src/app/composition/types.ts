@@ -43,6 +43,7 @@ export type AppQueues = Readonly<{
     process: Queue;
     dbWrite: Queue;
     checkRunCompletion: Queue;
+    vectorization: Queue;
 }>;
 
 export type AppClients = Readonly<{

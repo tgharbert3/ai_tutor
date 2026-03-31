@@ -88,6 +88,7 @@ export interface ProcessWorkerDeps {
     sanitizeHtml: ISanitizeHtml;
     dbWrite: Queue;
     checkRunCompletion: Queue;
+    vectorization: Queue;
 }
 
 export interface checkRunCompletionDeps {

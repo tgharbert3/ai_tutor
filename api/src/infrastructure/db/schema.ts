@@ -5,7 +5,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 export const apiSchema = pgSchema("ai");
 export const ingestionStatusEnum = apiSchema.enum("ingestion_status", ["queued", "running", "noop", "complete", "failed"]);
 // Identifier for the worker
-export const ingestionTaskKind = apiSchema.enum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetch:AllAssignments", "fetch:CourseInfo", "process:Syllabus", "write:NewCourse", "process:Tabs", "write:Syllabus", "write:UserEnrollment", "write:Course"]);
+export const ingestionTaskKind = apiSchema.enum("ingestion_task_kind", ["course:Plan", "course:Change", "course:FullIngest", "fetch:AllAssignments", "fetch:CourseInfo", "process:Syllabus", "write:NewCourse", "process:Tabs", "write:Syllabus", "write:UserEnrollment", "write:Course", "vectorize:Syllabus"]);
 // Specifies what the entityId user for. If 'assignment' then entityId is assignmentId
 export const ingestionTaskEntityType = apiSchema.enum("ingestion_task_entity_type", ["syllabus", "assignment", "course", "tabs", "rawDoc", "courseInfo"]);
 

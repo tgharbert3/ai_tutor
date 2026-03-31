@@ -8,6 +8,13 @@
       "when": 1774200416752,
       "tag": "0000_even_rage",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774898899022,
+      "tag": "0001_thick_harpoon",
+      "breakpoints": true
     }
   ]
 }

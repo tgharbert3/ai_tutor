@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function getCourseTabs(canvasCourseId: string): Promise<string[]> {
     const cookiesStore = await cookies();
@@ -9,6 +10,9 @@ export async function getCourseTabs(canvasCourseId: string): Promise<string[]> {
             Cookie: cookieHeader,
         }
     });
+    if (response.status === 401) {
+        redirect("/login")
+    }
     if (!response.ok) {
         throw new Error("Failed to fetch courseTabs")
     }
@@ -25,6 +29,9 @@ export async function getCourseSyllabus(canvasCourseId: string): Promise<string>
             Cookie: cookieHeader,
         }
     });
+    if (response.status === 401) {
+        redirect("/login")
+    }
     if (!response.ok) {
         throw new Error("Failed to fetch courseTabs")
     }

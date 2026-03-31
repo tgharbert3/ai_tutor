@@ -81,6 +81,7 @@ export function buildWorkerContainer(
                 sanitizeHtml: deps.sanitizeHtml,
                 dbWrite: queues.dbWrite,
                 checkRunCompletion: queues.checkRunCompletion,
+                vectorization: queues.vectorization,
             });
         },
 

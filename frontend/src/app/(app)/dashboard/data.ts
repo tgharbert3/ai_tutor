@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { Course } from "./page";
+import { redirect } from "next/navigation";
 
 export async function getCourses(): Promise<Course[]> {
     const cookiesStore = await cookies();
@@ -10,6 +11,9 @@ export async function getCourses(): Promise<Course[]> {
             Cookie: cookieHeader,
         }
     });
+    if (response.status === 401) {
+            redirect("/login")
+        }
     if (!response.ok) {
         throw new Error("Failed to fetch dashboard data")
     }

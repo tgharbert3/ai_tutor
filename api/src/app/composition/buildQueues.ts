@@ -14,5 +14,6 @@ export function buildQueues(queueOptions: QueueOptions) {
         process: createQueue("process", queueOptions),
         dbWrite: createQueue("dbWrite", queueOptions),
         checkRunCompletion: createQueue("checkRunCompletion", queueOptions),
+        vectorization: createQueue("vectorization", queueOptions),
     } satisfies AppQueues;
 }
