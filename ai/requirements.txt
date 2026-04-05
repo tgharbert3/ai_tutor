@@ -2,3 +2,8 @@ fastapi[standard]
 bullmq
 SQLAlchemy
 dotenv
+llama-index
+beautifulsoup4
+langchain
+langchain-text-splitters
+llama-index-vector-stores-postgres

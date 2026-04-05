@@ -132,6 +132,7 @@ export const courseSyllabus = apiSchema.table("course_syllabus", {
     rawSyllabus: text("raw_syllabus").notNull(),
     plainText: text("plain_text"),
     hash: text(),
+    vectorizedHash: text("vectorized_hash"),
     status: ingestionStatusEnum().notNull(),
     courseInfoId: uuid("course_info_id").notNull().references(() => courseInfo.id).unique(),
 });

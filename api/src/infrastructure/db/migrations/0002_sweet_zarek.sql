@@ -1,0 +1,1 @@
+ALTER TABLE "ai"."course_syllabus" ADD COLUMN "vectorized_hash" text;
