@@ -1,10 +1,18 @@
 import os
 from sqlalchemy import create_engine, make_url
-from llama_index.core import StorageContext, VectorStoreIndex, Settings
+from sqlalchemy.orm import sessionmaker
+from llama_index.core import  VectorStoreIndex, Settings, get_response_synthesizer
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
 
-engine = create_engine(os.environ.get("DATABASE_URL"))
+
+def get_db_engine():
+    return create_engine(os.environ.get("DATABASE_URL"))
+
+engine = get_db_engine()
+session_factory = sessionmaker(bind=engine, expire_on_commit=False)
 
 
 url = make_url(os.environ.get("DATABASE_URL"))
@@ -28,4 +36,16 @@ vector_store = PGVectorStore.from_params(
 )
 
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+
+retriever = VectorIndexRetriever(
+    index = index,
+    similarity_top_k = 10
+)
+
+response_synthesizer = get_response_synthesizer()
+
+query_engine = RetrieverQueryEngine(
+    retriever = retriever,
+    response_synthesizer = response_synthesizer
+)
 
