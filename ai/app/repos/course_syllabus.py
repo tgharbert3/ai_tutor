@@ -25,6 +25,5 @@ class CourseSyllabusRepo():
             .returning(CourseSyllabus)
         )
         rows = session.execute(stmt).scalar_one()
-        session.commit()
         return rows.id
     

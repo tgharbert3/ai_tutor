@@ -34,17 +34,16 @@ class VectorizeService:
                     chunks = chunk_syllabus(sanitized_syllabus)
                     nodes = generate_text_nodes(chunks)
                     ref_doc_id = f"syllabus:{task.entity_id}"
-                    if (self.course_syllabus_repo.get_vectorized_hash(syllabus_id, session) is not None):
+                    if (vectorized_hash is not None):
                         index.delete_ref_doc(ref_doc_id, delete_from_docstore=True)
                     index.insert_nodes(nodes)
                     self.course_syllabus_repo.insert_vectorized_hash(syllabus_id, compute_text_hash(plain_text), session)
-                    await self.ingestion_tasks_repo.markTaskAsSuccess(task_id, session)
-                    self.check_run_completion_queue.add("check", {"ingestionRunId", ingestion_run_id})
+                    self.ingestion_tasks_repo.markTaskAsSuccess(task_id, session)
                 else:
                     self.ingestion_tasks_repo.markTaskAsNoop(task_id, session)
-                    await self.check_run_completion_queue.add("check", {"ingestionRunId", ingestion_run_id})
+            await self.check_run_completion_queue.add("check", {"ingestionRunId": ingestion_run_id})
         except Exception as e:
             with self.session_factory.begin() as session:
                 self.ingestion_tasks_repo.markTaskAsFailure(task_id, session)
-                await self.check_run_completion_queue.add("check", {"ingestionRunId", ingestion_run_id})
-                raise RuntimeError("Failed to insert syllabus embeddings") from e
+            await self.check_run_completion_queue.add("check", {"ingestionRunId": ingestion_run_id})
+            raise RuntimeError("Failed to insert syllabus embeddings") from e
